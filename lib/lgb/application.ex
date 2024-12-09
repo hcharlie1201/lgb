@@ -12,6 +12,7 @@ defmodule Lgb.Application do
       Lgb.Repo,
       {DNSCluster, query: Application.get_env(:lgb, :dns_cluster_query) || :ignore},
       {Phoenix.PubSub, name: Lgb.PubSub},
+      LgbWeb.Presence,
       # Start the Finch HTTP client for sending emails
       {Finch, name: Lgb.Finch},
       # Start a worker by calling: Lgb.Worker.start_link(arg)

@@ -18,7 +18,7 @@ defmodule LgbWeb.Router do
   end
 
   scope "/", LgbWeb do
-    pipe_through :browser
+    pipe_through [:browser, :redirect_if_user_is_authenticated]
 
     get "/", PageController, :home
   end
@@ -66,8 +66,15 @@ defmodule LgbWeb.Router do
 
     live_session :require_authenticated_user,
       on_mount: [{LgbWeb.UserAuth, :ensure_authenticated}] do
+      live "/dashboard", DashboardLive
       live "/users/settings", UserSettingsLive, :edit
       live "/users/settings/confirm_email/:token", UserSettingsLive, :confirm_email
+
+      live "/chat_rooms", ChatRoomLive.Index, :index
+      live "/chat_rooms/new", ChatRoomLive.Index, :new
+      live "/chat_rooms/:id/edit", ChatRoomLive.Index, :edit
+      live "/chat_rooms/:id", ChatRoomLive.Show, :show
+      live "/chat_rooms/:id/show/edit", ChatRoomLive.Show, :edit
     end
   end
 
