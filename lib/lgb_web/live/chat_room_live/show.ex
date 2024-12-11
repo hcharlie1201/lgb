@@ -5,24 +5,14 @@ defmodule LgbWeb.ChatRoomLive.Show do
 
   alias Lgb.Chatting
 
-  def render(assigns) do
-    ~H"""
-    <ul id="users-online" phx-update="stream">
-      <li :for={{dom_id, %{id: id, metas: metas, user: user}} <- @streams.presences} id={dom_id}>
-        <%= id %> (<%= user.email %>)
-      </li>
-    </ul>
-    """
-  end
-
   def mount(%{"id" => id}, _session, socket) do
-    socket = stream(socket, :presences, [])
     topic = "chat_room:#{id}"
+    socket = stream(socket, :presences, [])
+    socket = stream(socket, :messages, Chatting.list_messages(id))
 
-    # Assign page title and chat room details
     chat_room = Chatting.get_chat_room!(id)
-    socket = assign(socket, :page_title, "Show Chat Room")
     socket = assign(socket, :chat_room, chat_room)
+    socket = assign(socket, form: to_form(%{}, as: "message"))
 
     socket =
       if connected?(socket) do
@@ -51,5 +41,23 @@ defmodule LgbWeb.ChatRoomLive.Show do
     else
       {:noreply, stream_insert(socket, :presences, presence)}
     end
+  end
+
+  def handle_event("send_message", %{"message" => %{"content" => content}}, socket) do
+    chat_room = socket.assigns.chat_room
+
+    Chatting.create_message!(%{
+      chat_room_id: chat_room.id,
+      user_id: socket.assigns.current_user.id,
+      content: content
+    })
+
+    socket = assign(socket, form: to_form(%{}, as: "message"))
+    {:noreply, socket}
+  end
+
+  # do nothing for now but want to filter out messages that are innappropriate
+  def handle_event("validate_message", %{"message" => %{"content" => content}}, socket) do
+    {:noreply, socket}
   end
 end

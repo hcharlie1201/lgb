@@ -548,6 +548,19 @@ defmodule LgbWeb.CoreComponents do
     """
   end
 
+  slot :inner_block, required: true
+  attr :entries, :list, default: []
+
+  def unordered_list(assigns) do
+    ~H"""
+    <div>
+      <ul :for={entry <- @entries}>
+        <li>{render_slot(@inner_block, entry)}</li>
+      </ul>
+    </div>
+    """
+  end
+
   @doc """
   Renders a back navigation link.
 

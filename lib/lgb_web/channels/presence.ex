@@ -1,4 +1,6 @@
 defmodule LgbWeb.Presence do
+  require Logger
+
   use Phoenix.Presence,
     otp_app: :lgb,
     pubsub_server: Lgb.PubSub
@@ -10,7 +12,6 @@ defmodule LgbWeb.Presence do
   def fetch(_topic, presences) do
     for {key, %{metas: [meta | metas]}} <- presences, into: %{} do
       # user can be populated here from the database here we populate
-      # the name for demonstration purposes
       {key, %{metas: [meta | metas], id: meta.id, user: meta}}
     end
   end

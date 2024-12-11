@@ -1,0 +1,17 @@
+<.header class="text-center">
+  Welcome to chat room <%= @chat_room.id %>
+  <:subtitle>There are currently <%= Enum.count(@streams.presences) %> users online</:subtitle>
+</.header>
+<.table id="users-online" rows={@streams.presences}>
+  <:col :let={{_presence, %{user: user}}} label="id">{ user.id }</:col>
+  <:col :let={{_presence, %{user: user}}} label="email"><%= user.email %></:col>
+</.table>
+<.unordered_list :let={{_, message}} entries={@streams.messages}>
+  { message.content }
+</.unordered_list>
+<.simple_form for={@form} phx-change="validate_message" phx-submit="send_message">
+  <.input field={@form[:content]} label="Chat" />
+  <:actions>
+    <.button>Send Message</.button>
+  </:actions>
+</.simple_form>
