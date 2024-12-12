@@ -1,4 +1,4 @@
-defmodule LgbWeb.UserSettingsLive do
+defmodule LgbWeb.LoginLive.UserSettingsLive do
   use LgbWeb, :live_view
 
   alias Lgb.Accounts

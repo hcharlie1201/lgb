@@ -1,4 +1,4 @@
-defmodule LgbWeb.UserLoginLive do
+defmodule LgbWeb.LoginLive.UserLoginLive do
   use LgbWeb, :live_view
 
   def render(assigns) do

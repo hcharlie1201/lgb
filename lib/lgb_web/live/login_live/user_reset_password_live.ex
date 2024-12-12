@@ -1,4 +1,4 @@
-defmodule LgbWeb.UserResetPasswordLive do
+defmodule LgbWeb.LoginLive.UserResetPasswordLive do
   use LgbWeb, :live_view
 
   alias Lgb.Accounts

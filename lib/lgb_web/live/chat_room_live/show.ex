@@ -7,26 +7,22 @@ defmodule LgbWeb.ChatRoomLive.Show do
 
   def mount(%{"id" => id}, _session, socket) do
     topic = "chat_room:#{id}"
-    socket = stream(socket, :presences, [])
-    socket = stream(socket, :messages, Chatting.list_messages(id))
-
     chat_room = Chatting.get_chat_room!(id)
-    socket = assign(socket, :chat_room, chat_room)
-    socket = assign(socket, form: to_form(%{}, as: "message"))
+
+    # Fetch existing messages from the database
+    messages = Chatting.list_messages(id)
 
     socket =
-      if connected?(socket) do
-        Presence.track_user(
-          socket.assigns.current_user.id,
-          topic,
-          socket.assigns.current_user
-        )
+      socket
+      |> assign(chat_room: chat_room)
+      |> assign(form: to_form(%{}, as: "message"))
+      |> stream(:messages, messages)
+      |> stream(:presences, [])
 
-        Presence.subscribe(topic)
-        stream(socket, :presences, Presence.list_online_users(topic))
-      else
-        socket
-      end
+    if connected?(socket) do
+      Presence.track_user(socket.assigns.current_user.id, topic, socket.assigns.current_user)
+      Presence.subscribe(topic)
+    end
 
     {:ok, socket}
   end
@@ -46,18 +42,25 @@ defmodule LgbWeb.ChatRoomLive.Show do
   def handle_event("send_message", %{"message" => %{"content" => content}}, socket) do
     chat_room = socket.assigns.chat_room
 
-    Chatting.create_message!(%{
-      chat_room_id: chat_room.id,
-      user_id: socket.assigns.current_user.id,
-      content: content
-    })
+    message =
+      Chatting.create_message!(%{
+        chat_room_id: chat_room.id,
+        user_id: socket.assigns.current_user.id,
+        content: content
+      })
 
-    socket = assign(socket, form: to_form(%{}, as: "message"))
+    socket =
+      socket
+      |> assign(:form, to_form(%{}, as: "message"))
+      |> stream_insert(:messages, message)
+
+    Logger.debug("Form reset: #{inspect(socket.assigns.form)}")
     {:noreply, socket}
   end
 
   # do nothing for now but want to filter out messages that are innappropriate
-  def handle_event("validate_message", %{"message" => %{"content" => content}}, socket) do
+  def handle_event("update_message", %{"message" => %{"content" => content}}, socket) do
+    socket = socket |> assign(form: to_form(%{"content" => content}, as: "message"))
     {:noreply, socket}
   end
 end
