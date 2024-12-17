@@ -20,6 +20,16 @@ if System.get_env("PHX_SERVER") do
   config :lgb, LgbWeb.Endpoint, server: true
 end
 
+config :waffle,
+  storage: Waffle.Storage.S3,
+  asset_host: "https://d1yk37eobc1zxb.cloudfront.net",
+  s3_region: System.fetch_env!("AWS_REGION"),
+  s3_access_key_id: System.fetch_env!("AWS_ACCESS_KEY_ID"),
+  s3_secret_access_key: System.fetch_env!("AWS_SECRET_ACCESS_KEY")
+
+config :ex_aws,
+  json_codec: Jason
+
 if config_env() == :prod do
   database_url =
     System.get_env("DATABASE_URL") ||

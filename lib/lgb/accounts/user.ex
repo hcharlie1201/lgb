@@ -3,6 +3,7 @@ defmodule Lgb.Accounts.User do
   import Ecto.Changeset
 
   schema "users" do
+    has_many :profiles, Lgb.Profiles.Profile
     field :email, :string
     field :password, :string, virtual: true, redact: true
     field :hashed_password, :string, redact: true
@@ -157,5 +158,11 @@ defmodule Lgb.Accounts.User do
     else
       add_error(changeset, :current_password, "is not valid")
     end
+  end
+
+  def current_profile(user) do
+    user
+    |> Ecto.assoc(:profiles)
+    |> Lgb.Repo.one()
   end
 end

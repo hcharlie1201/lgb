@@ -1,0 +1,76 @@
+<.header>
+  Welcome to your profile
+  <:subtitle>This is a profile record from your database.</:subtitle>
+</.header>
+<div>
+  <article :for={picture <- @uploaded_files}>
+    <figure>
+      <img src={Waffle.url({picture.image, picture})} width="100" class="outline" />
+      <figcaption>{picture.inserted_at}</figcaption>
+    </figure>
+  </article>
+  <.simple_form for={@form} id="my-profile" phx-submit="update_profile" phx-change="validate">
+    <section phx-drop-target={@uploads.avatar.ref} class="flex flex-wrap">
+      <article :for={entry <- @uploads.avatar.entries}>
+        <figure>
+          <.live_img_preview entry={entry} width="100" class="outline" />
+          <figcaption>{entry.client_name}</figcaption>
+        </figure>
+
+        <progress value={entry.progress} max="100">{entry.progress}%</progress>
+
+        <button
+          type="button"
+          phx-click="cancel-upload"
+          phx-value-ref={entry.ref}
+          aria-label="cancel"
+        >
+          &times;
+        </button>
+
+        <p :for={err <- upload_errors(@uploads.avatar, entry)} class="alert alert-danger">
+          {error_to_string(err)}
+        </p>
+      </article>
+      <p :for={err <- upload_errors(@uploads.avatar)} class="alert alert-danger">
+        {error_to_string(err)}
+      </p>
+    </section>
+    <.live_file_input upload={@uploads.avatar} />
+    <.input value={@profile.handle} name="handle" label="Name" />
+    <.input value={@profile.dob} name="dob" type="date" label="Birthday" />
+    <.input
+      value={@profile.height_cm}
+      name="height_cm"
+      type="select"
+      label="Height"
+      options={generate_height_options()}
+      prompt="Select your height"
+      multiple={false}
+    />
+    <.input
+      value={@profile.weight_lb}
+      name="weight_lb"
+      type="select"
+      label="Weight"
+      options={generate_weight_options()}
+      prompt="Select your weight"
+      multiple={false}
+    />
+    <.input name="city" type="text" label="City" value={@profile.city} />
+    <.input
+      value={@profile.state}
+      name="state"
+      type="select"
+      label="State"
+      options={generate_state_options()}
+      prompt="Select your state"
+      multiple={false}
+    />
+    <.input value={@profile.zip} name="zip" type="text" label="Zip" phx-change="validate_zip" />
+    <.input value={@profile.biography} name="biography" type="textarea" label="Bio" />
+    <:actions>
+      <.button phx-disable-with="Confirming">Save</.button>
+    </:actions>
+  </.simple_form>
+</div>
