@@ -105,11 +105,34 @@ defmodule Lgb.Profiles do
 
   @doc """
   Create a profile picture.
+
+  First saves the file to the local filesystem, then creates and upload to S3 while recording it to the DB.
+  Remove the locally temporary file after the upload.
   """
-  def create_profile_picture!(attrs \\ %{}) do
+  def create_profile_picture!(entry, temp_path, profile_id) do
+    dest =
+      Path.join(
+        Application.app_dir(:lgb, "priv/static/uploads"),
+        entry.client_name
+      )
+
+    File.cp!(temp_path, dest)
+
+    image_upload = %Plug.Upload{
+      path: dest,
+      filename: entry.client_name,
+      content_type: entry.client_type
+    }
+
     %ProfilePicture{}
-    |> ProfilePicture.changeset(attrs)
+    |> ProfilePicture.changeset(%{
+      profile_id: profile_id,
+      image: image_upload
+    })
     |> Repo.insert!()
+
+    # Remove the temporary file saved locally
+    File.rm!(dest)
   end
 
   @doc """
