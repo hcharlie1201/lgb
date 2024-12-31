@@ -3,12 +3,6 @@
   <:subtitle>This is a profile record from your database.</:subtitle>
 </.header>
 <div>
-  <article :for={picture <- @uploaded_files}>
-    <figure>
-      <img src={Waffle.url({picture.image, picture})} width="100" class="outline" />
-      <figcaption>{picture.inserted_at}</figcaption>
-    </figure>
-  </article>
   <.simple_form for={@form} id="my-profile" phx-submit="update_profile" phx-change="validate">
     <section phx-drop-target={@uploads.avatar.ref} class="flex flex-wrap">
       <article :for={entry <- @uploads.avatar.entries}>

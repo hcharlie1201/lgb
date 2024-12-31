@@ -6,6 +6,7 @@ defmodule Lgb.Profiles.ProfilePicture do
   schema "profile_pictures" do
     belongs_to :profile, Lgb.Profiles.Profile
     field :image, Lgb.Profiles.ProfilePictureUploader.Type
+    field :uuid, Ecto.UUID, default: Ecto.UUID.generate()
 
     timestamps(type: :utc_datetime)
   end
@@ -15,6 +16,5 @@ defmodule Lgb.Profiles.ProfilePicture do
     profile_picture
     |> cast(attrs, [:profile_id])
     |> cast_attachments(attrs, [:image])
-    |> validate_required([:profile_id, :image])
   end
 end

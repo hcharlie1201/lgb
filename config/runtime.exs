@@ -22,13 +22,13 @@ end
 
 config :waffle,
   storage: Waffle.Storage.S3,
-  asset_host: "https://d1yk37eobc1zxb.cloudfront.net",
-  s3_region: System.fetch_env!("AWS_REGION"),
-  s3_access_key_id: System.fetch_env!("AWS_ACCESS_KEY_ID"),
-  s3_secret_access_key: System.fetch_env!("AWS_SECRET_ACCESS_KEY")
+  bucket: System.fetch_env!("AWS_S3_BUCKET")
 
 config :ex_aws,
-  json_codec: Jason
+  json_codec: Jason,
+  access_key_id: System.fetch_env!("AWS_ACCESS_KEY_ID"),
+  secret_access_key: System.fetch_env!("AWS_SECRET_ACCESS_KEY"),
+  region: System.fetch_env!("AWS_REGION")
 
 if config_env() == :prod do
   database_url =
