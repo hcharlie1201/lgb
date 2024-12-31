@@ -31,25 +31,7 @@ defmodule LgbWeb.ProfileLive.MyProfile do
     case Profiles.update_profile(socket.assigns.profile, profile_params) do
       {:ok, profile} ->
         consume_uploaded_entries(socket, :avatar, fn %{path: path}, entry ->
-          dest =
-            Path.join(
-              Application.app_dir(:lgb, "priv/static/uploads"),
-              entry.client_name
-            )
-
-          # You will need to create `priv/static/uploads` for `File.cp!/2` to work.
-          File.cp!(path, dest)
-
-          upload = %Plug.Upload{
-            path: dest,
-            filename: entry.client_name,
-            content_type: entry.client_type
-          }
-
-          Profiles.create_profile_picture!(%{
-            profile_id: profile.id,
-            image: upload
-          })
+          Profiles.create_profile_picture!(entry, path, profile.id)
         end)
 
         {:noreply,
