@@ -139,8 +139,7 @@ defmodule Lgb.Profiles do
   List profile pictures.
   """
   def list_profile_pictures(profile) do
-    profile
-    |> Ecto.assoc(:profile_pictures)
-    |> Repo.all()
+    profile = Repo.preload(profile, :profile_pictures)
+    profile.profile_pictures
   end
 end
