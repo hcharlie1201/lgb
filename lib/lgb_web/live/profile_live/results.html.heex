@@ -1,0 +1,10 @@
+<div>
+  <h1>Search Results</h1>
+  <%= for profile <- @profiles do %>
+    <div>
+      <h2>handle: {profile.handle}</h2>
+      <p>height: {profile.height_cm} cm</p>
+      <p>bio: {profile.biography}</p>
+    </div>
+  <% end %>
+</div>

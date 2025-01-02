@@ -75,11 +75,13 @@ defmodule LgbWeb.Router do
       live "/chat_rooms/:id/edit", ChatRoomLive.Index, :edit
       live "/chat_rooms/:id", ChatRoomLive.Show, :show
 
-      live "/profiles/current", ProfileLive.MyProfile, :current
-      live "/profiles", ProfileLive.Index, :index
-      live "/profiles/:id/edit", ProfileLive.Index, :edit
+      scope "/profiles", ProfileLive do
+        live "/current", MyProfile
+        live "/", Search, :index
+        live "/results", Results, :index
 
-      live "/profiles/:id", ProfileLive.Show, :show
+        live "/:id", Show, :show
+      end
     end
   end
 

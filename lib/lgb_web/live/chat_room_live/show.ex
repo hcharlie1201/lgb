@@ -54,7 +54,6 @@ defmodule LgbWeb.ChatRoomLive.Show do
       |> assign(:form, to_form(%{}, as: "message"))
       |> stream_insert(:messages, message)
 
-    Logger.debug("Form reset: #{inspect(socket.assigns.form)}")
     {:noreply, socket}
   end
 

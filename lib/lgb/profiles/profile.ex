@@ -2,6 +2,14 @@ defmodule Lgb.Profiles.Profile do
   use Ecto.Schema
   import Ecto.Changeset
 
+  @derive {
+    Flop.Schema,
+    filterable: [:handle, :state, :city],
+    sortable: [:dob, :height_cm, :weight_lb],
+    max_limit: 50,
+    default_limit: 20
+  }
+
   schema "profiles" do
     has_many :profile_pictures, Lgb.Profiles.ProfilePicture
     belongs_to :user, Lgb.Accounts.User

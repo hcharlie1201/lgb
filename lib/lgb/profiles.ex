@@ -18,8 +18,8 @@ defmodule Lgb.Profiles do
       [%Profile{}, ...]
 
   """
-  def list_profiles do
-    Repo.all(Profile)
+  def list_profiles(params) do
+    Flop.validate_and_run(Profile, params, for: Profile)
   end
 
   @doc """
@@ -141,5 +141,20 @@ defmodule Lgb.Profiles do
   def list_profile_pictures(profile) do
     profile = Repo.preload(profile, :profile_pictures)
     profile.profile_pictures
+  end
+
+  def generate_height_options do
+    Enum.map(50..85, fn inches ->
+      cm = round(inches * 2.54)
+      feet = div(inches, 12)
+      remaining_inches = rem(inches, 12)
+      {"#{feet} ft #{remaining_inches} in", cm}
+    end)
+  end
+
+  def generate_weight_options do
+    Enum.map(100..300, fn lbs ->
+      {"#{lbs} lbs", lbs}
+    end)
   end
 end
