@@ -1,10 +1,27 @@
 <div>
-  <h1>Search Results</h1>
-  <%= for profile <- @profiles do %>
-    <div>
-      <h2>handle: {profile.handle}</h2>
-      <p>height: {profile.height_cm} cm</p>
-      <p>bio: {profile.biography}</p>
-    </div>
-  <% end %>
+  <.header class="text-center">
+    List of profile searches
+  </.header>
+  <Flop.Phoenix.table items={@profiles} meta={@metas} path={~p"/profiles/results"}>
+    <:col :let={profile} label="Name">{profile.handle}</:col>
+    <:col :let={profile} label="Height" field={:height_cm}>
+      {display_height(profile.height_cm)}
+    </:col>
+    <:col :let={profile} label="Weight" field={:weight_lb}>
+      {display_weight(profile.weight_lb)}
+    </:col>
+  </Flop.Phoenix.table>
+  <.simple_form for={@form} phx-submit="goto">
+    <.input
+      value={@metas.flop.page}
+      name="page"
+      type="select"
+      label="Page: "
+      options={for n <- 1..@metas.total_pages, do: {n, n}}
+      multiple={false}
+    />
+    <:actions>
+      <.button>Goto</.button>
+    </:actions>
+  </.simple_form>
 </div>

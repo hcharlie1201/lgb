@@ -55,10 +55,11 @@
       </p>
     </section>
     <.live_file_input upload={@uploads.avatar} />
-    <.input value={@profile.handle} name="handle" label="Name" />
-    <.input value={@profile.dob} name="dob" type="date" label="Birthday" />
+    <.input value={@profile.handle} field={@form[:handle]} name="handle" label="Name" />
+    <.input value={@profile.age} field={@form[:age]} name="age" type="number" label="Age" />
     <.input
       value={@profile.height_cm}
+      field={@form[:height_cm]}
       name="height_cm"
       type="select"
       label="Height"
@@ -68,6 +69,7 @@
     />
     <.input
       value={@profile.weight_lb}
+      field={@form[:weight_lb]}
       name="weight_lb"
       type="select"
       label="Weight"
@@ -75,9 +77,10 @@
       prompt="Select your weight"
       multiple={false}
     />
-    <.input name="city" type="text" label="City" value={@profile.city} />
+    <.input name="city" field={@form[:city]} type="text" label="City" value={@profile.city} />
     <.input
       value={@profile.state}
+      field={@form[:state]}
       name="state"
       type="select"
       label="State"
@@ -85,8 +88,21 @@
       prompt="Select your state"
       multiple={false}
     />
-    <.input value={@profile.zip} name="zip" type="text" label="Zip" phx-change="validate_zip" />
-    <.input value={@profile.biography} name="biography" type="textarea" label="Bio" />
+    <.input
+      value={@profile.zip}
+      field={@form[:zip]}
+      name="zip"
+      type="text"
+      label="Zip"
+      phx-change="validate_zip"
+    />
+    <.input
+      field={@form[:biography]}
+      value={@profile.biography}
+      name="biography"
+      type="textarea"
+      label="Bio"
+    />
     <:actions>
       <.button phx-disable-with="Confirming">Save</.button>
     </:actions>

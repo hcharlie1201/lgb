@@ -43,13 +43,24 @@ defmodule LgbWeb.ProfileLive.MyProfile do
         {:noreply,
          socket
          |> assign(:form, to_form(changeset))
-         |> put_flash(:error, "Failed to update profile.")}
+         |> put_flash(
+           :error,
+           "Failed to update profile."
+         )}
     end
   end
 
   @impl Phoenix.LiveView
-  def handle_event("validate", _params, socket) do
-    {:noreply, socket}
+  def handle_event("validate", params, socket) do
+    profile = socket.assigns.profile
+
+    form =
+      profile
+      |> Profile.changeset(params)
+      |> Map.put(:action, :validate)
+      |> to_form()
+
+    {:noreply, assign(socket, form: form)}
   end
 
   @impl Phoenix.LiveView

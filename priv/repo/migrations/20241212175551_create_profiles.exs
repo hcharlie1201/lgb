@@ -5,7 +5,7 @@ defmodule Lgb.Repo.Migrations.CreateProfiles do
     create table(:profiles) do
       add :user_id, references(:users)
       add :handle, :string
-      add :dob, :date
+      add :age, :integer, unsigned: true
       add :height_cm, :integer
       add :weight_lb, :integer
       add :city, :string
