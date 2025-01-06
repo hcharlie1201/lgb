@@ -1,7 +1,3 @@
-<.header>
-  Welcome to your profile
-  <:subtitle>This is a profile record from your database.</:subtitle>
-</.header>
 <div>
   <div>
     <h1>My Pictures</h1>
@@ -96,6 +92,7 @@
       label="Zip"
       phx-change="validate_zip"
     />
+    <div phx-hook="Map" class="h-96" id="mapid"></div>
     <.input
       field={@form[:biography]}
       value={@profile.biography}
