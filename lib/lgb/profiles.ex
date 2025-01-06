@@ -169,6 +169,12 @@ defmodule Lgb.Profiles do
         "max_height_cm" ->
           [%{field: :height_cm, op: :<=, value: String.to_integer(value)} | acc]
 
+        "min_age" ->
+          [%{field: :age, op: :>=, value: String.to_integer(value)} | acc]
+
+        "max_age" ->
+          [%{field: :age, op: :<=, value: String.to_integer(value)} | acc]
+
         _ ->
           acc
       end

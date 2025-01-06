@@ -2,8 +2,7 @@ defmodule LgbWeb.ProfileLive.Results do
   alias Lgb.Profiles.Profile
   use LgbWeb, :live_view
 
-  def mount(params, _session, socket) do
-    {_, socket} = handle_params(params, nil, socket)
+  def mount(_params, _session, socket) do
     socket = assign(socket, form: to_form(%{}))
     {:ok, socket}
   end
