@@ -12,15 +12,15 @@
     </:col>
   </Flop.Phoenix.table>
   <.simple_form for={@form} phx-submit="goto">
-    <.input
-      value={@metas.flop.page}
-      name="page"
-      type="select"
-      label="Page: "
-      options={for n <- 1..@metas.total_pages, do: {n, n}}
-      multiple={false}
-    />
     <:actions>
+      <.input
+        value={@metas.flop.page}
+        name="page"
+        type="select"
+        label="Page: "
+        options={for n <- 1..@metas.total_pages, do: {n, n}}
+        multiple={false}
+      />
       <.button>Goto</.button>
     </:actions>
   </.simple_form>

@@ -4,9 +4,9 @@ defmodule Lgb.Profiles.Profile do
 
   @derive {
     Flop.Schema,
-    filterable: [:handle, :state, :city, :height_cm, :weight_lb],
+    filterable: [:handle, :state, :city, :height_cm, :weight_lb, :age],
     sortable: [:age, :height_cm, :weight_lb],
-    default_limit: 20
+    default_limit: 1
   }
 
   schema "profiles" do

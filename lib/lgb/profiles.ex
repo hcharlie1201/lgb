@@ -157,4 +157,26 @@ defmodule Lgb.Profiles do
       {"#{lbs} lbs", lbs}
     end)
   end
+
+  def create_filter(params) do
+    params
+    |> sanitize()
+    |> Enum.reduce([], fn {key, value}, acc ->
+      case key do
+        "min_height_cm" ->
+          [%{field: :height_cm, op: :>=, value: String.to_integer(value)} | acc]
+
+        "max_height_cm" ->
+          [%{field: :height_cm, op: :<=, value: String.to_integer(value)} | acc]
+
+        _ ->
+          acc
+      end
+    end)
+  end
+
+  def sanitize(params) do
+    params
+    |> Enum.reject(fn {_, value} -> value in [nil, ""] end)
+  end
 end
