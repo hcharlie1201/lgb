@@ -27,7 +27,22 @@ defmodule LgbWeb.ProfileLive.MyProfile do
     {:ok, assign(socket, profile: profile, form: to_form(Profile.changeset(profile, %{})))}
   end
 
+  @doc """
+  Handles events from the client from app.js Hooks.map.
+  """
+  def handle_event("map_clicked", %{"lat" => lat, "lng" => lng}, socket) do
+    updated_form =
+      Map.update!(socket.assigns.form, :params, fn params_map ->
+        Map.put(params_map, "geolocation", %Geo.Point{coordinates: {lat, lng}, srid: 4326})
+      end)
+
+    {:noreply, assign(socket, form: updated_form)}
+  end
+
   def handle_event("update_profile", profile_params, socket) do
+    geolocation = socket.assigns.form.params["geolocation"]
+    profile_params = Map.put(profile_params, "geolocation", geolocation)
+
     case Profiles.update_profile(socket.assigns.profile, profile_params) do
       {:ok, profile} ->
         consume_uploaded_entries(socket, :avatar, fn %{path: path}, entry ->
@@ -82,61 +97,6 @@ defmodule LgbWeb.ProfileLive.MyProfile do
           {:noreply, socket}
         end
     end
-  end
-
-  defp generate_state_options do
-    [
-      {"Alabama", "AL"},
-      {"Alaska", "AK"},
-      {"Arizona", "AZ"},
-      {"Arkansas", "AR"},
-      {"California", "CA"},
-      {"Colorado", "CO"},
-      {"Connecticut", "CT"},
-      {"Delaware", "DE"},
-      {"Florida", "FL"},
-      {"Georgia", "GA"},
-      {"Hawaii", "HI"},
-      {"Idaho", "ID"},
-      {"Illinois", "IL"},
-      {"Indiana", "IN"},
-      {"Iowa", "IA"},
-      {"Kansas", "KS"},
-      {"Kentucky", "KY"},
-      {"Louisiana", "LA"},
-      {"Maine", "ME"},
-      {"Maryland", "MD"},
-      {"Massachusetts", "MA"},
-      {"Michigan", "MI"},
-      {"Minnesota", "MN"},
-      {"Mississippi", "MS"},
-      {"Missouri", "MO"},
-      {"Montana", "MT"},
-      {"Nebraska", "NE"},
-      {"Nevada", "NV"},
-      {"New Hampshire", "NH"},
-      {"New Jersey", "NJ"},
-      {"New Mexico", "NM"},
-      {"New York", "NY"},
-      {"North Carolina", "NC"},
-      {"North Dakota", "ND"},
-      {"Ohio", "OH"},
-      {"Oklahoma", "OK"},
-      {"Oregon", "OR"},
-      {"Pennsylvania", "PA"},
-      {"Rhode Island", "RI"},
-      {"South Carolina", "SC"},
-      {"South Dakota", "SD"},
-      {"Tennessee", "TN"},
-      {"Texas", "TX"},
-      {"Utah", "UT"},
-      {"Vermont", "VT"},
-      {"Virginia", "VA"},
-      {"Washington", "WA"},
-      {"West Virginia", "WV"},
-      {"Wisconsin", "WI"},
-      {"Wyoming", "WY"}
-    ]
   end
 
   defp error_to_string(:too_large), do: "Too large"

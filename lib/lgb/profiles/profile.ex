@@ -20,6 +20,7 @@ defmodule Lgb.Profiles.Profile do
     field :weight_lb, :integer
     field :city, :string
     field :biography, :string
+    field :geolocation, Geo.PostGIS.Geometry
 
     timestamps(type: :utc_datetime)
   end
@@ -36,7 +37,8 @@ defmodule Lgb.Profiles.Profile do
       :state,
       :zip,
       :biography,
-      :user_id
+      :user_id,
+      :geolocation
     ])
     |> validate_required([:user_id])
     |> validate_number(:age,
