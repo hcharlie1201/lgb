@@ -1,0 +1,40 @@
+<.simple_form for={@form} id="search-profile" phx-submit="search" phx-change="validate">
+  <.input
+    type="select"
+    label="Min Height"
+    field={@form[:min_height_cm]}
+    options={Lgb.Profiles.generate_height_options()}
+    prompt="Minimum height"
+    name="min_height_cm"
+    multiple={false}
+  />
+  <.input
+    type="select"
+    name="max_height_cm"
+    label="Max Height"
+    field={@form[:max_height_cm]}
+    options={Lgb.Profiles.generate_height_options()}
+    prompt="Maximum height"
+    multiple={false}
+  />
+  <.input
+    type="number"
+    name="min_age"
+    label="Min Age"
+    field={@form[:min_age]}
+    label="Minimum age"
+  />
+  <.input
+    type="number"
+    name="max_age"
+    label="Max Age"
+    field={@form[:max_age]}
+    label="Maximum age"
+  />
+  <:actions>
+    <.button :if={@form.errors == []}>Search</.button>
+    <.button :if={@form.errors != []} disabled class="cursor-not-allowed">
+      Search
+    </.button>
+  </:actions>
+</.simple_form>

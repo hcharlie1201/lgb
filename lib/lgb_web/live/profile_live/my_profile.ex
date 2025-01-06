@@ -43,13 +43,24 @@ defmodule LgbWeb.ProfileLive.MyProfile do
         {:noreply,
          socket
          |> assign(:form, to_form(changeset))
-         |> put_flash(:error, "Failed to update profile.")}
+         |> put_flash(
+           :error,
+           "Failed to update profile."
+         )}
     end
   end
 
   @impl Phoenix.LiveView
-  def handle_event("validate", _params, socket) do
-    {:noreply, socket}
+  def handle_event("validate", params, socket) do
+    profile = socket.assigns.profile
+
+    form =
+      profile
+      |> Profile.changeset(params)
+      |> Map.put(:action, :validate)
+      |> to_form()
+
+    {:noreply, assign(socket, form: form)}
   end
 
   @impl Phoenix.LiveView
@@ -71,21 +82,6 @@ defmodule LgbWeb.ProfileLive.MyProfile do
           {:noreply, socket}
         end
     end
-  end
-
-  defp generate_height_options do
-    Enum.map(50..85, fn inches ->
-      cm = round(inches * 2.54)
-      feet = div(inches, 12)
-      remaining_inches = rem(inches, 12)
-      {"#{feet} ft #{remaining_inches} in", cm}
-    end)
-  end
-
-  defp generate_weight_options do
-    Enum.map(100..300, fn lbs ->
-      {"#{lbs} lbs", lbs}
-    end)
   end
 
   defp generate_state_options do

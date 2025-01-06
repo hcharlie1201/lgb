@@ -9,7 +9,7 @@ defmodule LgbWeb.DashboardLive do
       <div class="flex-1">
         <ul class="flex flex-col">
           <.link class="hover:bg-sky-200" href={~p"/profiles/current"}>My Profile</.link>
-          <.link class="hover:bg-sky-200" href={~p"/chat_rooms"}>Search profiles</.link>
+          <.link class="hover:bg-sky-200" href={~p"/profiles"}>Search profiles</.link>
           <.link class="hover:bg-sky-200" href={~p"/chat_rooms"}>Inbox/Chats</.link>
           <.link class="hover:bg-sky-200" href={~p"/chat_rooms"}>Go to chatroom</.link>
         </ul>
