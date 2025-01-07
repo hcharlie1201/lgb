@@ -37,6 +37,8 @@ defmodule Lgb.MixProject do
       {:ex_aws, "~> 2.1.2"},
       {:ex_aws_s3, "~> 2.0"},
       {:hackney, "~> 1.9"},
+      {:httpoison, "~> 2.0"},
+      {:poison, "~> 6.0"},
       {:sweet_xml, "~> 0.6"},
       {:waffle, "~> 1.1"},
       {:waffle_ecto, "~> 0.0"},

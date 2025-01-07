@@ -30,18 +30,41 @@ defmodule LgbWeb.ProfileLive.MyProfile do
   @doc """
   Handles events from the client from app.js Hooks.map.
   """
-  def handle_event("map_clicked", %{"lat" => lat, "lng" => lng}, socket) do
-    updated_form =
-      Map.update!(socket.assigns.form, :params, fn params_map ->
-        Map.put(params_map, "geolocation", %Geo.Point{coordinates: {lat, lng}, srid: 4326})
-      end)
 
-    {:noreply, assign(socket, form: updated_form)}
+  @doc """
+  Updates the geolocation and address details in the form.
+  """
+  def handle_event("map_clicked", %{"lat" => lat, "lng" => lng}, socket) do
+    case Lgb.ThirdParty.Google.ReverseGeo.get_address(lat, lng) do
+      [city: city, state: state, zip: zip] ->
+        updated_params = %{
+          "geolocation" => %Geo.Point{coordinates: {lat, lng}, srid: 4326},
+          "city" => city,
+          "state" => state,
+          "zip" => zip
+        }
+
+        form =
+          socket.assigns.profile
+          |> Profile.changeset(updated_params)
+          |> to_form()
+
+        {:noreply, assign(socket, form: form)}
+
+      _ ->
+        {:noreply, put_flash(socket, :error, "Failed to fetch address details.")}
+    end
   end
 
   def handle_event("update_profile", profile_params, socket) do
     geolocation = socket.assigns.form.params["geolocation"]
-    profile_params = Map.put(profile_params, "geolocation", geolocation)
+
+    profile_params =
+      profile_params
+      |> Map.put("geolocation", geolocation)
+      |> Map.put("zip", socket.assigns.form.params["zip"])
+      |> Map.put("city", socket.assigns.form.params["city"])
+      |> Map.put("state", socket.assigns.form.params["state"])
 
     case Profiles.update_profile(socket.assigns.profile, profile_params) do
       {:ok, profile} ->
@@ -52,6 +75,8 @@ defmodule LgbWeb.ProfileLive.MyProfile do
         {:noreply,
          socket
          |> assign(:uploaded_files, Profiles.list_profile_pictures(profile))
+         |> assign(:form, to_form(Profile.changeset(profile, %{})))
+         |> assign(:profile, profile)
          |> put_flash(:info, "Profile updated successfully!")}
 
       {:error, changeset} ->
