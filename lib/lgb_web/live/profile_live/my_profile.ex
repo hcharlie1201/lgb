@@ -76,7 +76,6 @@ defmodule LgbWeb.ProfileLive.MyProfile do
         {:noreply,
          socket
          |> assign(:uploaded_files, Profiles.list_profile_pictures(profile))
-         |> assign(:form, to_form(Profile.changeset(profile, %{})))
          |> assign(:profile, profile)
          |> put_flash(:info, "Profile updated successfully!")}
 
