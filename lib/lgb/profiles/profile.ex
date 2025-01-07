@@ -6,7 +6,7 @@ defmodule Lgb.Profiles.Profile do
     Flop.Schema,
     filterable: [:handle, :state, :city, :height_cm, :weight_lb, :age],
     sortable: [:age, :height_cm, :weight_lb],
-    default_limit: 1
+    default_limit: 20
   }
 
   schema "profiles" do

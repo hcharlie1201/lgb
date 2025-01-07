@@ -10,12 +10,11 @@ defmodule LgbWeb.ProfileLive.Show do
 
   @impl true
   def handle_params(%{"id" => id}, _, socket) do
+    profile = Profiles.get_profile!(id)
+
     {:noreply,
      socket
-     |> assign(:page_title, page_title(socket.assigns.live_action))
-     |> assign(:profile, Profiles.get_profile!(id))}
+     |> assign(:profile, profile)
+     |> assign(:uploaded_files, Profiles.list_profile_pictures(profile))}
   end
-
-  defp page_title(:show), do: "Show Profile"
-  defp page_title(:edit), do: "Edit Profile"
 end
