@@ -56,6 +56,7 @@ defmodule LgbWeb.ProfileLive.MyProfile do
     end
   end
 
+  # TODO: not too happy with the code since im not really updating the form html so have 1 sources of truths
   def handle_event("update_profile", profile_params, socket) do
     geolocation = socket.assigns.form.params["geolocation"]
 
