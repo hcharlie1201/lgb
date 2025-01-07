@@ -27,7 +27,46 @@ defmodule LgbWeb.ProfileLive.MyProfile do
     {:ok, assign(socket, profile: profile, form: to_form(Profile.changeset(profile, %{})))}
   end
 
+  @doc """
+  Handles events from the client from app.js Hooks.map.
+  """
+
+  @doc """
+  Updates the geolocation and address details in the form.
+  """
+  def handle_event("map_clicked", %{"lat" => lat, "lng" => lng}, socket) do
+    case Lgb.ThirdParty.Google.ReverseGeo.get_address(lat, lng) do
+      [city: city, state: state, zip: zip] ->
+        updated_params = %{
+          "geolocation" => %Geo.Point{coordinates: {lat, lng}, srid: 4326},
+          "city" => city,
+          "state" => state,
+          "zip" => zip
+        }
+
+        form =
+          socket.assigns.profile
+          |> Profile.changeset(updated_params)
+          |> to_form()
+
+        {:noreply, assign(socket, form: form)}
+
+      _ ->
+        {:noreply, put_flash(socket, :error, "Failed to fetch address details.")}
+    end
+  end
+
+  # TODO: not too happy with the code since im not really updating the form html so have 1 sources of truths
   def handle_event("update_profile", profile_params, socket) do
+    geolocation = socket.assigns.form.params["geolocation"]
+
+    profile_params =
+      profile_params
+      |> Map.put("geolocation", geolocation)
+      |> Map.put("zip", socket.assigns.form.params["zip"])
+      |> Map.put("city", socket.assigns.form.params["city"])
+      |> Map.put("state", socket.assigns.form.params["state"])
+
     case Profiles.update_profile(socket.assigns.profile, profile_params) do
       {:ok, profile} ->
         consume_uploaded_entries(socket, :avatar, fn %{path: path}, entry ->
@@ -37,6 +76,7 @@ defmodule LgbWeb.ProfileLive.MyProfile do
         {:noreply,
          socket
          |> assign(:uploaded_files, Profiles.list_profile_pictures(profile))
+         |> assign(:profile, profile)
          |> put_flash(:info, "Profile updated successfully!")}
 
       {:error, changeset} ->
@@ -82,61 +122,6 @@ defmodule LgbWeb.ProfileLive.MyProfile do
           {:noreply, socket}
         end
     end
-  end
-
-  defp generate_state_options do
-    [
-      {"Alabama", "AL"},
-      {"Alaska", "AK"},
-      {"Arizona", "AZ"},
-      {"Arkansas", "AR"},
-      {"California", "CA"},
-      {"Colorado", "CO"},
-      {"Connecticut", "CT"},
-      {"Delaware", "DE"},
-      {"Florida", "FL"},
-      {"Georgia", "GA"},
-      {"Hawaii", "HI"},
-      {"Idaho", "ID"},
-      {"Illinois", "IL"},
-      {"Indiana", "IN"},
-      {"Iowa", "IA"},
-      {"Kansas", "KS"},
-      {"Kentucky", "KY"},
-      {"Louisiana", "LA"},
-      {"Maine", "ME"},
-      {"Maryland", "MD"},
-      {"Massachusetts", "MA"},
-      {"Michigan", "MI"},
-      {"Minnesota", "MN"},
-      {"Mississippi", "MS"},
-      {"Missouri", "MO"},
-      {"Montana", "MT"},
-      {"Nebraska", "NE"},
-      {"Nevada", "NV"},
-      {"New Hampshire", "NH"},
-      {"New Jersey", "NJ"},
-      {"New Mexico", "NM"},
-      {"New York", "NY"},
-      {"North Carolina", "NC"},
-      {"North Dakota", "ND"},
-      {"Ohio", "OH"},
-      {"Oklahoma", "OK"},
-      {"Oregon", "OR"},
-      {"Pennsylvania", "PA"},
-      {"Rhode Island", "RI"},
-      {"South Carolina", "SC"},
-      {"South Dakota", "SD"},
-      {"Tennessee", "TN"},
-      {"Texas", "TX"},
-      {"Utah", "UT"},
-      {"Vermont", "VT"},
-      {"Virginia", "VA"},
-      {"Washington", "WA"},
-      {"West Virginia", "WV"},
-      {"Wisconsin", "WI"},
-      {"Wyoming", "WY"}
-    ]
   end
 
   defp error_to_string(:too_large), do: "Too large"

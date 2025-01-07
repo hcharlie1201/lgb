@@ -1,7 +1,3 @@
-<.header>
-  Welcome to your profile
-  <:subtitle>This is a profile record from your database.</:subtitle>
-</.header>
 <div>
   <div>
     <h1>My Pictures</h1>
@@ -77,25 +73,17 @@
       prompt="Select your weight"
       multiple={false}
     />
-    <.input name="city" field={@form[:city]} type="text" label="City" value={@profile.city} />
-    <.input
-      value={@profile.state}
-      field={@form[:state]}
-      name="state"
-      type="select"
-      label="State"
-      options={generate_state_options()}
-      prompt="Select your state"
-      multiple={false}
-    />
-    <.input
-      value={@profile.zip}
-      field={@form[:zip]}
-      name="zip"
-      type="text"
-      label="Zip"
-      phx-change="validate_zip"
-    />
+    <div>City: {@profile.city}</div>
+    <div>State: {@profile.state}</div>
+    <div>Zip: {@profile.zip}</div>
+    <div
+      phx-hook="Map"
+      class="h-96"
+      id="mapid"
+      phx-update="ignore"
+      data-geo={if @profile.geolocation, do: Geo.WKT.encode!(@profile.geolocation), else: ""}
+    >
+    </div>
     <.input
       field={@form[:biography]}
       value={@profile.biography}
