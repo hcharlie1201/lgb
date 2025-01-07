@@ -2,11 +2,9 @@
   Profile {@profile.id}
   <:subtitle>Welcome to their profile</:subtitle>
 </.header>
-
 <.list>
-  <%= for uploaded_file <- @uploaded_files do %>
-    <div>
-      )
+  <:item title="Uploaded Pictures">
+    <%= for uploaded_file <- @uploaded_files do %>
       <img
         src={
           Lgb.Profiles.ProfilePictureUploader.url(
@@ -17,16 +15,15 @@
         }
         alt="Uploaded file"
       />
-    </div>
-  <% end %>
+    <% end %>
+  </:item>
   <:item title="Handle">{@profile.handle}</:item>
   <:item title="Age">{@profile.age}</:item>
-  <:item title="Height">{@profile.height_cm}</:item>
-  <:item title="Weight">{@profile.weight_lb}</:item>
+  <:item title="Height">{@profile.height_cm} cm</:item>
+  <:item title="Weight">{@profile.weight_lb} lbs</:item>
   <:item title="City">{@profile.city}</:item>
   <:item title="State">{@profile.state}</:item>
   <:item title="Zip">{@profile.zip}</:item>
   <:item title="Biography">{@profile.biography}</:item>
 </.list>
-
-<.back navigate={~p"/profiles"}>Back to profiles</.back>
+<.back navigate={~p"/profiles"}>Back to searches</.back>
