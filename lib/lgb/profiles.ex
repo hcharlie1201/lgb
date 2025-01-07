@@ -143,6 +143,22 @@ defmodule Lgb.Profiles do
     profile.profile_pictures
   end
 
+  def profile_picture_url(profile) do
+    profile = Repo.preload(profile, :profile_pictures)
+
+    uploaded_file = Enum.at(profile.profile_pictures, 0)
+
+    if uploaded_file do
+      Lgb.Profiles.ProfilePictureUploader.url(
+        {uploaded_file.image, uploaded_file},
+        :original,
+        signed: true
+      )
+    else
+      nil
+    end
+  end
+
   def generate_height_options do
     Enum.map(50..85, fn inches ->
       cm = round(inches * 2.54)

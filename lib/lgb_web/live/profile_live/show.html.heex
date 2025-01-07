@@ -1,33 +1,29 @@
 <.header>
   Profile {@profile.id}
-  <:subtitle>This is a profile record from your database.</:subtitle>
-  <:actions>
-    <.link patch={~p"/profiles/#{@profile}/show/edit"} phx-click={JS.push_focus()}>
-      <.button>Edit profile</.button>
-    </.link>
-  </:actions>
+  <:subtitle>Welcome to their profile</:subtitle>
 </.header>
-
 <.list>
+  <:item title="Uploaded Pictures">
+    <%= for uploaded_file <- @uploaded_files do %>
+      <img
+        src={
+          Lgb.Profiles.ProfilePictureUploader.url(
+            {uploaded_file.image, uploaded_file},
+            :original,
+            signed: true
+          )
+        }
+        alt="Uploaded file"
+      />
+    <% end %>
+  </:item>
   <:item title="Handle">{@profile.handle}</:item>
-  <:item title="Dob">{@profile.dob}</:item>
-  <:item title="Height cm">{@profile.height_cm}</:item>
-  <:item title="Weight lb">{@profile.weight_lb}</:item>
+  <:item title="Age">{@profile.age}</:item>
+  <:item title="Height">{@profile.height_cm} cm</:item>
+  <:item title="Weight">{@profile.weight_lb} lbs</:item>
   <:item title="City">{@profile.city}</:item>
   <:item title="State">{@profile.state}</:item>
   <:item title="Zip">{@profile.zip}</:item>
   <:item title="Biography">{@profile.biography}</:item>
 </.list>
-
-<.back navigate={~p"/profiles"}>Back to profiles</.back>
-
-<.modal :if={@live_action == :edit} id="profile-modal" show on_cancel={JS.patch(~p"/profiles/#{@profile}")}>
-  <.live_component
-    module={LgbWeb.ProfileLive.FormComponent}
-    id={@profile.id}
-    title={@page_title}
-    action={@live_action}
-    profile={@profile}
-    patch={~p"/profiles/#{@profile}"}
-  />
-</.modal>
+<.back navigate={~p"/profiles"}>Back to searches</.back>

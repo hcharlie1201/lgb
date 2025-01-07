@@ -79,7 +79,6 @@ defmodule LgbWeb.Router do
         live "/current", MyProfile
         live "/", Search, :index
         live "/results", Results, :index
-
         live "/:id", Show, :show
       end
     end

@@ -3,12 +3,21 @@
     List of profile searches
   </.header>
   <Flop.Phoenix.table items={@profiles} meta={@metas} path={~p"/profiles/results"}>
-    <:col :let={profile} label="Name">{profile.handle}</:col>
+    <:col :let={profile} label="Name">
+      <.link navigate={~p"/profiles/#{profile.id}"}>{profile.handle}</.link>
+    </:col>
     <:col :let={profile} label="Height" field={:height_cm}>
       {display_height(profile.height_cm)}
     </:col>
     <:col :let={profile} label="Weight" field={:weight_lb}>
       {display_weight(profile.weight_lb)}
+    </:col>
+    <:col :let={profile} label="Age" field={:age}>{profile.age}</:col>
+    <:col :let={profile} label="Picture">
+      <img
+        src={Lgb.Profiles.profile_picture_url(profile) || ~p"/images/logo.svg"}
+        alt="Profile Pic"
+      />
     </:col>
   </Flop.Phoenix.table>
   <.simple_form for={@form} phx-submit="goto">
