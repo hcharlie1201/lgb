@@ -27,9 +27,31 @@ defmodule LgbWeb.ProfileLive.MyProfile do
     {:ok, assign(socket, profile: profile, form: to_form(Profile.changeset(profile, %{})))}
   end
 
-  @doc """
-  Handles events from the client from app.js Hooks.map.
-  """
+  def handle_event("update_profile", profile_params, socket) do
+    profile_params = handle_geo_location(profile_params, socket)
+
+    case Profiles.update_profile(socket.assigns.profile, profile_params) do
+      {:ok, profile} ->
+        consume_uploaded_entries(socket, :avatar, fn %{path: path}, entry ->
+          Profiles.create_profile_picture!(entry, path, profile.id)
+        end)
+
+        {:noreply,
+         socket
+         |> assign(:uploaded_files, Profiles.list_profile_pictures(profile))
+         |> assign(:profile, profile)
+         |> put_flash(:info, "Profile updated successfully!")}
+
+      {:error, changeset} ->
+        {:noreply,
+         socket
+         |> assign(:form, to_form(changeset))
+         |> put_flash(
+           :error,
+           "Failed to update profile."
+         )}
+    end
+  end
 
   @doc """
   Updates the geolocation and address details in the form.
@@ -56,40 +78,6 @@ defmodule LgbWeb.ProfileLive.MyProfile do
     end
   end
 
-  # TODO: not too happy with the code since im not really updating the form html so have 1 sources of truths
-  def handle_event("update_profile", profile_params, socket) do
-    geolocation = socket.assigns.form.params["geolocation"]
-
-    profile_params =
-      profile_params
-      |> Map.put("geolocation", geolocation)
-      |> Map.put("zip", socket.assigns.form.params["zip"])
-      |> Map.put("city", socket.assigns.form.params["city"])
-      |> Map.put("state", socket.assigns.form.params["state"])
-
-    case Profiles.update_profile(socket.assigns.profile, profile_params) do
-      {:ok, profile} ->
-        consume_uploaded_entries(socket, :avatar, fn %{path: path}, entry ->
-          Profiles.create_profile_picture!(entry, path, profile.id)
-        end)
-
-        {:noreply,
-         socket
-         |> assign(:uploaded_files, Profiles.list_profile_pictures(profile))
-         |> assign(:profile, profile)
-         |> put_flash(:info, "Profile updated successfully!")}
-
-      {:error, changeset} ->
-        {:noreply,
-         socket
-         |> assign(:form, to_form(changeset))
-         |> put_flash(
-           :error,
-           "Failed to update profile."
-         )}
-    end
-  end
-
   @impl Phoenix.LiveView
   def handle_event("validate", params, socket) do
     profile = socket.assigns.profile
@@ -108,19 +96,19 @@ defmodule LgbWeb.ProfileLive.MyProfile do
     {:noreply, cancel_upload(socket, :avatar, ref)}
   end
 
-  @impl Phoenix.LiveView
-  def handle_event("validate_zip", %{"zip" => zip}, socket) do
-    case zip do
-      "" ->
-        {:noreply, socket}
+  # special case since form doesn't accept struct so we have to update it manually
+  defp handle_geo_location(params, socket) do
+    case socket.assigns.form.params["geolocation"] do
+      nil ->
+        params
 
-      _ ->
-        if String.length(zip) > 5 or !String.match?(zip, ~r/^\d+$/) do
-          assign(socket, :form, %{socket.assign.form | zip: ""} |> to_form())
-          {:noreply, put_flash(socket, :error, "Must be a valid zip")}
-        else
-          {:noreply, socket}
-        end
+      geolocation ->
+        Map.merge(params, %{
+          "geolocation" => geolocation,
+          "zip" => socket.assigns.form.params["zip"],
+          "city" => socket.assigns.form.params["city"],
+          "state" => socket.assigns.form.params["state"]
+        })
     end
   end
 
