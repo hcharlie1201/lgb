@@ -13,6 +13,7 @@
       {display_weight(profile.weight_lb)}
     </:col>
     <:col :let={profile} label="Age" field={:age}>{profile.age}</:col>
+    <:col :let={profile} label="distance" field={:distance}>{profile.distance}</:col>
     <:col :let={profile} label="Picture">
       <img
         src={Lgb.Profiles.profile_picture_url(profile) || ~p"/images/logo.svg"}

@@ -174,6 +174,24 @@ defmodule Lgb.Profiles do
     end)
   end
 
+  def get_other_profiles_distance(profile) do
+    {lat, lng} = profile.geolocation.coordinates
+
+    from p in Profile,
+      select_merge: %{
+        distance:
+          selected_as(
+            fragment(
+              "ST_Distance(?, ST_SetSRID(ST_Point(?, ?), 4326))",
+              p.geolocation,
+              ^lng,
+              ^lat
+            ),
+            :distance
+          )
+      }
+  end
+
   def create_filter(params) do
     params
     |> sanitize()
@@ -190,6 +208,12 @@ defmodule Lgb.Profiles do
 
         "max_age" ->
           [%{field: :age, op: :<=, value: String.to_integer(value)} | acc]
+
+        "min_weight" ->
+          [%{field: :weight_lb, op: :>=, value: String.to_integer(value)} | acc]
+
+        "max_weight" ->
+          [%{field: :weight_lb, op: :<=, value: String.to_integer(value)} | acc]
 
         _ ->
           acc

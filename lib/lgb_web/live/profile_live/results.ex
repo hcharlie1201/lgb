@@ -1,5 +1,6 @@
 defmodule LgbWeb.ProfileLive.Results do
   alias Lgb.Profiles.Profile
+  alias Lgb.Profiles
   use LgbWeb, :live_view
 
   def mount(_params, _session, socket) do
@@ -8,12 +9,15 @@ defmodule LgbWeb.ProfileLive.Results do
   end
 
   def handle_params(params, _uri, socket) do
-    case Flop.validate_and_run(Profile, params, for: Profile) do
+    profile = Lgb.Accounts.User.current_profile(socket.assigns.current_user)
+    query = Profiles.get_distance_query(profile)
+
+    case Flop.validate_and_run(query, params, for: Profile) do
       {:ok, {profiles, metas}} ->
         IO.inspect(metas)
         {:noreply, assign(socket, %{profiles: profiles, metas: metas})}
 
-      {:error, _} ->
+      {:error, wh} ->
         {:noreply, assign(socket, %{profiles: [], metas: nil})}
     end
   end
