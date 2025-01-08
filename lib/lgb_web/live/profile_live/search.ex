@@ -63,14 +63,35 @@ defmodule LgbWeb.ProfileLive.Search do
               acc
           end
 
+        {"min_weight", weight}, acc ->
+          case Integer.parse(weight) do
+            {parsed_weight, ""} when parsed_weight <= 0 ->
+              [{:min_weight, {"Weight must be between greater than 0", []}} | acc]
+
+            _ ->
+              acc
+          end
+
+        {"max_weight", weight}, acc ->
+          case Integer.parse(weight) do
+            {parsed_weight, ""} when parsed_weight > 400 ->
+              [{:max_weight, {"Weight must be between less than 400 lbs", []}} | acc]
+
+            _ ->
+              acc
+          end
+
         _, acc ->
           acc
       end)
       |> validate_age_order(params)
+      |> validate_weight_order(params)
 
     # Return the form with errors
     to_form(params, errors: errors, action: :validate)
   end
+
+  defp validate_age_order(errors, _params), do: errors
 
   defp validate_age_order(errors, %{"min_age" => min_age, "max_age" => max_age})
        when min_age != "" and max_age != "" do
@@ -81,7 +102,19 @@ defmodule LgbWeb.ProfileLive.Search do
     end
   end
 
-  defp validate_age_order(errors, _params), do: errors
+  defp validate_weight_order(errors, %{"min_weight" => min_weight, "max_weight" => max_weight})
+       when min_weight != "" and max_weight != "" do
+    if String.to_integer(max_weight) < String.to_integer(min_weight) do
+      [
+        {:max_weight, {"Maximum weight must be greater than or equal to minimum age", []}}
+        | errors
+      ]
+    else
+      errors
+    end
+  end
+
+  defp validate_weight_order(errors, _params), do: errors
 
   def sanitize(params) do
     params

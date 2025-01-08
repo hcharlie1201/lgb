@@ -5,8 +5,11 @@ defmodule Lgb.Profiles.Profile do
   @derive {
     Flop.Schema,
     filterable: [:handle, :state, :city, :height_cm, :weight_lb, :age],
-    sortable: [:age, :height_cm, :weight_lb],
-    default_limit: 20
+    sortable: [:age, :height_cm, :weight_lb, :distance],
+    default_limit: 20,
+    adapter_opts: [
+      alias_fields: [:distance]
+    ]
   }
 
   schema "profiles" do
@@ -21,6 +24,7 @@ defmodule Lgb.Profiles.Profile do
     field :city, :string
     field :biography, :string
     field :geolocation, Geo.PostGIS.Geometry
+    field :distance, :float, virtual: true
 
     timestamps(type: :utc_datetime)
   end
