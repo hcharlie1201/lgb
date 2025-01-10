@@ -18,14 +18,18 @@ defmodule LgbWeb.ProfileLive.Show do
      |> assign(:uploaded_files, Profiles.list_profile_pictures(profile))}
   end
 
-  def handle_event("go", %{"id" => other_profile_id}, socket) do
+  @impl true
+  def handle_event("message", %{"id" => other_profile_id}, socket) do
     user = socket.assigns.current_user
-    profile = User.current_profile(user)
+    profile = Lgb.Accounts.User.current_profile(user)
     other_profile = Profiles.get_profile!(other_profile_id)
 
-    conversation =
-      Chatting.get_or_create_conversation(profile, other_profile)
+    case Chatting.get_or_create_conversation(profile, other_profile) do
+      {:ok, conversation} ->
+        {:noreply, push_navigate(socket, to: ~p"/conversations/#{conversation.id}")}
 
-    {:noreply, push_navigate(socket, to: ~p"/conversations/#{conversation.id}")}
+      {:error, _} ->
+        {:noreply, socket}
+    end
   end
 end

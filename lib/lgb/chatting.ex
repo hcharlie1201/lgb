@@ -320,7 +320,7 @@ defmodule Lgb.Chatting do
     query =
       from c in Conversation,
         where: c.id == ^id,
-        preload: [:sender, :receiver]
+        preload: [:sender_profile, :receiver_profile]
 
     Repo.one(query)
   end
@@ -335,16 +335,21 @@ defmodule Lgb.Chatting do
     query =
       from c in Conversation,
         where:
-          (c.sender_id == ^current_profile.id and c.receiver_id == ^other_profile.id) or
-            (c.sender_id == ^other_profile.id and c.receiver_id == ^current_profile.id),
-        preload: [:sender, :receiver]
+          (c.sender_profile_id == ^current_profile.id and
+             c.receiver_profile_id == ^other_profile.id) or
+            (c.sender_profile_id == ^other_profile.id and
+               c.receiver_profile_id == ^current_profile.id),
+        preload: [:sender_profile, :receiver_profile]
 
     case Repo.one(query) do
       nil ->
-        create_conversation(%{sender_id: current_profile.id, receiver_id: other_profile.id})
+        create_conversation(%{
+          sender_profile_id: current_profile.id,
+          receiver_profile_id: other_profile.id
+        })
 
       conversation ->
-        conversation
+        {:ok, conversation}
     end
   end
 end

@@ -22,7 +22,7 @@ defmodule LgbWeb.ConversationLive.Show do
     {:noreply,
      socket
      |> assign(conversation: conversation)
-     |> assign(sender_messages: sender_messages)
-     |> assign(receiver_messages: receiver_messages)}
+     |> stream(:sender_messages, sender_messages)
+     |> stream(:receiver_messages, receiver_messages)}
   end
 end
