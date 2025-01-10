@@ -1,9 +1,8 @@
-defmodule Lgb.Messaging.Conversation do
+defmodule Lgb.Chatting.Conversation do
   use Ecto.Schema
   import Ecto.Changeset
 
   schema "conversations" do
-
     field :sender_id, :id
     field :receiver_id, :id
 
@@ -13,7 +12,7 @@ defmodule Lgb.Messaging.Conversation do
   @doc false
   def changeset(conversation, attrs) do
     conversation
-    |> cast(attrs, [])
+    |> cast(attrs, [:sender_id, :receiver_id])
     |> validate_required([])
   end
 end

@@ -1,0 +1,14 @@
+<div>
+  <div
+    id="conversation-message-#{@conversation.id}"
+    phx-update="stream"
+    phx-viewport-top="load_more"
+  >
+    <div :for={{dom_id, message} <- @streams.sender_messages} id={dom_id}>
+      <p>{message.content} {@conversation.sender.handle}</p>
+    </div>
+    <div :for={{dom_id, message} <- @streams.receiver_messages} id={dom_id}>
+      <p>{message.content} {@conversation.receiver.handle}</p>
+    </div>
+  </div>
+</div>

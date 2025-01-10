@@ -31,4 +31,19 @@ defmodule Lgb.ChattingFixtures do
 
     message
   end
+
+  @doc """
+  Generate a conversation_message.
+  """
+  def conversation_message_fixture(attrs \\ %{}) do
+    {:ok, conversation_message} =
+      attrs
+      |> Enum.into(%{
+        content: "some content",
+        read: true
+      })
+      |> Lgb.Chatting.create_conversation_message()
+
+    conversation_message
+  end
 end

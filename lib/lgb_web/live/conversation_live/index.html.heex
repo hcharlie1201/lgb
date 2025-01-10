@@ -1,0 +1,5 @@
+<div id="conversation-#{@conversation.id}" phx-update="stream" phx-viewport-top="load_more">
+  <div :for={{dom_id, conversation} <- @streams.conversations}>
+    <p>{conversation.sender_id} {conversation.receiver_id}</p>
+  </div>
+</div>

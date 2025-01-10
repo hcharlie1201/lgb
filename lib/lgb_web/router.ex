@@ -81,6 +81,9 @@ defmodule LgbWeb.Router do
         live "/results", Results, :index
         live "/:id", Show, :show
       end
+
+      live "/conversations", ConversationLive.Index, :index
+      live "/conversations/:id", ConversationLive.Show, :show
     end
   end
 
