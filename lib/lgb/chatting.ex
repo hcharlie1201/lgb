@@ -203,4 +203,153 @@ defmodule Lgb.Chatting do
   def change_message(%Message{} = message, attrs \\ %{}) do
     Message.changeset(message, attrs)
   end
+
+  alias Lgb.Chatting.ConversationMessage
+
+  @doc """
+  Returns the list of conversation_messages.
+
+  ## Examples
+
+      iex> list_conversation_messages()
+      [%ConversationMessage{}, ...]
+
+  """
+  def list_conversation_messages!(conversation_id, profile_id) do
+    query =
+      from cm in ConversationMessage,
+        where: cm.conversation_id == ^conversation_id and cm.profile_id == ^profile_id,
+        order_by: [asc: cm.inserted_at]
+
+    Repo.all(query)
+  end
+
+  @doc """
+  Gets a single conversation_message.
+
+  Raises `Ecto.NoResultsError` if the Conversation message does not exist.
+
+  ## Examples
+
+      iex> get_conversation_message!(123)
+      %ConversationMessage{}
+
+      iex> get_conversation_message!(456)
+      ** (Ecto.NoResultsError)
+
+  """
+  def get_conversation_message!(id), do: Repo.get!(ConversationMessage, id)
+
+  @doc """
+  Creates a conversation_message.
+
+  ## Examples
+
+      iex> create_conversation_message(%{field: value})
+      {:ok, %ConversationMessage{}}
+
+      iex> create_conversation_message(%{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def create_conversation_message(attrs \\ %{}) do
+    %ConversationMessage{}
+    |> ConversationMessage.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Updates a conversation_message.
+
+  ## Examples
+
+      iex> update_conversation_message(conversation_message, %{field: new_value})
+      {:ok, %ConversationMessage{}}
+
+      iex> update_conversation_message(conversation_message, %{field: bad_value})
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def update_conversation_message(%ConversationMessage{} = conversation_message, attrs) do
+    conversation_message
+    |> ConversationMessage.changeset(attrs)
+    |> Repo.update()
+  end
+
+  @doc """
+  Deletes a conversation_message.
+
+  ## Examples
+
+      iex> delete_conversation_message(conversation_message)
+      {:ok, %ConversationMessage{}}
+
+      iex> delete_conversation_message(conversation_message)
+      {:error, %Ecto.Changeset{}}
+
+  """
+  def delete_conversation_message(%ConversationMessage{} = conversation_message) do
+    Repo.delete(conversation_message)
+  end
+
+  @doc """
+  Returns an `%Ecto.Changeset{}` for tracking conversation_message changes.
+
+  ## Examples
+
+      iex> change_conversation_message(conversation_message)
+      %Ecto.Changeset{data: %ConversationMessage{}}
+
+  """
+  def change_conversation_message(%ConversationMessage{} = conversation_message, attrs \\ %{}) do
+    ConversationMessage.changeset(conversation_message, attrs)
+  end
+
+  alias Lgb.Chatting.Conversation
+
+  def list_conversations(profile) do
+    query =
+      from c in Conversation,
+        where: c.sender_profile_id == ^profile.id or c.receiver_profile_id == ^profile.id,
+        order_by: [asc: c.inserted_at]
+
+    Repo.all(query)
+  end
+
+  def get_conversation(id) do
+    query =
+      from c in Conversation,
+        where: c.id == ^id,
+        preload: [:sender_profile, :receiver_profile]
+
+    Repo.one(query)
+  end
+
+  def create_conversation(attrs \\ %{}) do
+    %Conversation{}
+    |> Conversation.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  def get_or_create_conversation(current_profile, other_profile) do
+    query =
+      from c in Conversation,
+        where:
+          (c.sender_profile_id == ^current_profile.id and
+             c.receiver_profile_id == ^other_profile.id) or
+            (c.sender_profile_id == ^other_profile.id and
+               c.receiver_profile_id == ^current_profile.id),
+        preload: [:sender_profile, :receiver_profile]
+
+    case Repo.one(query) do
+      nil ->
+        create_conversation(%{
+          sender_profile_id: current_profile.id,
+          receiver_profile_id: other_profile.id
+        })
+
+      conversation ->
+        {:ok, conversation}
+    end
+  end
 end
