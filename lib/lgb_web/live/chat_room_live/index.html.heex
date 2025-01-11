@@ -12,8 +12,8 @@
   rows={@streams.chat_rooms}
   row_click={fn {_id, chat_room} -> JS.navigate(~p"/chat_rooms/#{chat_room}") end}
 >
-  <:col :let={{_id, chat_room}} label="Room Limit"><%= chat_room.limit %></:col>
-  <:col :let={{_id, chat_room}} label="Description"><%= chat_room.description %></:col>
+  <:col :let={{_id, chat_room}} label="Room Limit">{chat_room.limit}</:col>
+  <:col :let={{_id, chat_room}} label="Description">{chat_room.description}</:col>
   <:action :let={{_id, chat_room}}>
     <div class="sr-only">
       <.link navigate={~p"/chat_rooms/#{chat_room}"}>Show</.link>
