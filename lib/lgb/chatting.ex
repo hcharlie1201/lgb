@@ -224,6 +224,16 @@ defmodule Lgb.Chatting do
     Repo.all(query)
   end
 
+  def list_conversation_messages!(conversation_id) do
+    query =
+      from cm in ConversationMessage,
+        where: cm.conversation_id == ^conversation_id,
+        order_by: [asc: cm.inserted_at],
+        preload: [:profile, :conversation]
+
+    Repo.all(query)
+  end
+
   @doc """
   Gets a single conversation_message.
 
@@ -252,8 +262,8 @@ defmodule Lgb.Chatting do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_conversation_message(attrs \\ %{}) do
-    %ConversationMessage{}
+  def create_conversation_message(conversation_message \\ %ConversationMessage{}, attrs \\ %{}) do
+    conversation_message
     |> ConversationMessage.changeset(attrs)
     |> Repo.insert()
   end

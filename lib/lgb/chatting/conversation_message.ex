@@ -15,6 +15,6 @@ defmodule Lgb.Chatting.ConversationMessage do
   def changeset(conversation_message, attrs) do
     conversation_message
     |> cast(attrs, [:content, :read, :profile_id, :conversation_id])
-    |> validate_required([:content, :read])
+    |> validate_required([:profile_id, :conversation_id])
   end
 end

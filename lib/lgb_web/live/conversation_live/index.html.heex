@@ -1,5 +1,7 @@
-<div id="conversation-#{@conversation.id}" phx-update="stream" phx-viewport-top="load_more">
+<div id="conversation" phx-update="stream">
   <div :for={{dom_id, conversation} <- @streams.conversations} id={dom_id}>
-    <p>{conversation.sender_id} {conversation.receiver_id}</p>
+    <.link patch={~p"/conversations/#{conversation.id}"}>
+      convo: {conversation.sender_profile_id} {conversation.receiver_profile_id}
+    </.link>
   </div>
 </div>
