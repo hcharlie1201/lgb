@@ -1,14 +1,21 @@
+<.header class="text-center">
+  Welcome to your chat convo {@conversation.id}
+</.header>
 <div>
   <div
     id="conversation-message-#{@conversation.id}"
     phx-update="stream"
     phx-viewport-top="load_more"
   >
-    <div :for={{dom_id, message} <- @streams.sender_messages} id={dom_id}>
-      <p>{message.content} {@conversation.sender.handle}</p>
-    </div>
-    <div :for={{dom_id, message} <- @streams.receiver_messages} id={dom_id}>
-      <p>{message.content} {@conversation.receiver.handle}</p>
+    <div :for={{dom_id, message} <- @streams.all_messages} id={dom_id}>
+      <p>{message.content} {message.profile.id}</p>
     </div>
   </div>
+  <.simple_form for={@form} phx-change="validate" phx-submit="send">
+    <.input field={@form[:content]} name="content" />
+    <:actions>
+      <.button>Send</.button>
+    </:actions>
+  </.simple_form>
+  <.back navigate={~p"/conversations"}>Back to conversations</.back>
 </div>
