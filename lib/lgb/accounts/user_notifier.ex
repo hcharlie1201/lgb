@@ -4,18 +4,18 @@ defmodule Lgb.Accounts.UserNotifier do
   alias Lgb.Mailer
 
   # Delivers the email using the application mailer.
-  defp deliver(recipient, subject, body) do
+  defp deliver(recipient, template_id, url) do
     email =
       new()
       |> to(recipient)
       |> from({"Lgb", "charlie@bii-bi.com"})
-      |> put_provider_option(:template_id, "38664718")
+      |> put_provider_option(:template_id, template_id)
       |> put_provider_option(:template_model, %{
-        invite_sender_name: "John Doe",
+        invite_sender_name: "Charlie",
         product_name: "BiBi",
-        product_url: "asdasd",
-        email: "charlie@bii-bi.com",
-        token: "123456",
+        product_url: url,
+        # currently for testing it has to end with @bii-bi.com
+        email: recipient,
         company_name: "BiBi",
         company_address: "1234 Main St"
       })
@@ -25,6 +25,7 @@ defmodule Lgb.Accounts.UserNotifier do
         {:ok, email}
 
       {:error, reason} ->
+        IO.inspect(reason)
         {:ok, email}
     end
   end
@@ -33,59 +34,20 @@ defmodule Lgb.Accounts.UserNotifier do
   Deliver instructions to confirm account.
   """
   def deliver_confirmation_instructions(user, url) do
-    deliver(user.email, "Confirmation instructions", """
-
-    ==============================
-
-    Hi #{user.email},
-
-    You can confirm your account by visiting the URL below:
-
-    #{url}
-
-    If you didn't create an account with us, please ignore this.
-
-    ==============================
-    """)
+    deliver(user.email, "38664718", url)
   end
 
   @doc """
   Deliver instructions to reset a user password.
   """
   def deliver_reset_password_instructions(user, url) do
-    deliver(user.email, "Reset password instructions", """
-
-    ==============================
-
-    Hi #{user.email},
-
-    You can reset your password by visiting the URL below:
-
-    #{url}
-
-    If you didn't request this change, please ignore this.
-
-    ==============================
-    """)
+    deliver(user.email, "38674222", url)
   end
 
   @doc """
   Deliver instructions to update a user email.
   """
   def deliver_update_email_instructions(user, url) do
-    deliver(user.email, "Update email instructions", """
-
-    ==============================
-
-    Hi #{user.email},
-
-    You can change your email by visiting the URL below:
-
-    #{url}
-
-    If you didn't request this change, please ignore this.
-
-    ==============================
-    """)
+    deliver(user.email, "38674232", url)
   end
 end
