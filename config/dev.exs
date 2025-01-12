@@ -84,4 +84,6 @@ config :phoenix_live_view,
   enable_expensive_runtime_checks: true
 
 # Disable swoosh api client as it is only required for production adapters.
-config :swoosh, :api_client, false
+# For production it's recommended to configure a different adapter
+# at the `config/runtime.exs`.
+config :lgb, Lgb.Mailer, adapter: Swoosh.Adapters.Local

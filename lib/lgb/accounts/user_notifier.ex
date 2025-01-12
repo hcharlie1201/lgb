@@ -8,12 +8,24 @@ defmodule Lgb.Accounts.UserNotifier do
     email =
       new()
       |> to(recipient)
-      |> from({"Lgb", "contact@example.com"})
-      |> subject(subject)
-      |> text_body(body)
+      |> from({"Lgb", "charlie@bii-bi.com"})
+      |> put_provider_option(:template_id, "38664718")
+      |> put_provider_option(:template_model, %{
+        invite_sender_name: "John Doe",
+        product_name: "BiBi",
+        product_url: "asdasd",
+        email: "charlie@bii-bi.com",
+        token: "123456",
+        company_name: "BiBi",
+        company_address: "1234 Main St"
+      })
 
-    with {:ok, _metadata} <- Mailer.deliver(email) do
-      {:ok, email}
+    case Mailer.deliver(email) do
+      {:ok, _metadata} ->
+        {:ok, email}
+
+      {:error, reason} ->
+        {:ok, email}
     end
   end
 
