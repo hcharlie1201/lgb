@@ -2,6 +2,8 @@ defmodule Lgb.Repo.Migrations.ProfilesAddGeom do
   use Ecto.Migration
 
   def up do
+    execute("CREATE EXTENSION IF NOT EXISTS postgis;")
+
     alter table(:profiles) do
       add :geolocation, :geometry
     end
@@ -11,5 +13,7 @@ defmodule Lgb.Repo.Migrations.ProfilesAddGeom do
     alter table(:profiles) do
       remove :geolocation
     end
+
+    execute("DROP EXTENSION IF EXISTS postgis;")
   end
 end

@@ -22,13 +22,13 @@ end
 
 config :waffle,
   storage: Waffle.Storage.S3,
-  bucket: System.fetch_env!("AWS_S3_BUCKET")
+  bucket: {:system, "AWS_S3_BUCKET"}
 
 config :ex_aws,
   json_codec: Jason,
-  access_key_id: System.fetch_env!("AWS_ACCESS_KEY_ID"),
-  secret_access_key: System.fetch_env!("AWS_SECRET_ACCESS_KEY"),
-  region: System.fetch_env!("AWS_REGION")
+  access_key_id: {:system, "AWS_ACCESS_KEY_ID"},
+  secret_access_key: {:system, "AWS_SECRET_ACCESS_KEY"},
+  region: {:system, "AWS_REGION"}
 
 if config_env() == :prod do
   database_url =
@@ -115,15 +115,12 @@ if config_env() == :prod do
   # Also, you may need to configure the Swoosh API client of your choice if you
   # are not using SMTP. Here is an example of the configuration:
   #
-  #     config :lgb, Lgb.Mailer,
-  #       adapter: Swoosh.Adapters.Mailgun,
-  #       api_key: System.get_env("MAILGUN_API_KEY"),
-  #       domain: System.get_env("MAILGUN_DOMAIN")
-  #
-  # For this example you need include a HTTP client required by Swoosh API client.
-  # Swoosh supports Hackney and Finch out of the box:
-  #
-  #     config :swoosh, :api_client, Swoosh.ApiClient.Hackney
+  config :lgb, Lgb.Mailer,
+    adapter: Swoosh.Adapters.Postmark,
+    api_key: {:system, "POSTMARK_API_KEY"}
+
+  config :swoosh, :api_client, Swoosh.ApiClient.Hackney
+
   #
   # See https://hexdocs.pm/swoosh/Swoosh.html#module-installation for details.
 end
