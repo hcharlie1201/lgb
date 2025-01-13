@@ -28,4 +28,5 @@
   <:item title="Zip">{@profile.zip}</:item>
   <:item title="Biography">{@profile.biography}</:item>
 </.list>
+<.button phx-click="message" class="mt-16" phx-value-id={@profile.id}>Message</.button>
 <.back navigate={~p"/profiles"}>Back to searches</.back>

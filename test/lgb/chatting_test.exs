@@ -108,4 +108,60 @@ defmodule Lgb.ChattingTest do
       assert %Ecto.Changeset{} = Chatting.change_message(message)
     end
   end
+
+  describe "conversation_messages" do
+    alias Lgb.Chatting.ConversationMessage
+
+    import Lgb.ChattingFixtures
+
+    @invalid_attrs %{read: nil, content: nil}
+
+    test "list_conversation_messages/0 returns all conversation_messages" do
+      conversation_message = conversation_message_fixture()
+      assert Chatting.list_conversation_messages() == [conversation_message]
+    end
+
+    test "get_conversation_message!/1 returns the conversation_message with given id" do
+      conversation_message = conversation_message_fixture()
+      assert Chatting.get_conversation_message!(conversation_message.id) == conversation_message
+    end
+
+    test "create_conversation_message/1 with valid data creates a conversation_message" do
+      valid_attrs = %{read: true, content: "some content"}
+
+      assert {:ok, %ConversationMessage{} = conversation_message} = Chatting.create_conversation_message(valid_attrs)
+      assert conversation_message.read == true
+      assert conversation_message.content == "some content"
+    end
+
+    test "create_conversation_message/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Chatting.create_conversation_message(@invalid_attrs)
+    end
+
+    test "update_conversation_message/2 with valid data updates the conversation_message" do
+      conversation_message = conversation_message_fixture()
+      update_attrs = %{read: false, content: "some updated content"}
+
+      assert {:ok, %ConversationMessage{} = conversation_message} = Chatting.update_conversation_message(conversation_message, update_attrs)
+      assert conversation_message.read == false
+      assert conversation_message.content == "some updated content"
+    end
+
+    test "update_conversation_message/2 with invalid data returns error changeset" do
+      conversation_message = conversation_message_fixture()
+      assert {:error, %Ecto.Changeset{}} = Chatting.update_conversation_message(conversation_message, @invalid_attrs)
+      assert conversation_message == Chatting.get_conversation_message!(conversation_message.id)
+    end
+
+    test "delete_conversation_message/1 deletes the conversation_message" do
+      conversation_message = conversation_message_fixture()
+      assert {:ok, %ConversationMessage{}} = Chatting.delete_conversation_message(conversation_message)
+      assert_raise Ecto.NoResultsError, fn -> Chatting.get_conversation_message!(conversation_message.id) end
+    end
+
+    test "change_conversation_message/1 returns a conversation_message changeset" do
+      conversation_message = conversation_message_fixture()
+      assert %Ecto.Changeset{} = Chatting.change_conversation_message(conversation_message)
+    end
+  end
 end

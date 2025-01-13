@@ -175,21 +175,25 @@ defmodule Lgb.Profiles do
   end
 
   def get_other_profiles_distance(profile) do
-    {lat, lng} = profile.geolocation.coordinates
+    if profile.geolocation == nil do
+      Profile
+    else
+      {lat, lng} = profile.geolocation.coordinates
 
-    from p in Profile,
-      select_merge: %{
-        distance:
-          selected_as(
-            fragment(
-              "ST_Distance(?, ST_SetSRID(ST_Point(?, ?), 4326))",
-              p.geolocation,
-              ^lng,
-              ^lat
-            ),
-            :distance
-          )
-      }
+      from p in Profile,
+        select_merge: %{
+          distance:
+            selected_as(
+              fragment(
+                "ST_Distance(?, ST_SetSRID(ST_Point(?, ?), 4326))",
+                p.geolocation,
+                ^lng,
+                ^lat
+              ),
+              :distance
+            )
+        }
+    end
   end
 
   def create_filter(params) do

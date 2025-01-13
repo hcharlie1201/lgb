@@ -39,6 +39,7 @@ defmodule Lgb.MixProject do
       {:hackney, "~> 1.9"},
       {:httpoison, "~> 2.0"},
       {:poison, "~> 6.0"},
+      {:dotenv, "~> 3.0.0"},
       {:ecto_dbg, "~> 0.5.0"},
       {:sweet_xml, "~> 0.6"},
       {:waffle, "~> 1.1"},

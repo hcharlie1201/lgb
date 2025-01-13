@@ -10,14 +10,14 @@ defmodule LgbWeb.ProfileLive.Results do
 
   def handle_params(params, _uri, socket) do
     profile = Lgb.Accounts.User.current_profile(socket.assigns.current_user)
-    query = Profiles.get_distance_query(profile)
+    query = Profiles.get_other_profiles_distance(profile)
 
     case Flop.validate_and_run(query, params, for: Profile) do
       {:ok, {profiles, metas}} ->
         IO.inspect(metas)
         {:noreply, assign(socket, %{profiles: profiles, metas: metas})}
 
-      {:error, wh} ->
+      {:error, _} ->
         {:noreply, assign(socket, %{profiles: [], metas: nil})}
     end
   end

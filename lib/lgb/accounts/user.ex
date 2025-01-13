@@ -41,6 +41,7 @@ defmodule Lgb.Accounts.User do
     |> cast(attrs, [:email, :password])
     |> validate_email(opts)
     |> validate_password(opts)
+    |> validate_confirmation(:password, message: "does not match password")
   end
 
   defp validate_email(changeset, opts) do
@@ -164,5 +165,9 @@ defmodule Lgb.Accounts.User do
     user
     |> Ecto.assoc(:profiles)
     |> Lgb.Repo.one()
+  end
+
+  def is_confirmed?(user) do
+    user.confirmed_at != nil
   end
 end
