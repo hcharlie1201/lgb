@@ -25,7 +25,8 @@ defmodule Lgb.AccountsTest do
 
     test "does not return the user if the password is not valid" do
       user = user_fixture()
-      refute Accounts.get_user_by_email_and_password(user.email, "invalid")
+      assert {:error, :bad_username_or_password} = 
+        Accounts.get_user_by_email_and_password(user.email, "invalid")
     end
 
     test "returns the user if the email and password are valid" do
@@ -82,7 +83,7 @@ defmodule Lgb.AccountsTest do
         password: valid_user_password()
       })
 
-      assert "must have the @ sign and no spaces" in errors_on(changeset).email
+      assert "must have exactly one @ sign" in errors_on(changeset).email
     end
 
     test "validates email format with spaces" do
@@ -97,10 +98,10 @@ defmodule Lgb.AccountsTest do
     test "validates password with common patterns" do
       {:error, changeset} = Accounts.register_user(%{
         email: unique_user_email(),
-        password: "password123456"
+        password: "password123456789"  # Valid length but common pattern
       })
 
-      assert "should be at least 12 character(s)" in errors_on(changeset).password
+      assert "is too common" in errors_on(changeset).password
     end
 
     test "validates maximum values for email and password for security" do
