@@ -4,9 +4,20 @@
 
 @font-face {
     font-family: 'RobotoFlex';
+    src: url('/fonts/RobotoFlex.ttf') format('truetype');
+  }
+
+  @font-face {
+    font-family: 'MarkoOne';
     src: url('/fonts/MarkoOne-Regular.ttf') format('truetype');
   }
 
-body {
-    font-family: 'RobotoFlex';
+@layer components {
+  .join-button {
+    @apply text-xl bg-black rounded-md text-white px-32 py-3;
+  }
+  
+  .login-button {
+    @apply bg-transparent border-black border rounded-md px-3 py-1;
+  }
 }
