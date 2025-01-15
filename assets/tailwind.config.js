@@ -12,9 +12,18 @@ module.exports = {
     "../lib/lgb_web/**/*.*ex"
   ],
   theme: {
+    fontFamily: {
+      RobotoFlex: ['RobotoFlex'],
+      MarkoOne: ['MarkoOne']
+    },
     extend: {
       colors: {
         brand: "#FD4F00",
+        landingPageColor: "#95DFEC",
+      },
+      width: {
+        'landingPageImageWidth': '240px',
+        'landingPageTextWidth': '550px'
       }
     },
   },
