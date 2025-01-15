@@ -35,6 +35,11 @@ defmodule Lgb.AccountsTest do
                Accounts.get_user_by_email_and_password(user.email, nil)
     end
 
+    test "returns error with empty string email/password" do
+      assert {:error, :bad_username_or_password} =
+               Accounts.get_user_by_email_and_password("", "")
+    end
+
     test "does not return the user if the password is not valid" do
       user = user_fixture()
 
@@ -104,6 +109,16 @@ defmodule Lgb.AccountsTest do
         })
 
       assert user.email == "user@domain@example.com"
+    end
+
+    test "validates email format with double @ signs" do
+      {:error, changeset} =
+        Accounts.register_user(%{
+          email: "user@@example.com",
+          password: valid_user_password()
+        })
+
+      assert "must have the @ sign and no spaces" in errors_on(changeset).email
     end
 
     test "validates email format with special characters" do
