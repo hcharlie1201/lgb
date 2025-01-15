@@ -101,24 +101,24 @@ defmodule Lgb.AccountsTest do
              } = errors_on(changeset)
     end
 
-    test "validates email format with multiple @ signs" do
-      {:ok, user} =
+    test "rejects email format with multiple @ signs" do
+      {:error, changeset} =
         Accounts.register_user(%{
           email: "user@domain@example.com",
           password: valid_user_password()
         })
 
-      assert user.email == "user@domain@example.com"
+      assert "must have exactly one @ sign and no spaces" in errors_on(changeset).email
     end
 
-    test "validates email format with double @ signs" do
-      {:ok, user} =
+    test "rejects email format with double @ signs" do
+      {:error, changeset} =
         Accounts.register_user(%{
           email: "user@@example.com",
           password: valid_user_password()
         })
 
-      assert user.email == "user@@example.com"
+      assert "must have exactly one @ sign and no spaces" in errors_on(changeset).email
     end
 
     test "validates email format with special characters" do
