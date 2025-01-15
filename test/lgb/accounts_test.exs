@@ -97,31 +97,23 @@ defmodule Lgb.AccountsTest do
     end
 
     test "validates email format with multiple @ signs" do
-      {:ok, user} = Accounts.register_user(%{
-        email: "user@domain@example.com",
-        password: valid_user_password()
-      })
+      {:ok, user} =
+        Accounts.register_user(%{
+          email: "user@domain@example.com",
+          password: valid_user_password()
+        })
+
       assert user.email == "user@domain@example.com"
     end
 
     test "validates email format with special characters" do
-      {:ok, user} = Accounts.register_user(%{
-        email: "user!@domain.com",
-        password: valid_user_password()
-      })
-      assert user.email == "user!@domain.com"
-    end
-
-    test "validates email maximum length" do
-      too_long_email = String.duplicate("a", 150) <> "@example.com"
-
-      {:error, changeset} =
+      {:ok, user} =
         Accounts.register_user(%{
-          email: too_long_email,
+          email: "user!@domain.com",
           password: valid_user_password()
         })
 
-      assert "should be at most 160 character(s)" in errors_on(changeset).email
+      assert user.email == "user!@domain.com"
     end
 
     test "validates email maximum length" do
@@ -147,10 +139,12 @@ defmodule Lgb.AccountsTest do
     end
 
     test "validates password with common patterns" do
-      {:ok, user} = Accounts.register_user(%{
-        email: unique_user_email(),
-        password: "password123456789"
-      })
+      {:ok, user} =
+        Accounts.register_user(%{
+          email: unique_user_email(),
+          password: "password123456789"
+        })
+
       assert user.email != nil
     end
 
