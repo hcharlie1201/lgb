@@ -119,6 +119,7 @@ defmodule Lgb.AccountsTest do
         })
 
       assert "must have the @ sign and no spaces" in errors_on(changeset).email
+      refute changeset.valid?
     end
 
     test "validates email format with special characters" do

@@ -132,8 +132,15 @@ defmodule Lgb.Accounts do
   def apply_user_email(user, password, attrs) do
     user
     |> User.email_changeset(attrs)
-    |> User.validate_current_password(password)
+    |> validate_current_password(password)
     |> Ecto.Changeset.apply_action(:update)
+  end
+
+  @doc """
+  Validates the current password.
+  """
+  def validate_current_password(changeset, password) do
+    User.validate_current_password(changeset, password)
   end
 
   @doc """
