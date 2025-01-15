@@ -227,7 +227,7 @@ defmodule Lgb.AccountsTest do
           password: valid_user_password()
         })
 
-      assert %{email: ["must have the @ sign and no spaces"]} = errors_on(changeset)
+      assert %{email: ["must have exactly one @ sign and no spaces"]} = errors_on(changeset)
       assert changeset.valid? == false
     end
 
@@ -296,7 +296,7 @@ defmodule Lgb.AccountsTest do
       {:error, changeset} =
         Accounts.apply_user_email(user, valid_user_password(), %{email: "not valid"})
 
-      assert %{email: ["must have the @ sign and no spaces"]} = errors_on(changeset)
+      assert %{email: ["must have exactly one @ sign and no spaces"]} = errors_on(changeset)
     end
 
     test "validates maximum value for email for security", %{user: user} do
