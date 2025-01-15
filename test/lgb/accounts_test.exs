@@ -324,6 +324,12 @@ defmodule Lgb.AccountsTest do
       assert %{current_password: ["is not valid"]} = errors_on(changeset)
     end
 
+    test "validates current password with nil password" do
+      user = user_fixture()
+      {:error, changeset} = Accounts.validate_current_password(user, nil)
+      assert %{current_password: ["is not valid"]} = errors_on(changeset)
+    end
+
     test "applies the email without persisting it", %{user: user} do
       email = unique_user_email()
       {:ok, user} = Accounts.apply_user_email(user, valid_user_password(), %{email: email})
