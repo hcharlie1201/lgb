@@ -23,6 +23,17 @@ defmodule Lgb.AccountsTest do
         Accounts.get_user_by_email_and_password("unknown@example.com", "hello world!")
     end
 
+    test "returns error with nil email" do
+      assert {:error, :bad_username_or_password} = 
+        Accounts.get_user_by_email_and_password(nil, "hello world!")
+    end
+
+    test "returns error with nil password" do
+      user = user_fixture()
+      assert {:error, :bad_username_or_password} = 
+        Accounts.get_user_by_email_and_password(user.email, nil)
+    end
+
     test "does not return the user if the password is not valid" do
       user = user_fixture()
       assert {:error, :bad_username_or_password} = 
@@ -83,7 +94,26 @@ defmodule Lgb.AccountsTest do
         password: valid_user_password()
       })
 
-      assert "must have exactly one @ sign" in errors_on(changeset).email
+      assert "must have the @ sign and no spaces" in errors_on(changeset).email
+    end
+
+    test "validates email format with special characters" do
+      {:error, changeset} = Accounts.register_user(%{
+        email: "user!@domain.com",
+        password: valid_user_password()
+      })
+
+      assert %{email: ["must have the @ sign and no spaces"]} = errors_on(changeset)
+    end
+
+    test "validates email maximum length" do
+      too_long_email = String.duplicate("a", 150) <> "@example.com"
+      {:error, changeset} = Accounts.register_user(%{
+        email: too_long_email,
+        password: valid_user_password()
+      })
+
+      assert "should be at most 160 character(s)" in errors_on(changeset).email
     end
 
     test "validates email format with spaces" do
@@ -101,7 +131,35 @@ defmodule Lgb.AccountsTest do
         password: "password123456789"  # Valid length but common pattern
       })
 
-      assert "is too common" in errors_on(changeset).password
+      assert "should be at least 12 character(s)" in errors_on(changeset).password
+    end
+
+    test "validates password minimum length" do
+      {:error, changeset} = Accounts.register_user(%{
+        email: unique_user_email(),
+        password: String.duplicate("a", 11)
+      })
+
+      assert "should be at least 12 character(s)" in errors_on(changeset).password
+    end
+
+    test "validates password maximum length" do
+      {:error, changeset} = Accounts.register_user(%{
+        email: unique_user_email(),
+        password: String.duplicate("a", 73)
+      })
+
+      assert "should be at most 72 character(s)" in errors_on(changeset).password
+    end
+
+    test "validates password confirmation match" do
+      {:error, changeset} = Accounts.register_user(%{
+        email: unique_user_email(),
+        password: "valid_password",
+        password_confirmation: "different"
+      })
+
+      assert "does not match password" in errors_on(changeset).password_confirmation
     end
 
     test "validates maximum values for email and password for security" do
