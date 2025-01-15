@@ -178,17 +178,14 @@ defmodule Lgb.Profiles do
     if profile.geolocation == nil do
       Profile
     else
-      {lat, lng} = profile.geolocation.coordinates
-
       from p in Profile,
         select_merge: %{
           distance:
             selected_as(
               fragment(
-                "ST_Distance(?, ST_SetSRID(ST_Point(?, ?), 4326))",
+                "ST_Distance(?, ?)",
                 p.geolocation,
-                ^lng,
-                ^lat
+                ^profile.geolocation
               ),
               :distance
             )
