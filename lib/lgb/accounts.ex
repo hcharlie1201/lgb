@@ -50,13 +50,6 @@ defmodule Lgb.Accounts do
       _ ->
         {:error, :bad_username_or_password}
     end
-    user = Repo.get_by(User, email: email)
-
-    cond do
-      !User.valid_password?(user, password) -> {:error, :bad_username_or_password}
-      !User.is_confirmed?(user) -> {:error, :user_not_confirmed}
-      true -> {:ok, user}
-    end
   end
 
   @doc """
