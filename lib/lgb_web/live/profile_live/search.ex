@@ -21,7 +21,10 @@ defmodule LgbWeb.ProfileLive.Search do
         filters: Profiles.create_filter(params)
       }
 
-      case Flop.validate_and_run(Profile, flop_params, for: Profile) do
+      profile = Lgb.Accounts.User.current_profile(socket.assigns.current_user)
+      query = Profiles.get_other_profiles_distance(profile)
+
+      case Flop.validate_and_run(query, flop_params, for: Profile) do
         {:ok, {_, metas}} ->
           path = Flop.Phoenix.build_path(~p"/profiles/results", metas)
           {:noreply, push_navigate(socket, to: path)}
