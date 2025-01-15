@@ -25,10 +25,7 @@ defmodule Lgb.AccountsFixtures do
 
   def extract_user_token(fun) do
     {:ok, captured_email} = fun.(&"[TOKEN]#{&1}[TOKEN]")
-
-    [_, token | _] =
-      String.split(captured_email.provider_options[:template_model][:product_url], "[TOKEN]")
-
+    [_, token | _] = String.split(captured_email.provider_options.template_model.product_url, "[TOKEN]")
     token
   end
 end
