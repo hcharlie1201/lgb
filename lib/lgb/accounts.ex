@@ -38,8 +38,18 @@ defmodule Lgb.Accounts do
       nil
 
   """
-  def get_user_by_email_and_password(email, password)
-      when is_binary(email) and is_binary(password) do
+  def get_user_by_email_and_password(email, password) do
+    case {email, password} do
+      {email, password} when is_binary(email) and is_binary(password) ->
+        user = Repo.get_by(User, email: email)
+        cond do
+          !User.valid_password?(user, password) -> {:error, :bad_username_or_password}
+          !User.is_confirmed?(user) -> {:error, :user_not_confirmed}
+          true -> {:ok, user}
+        end
+      _ ->
+        {:error, :bad_username_or_password}
+    end
     user = Repo.get_by(User, email: email)
 
     cond do
