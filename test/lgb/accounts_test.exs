@@ -29,8 +29,16 @@ defmodule Lgb.AccountsTest do
 
     test "returns the user if the email and password are valid" do
       %{id: id} = user = user_fixture()
+      {:ok, _} = Accounts.confirm_user(extract_user_token(fn url -> Accounts.deliver_user_confirmation_instructions(user, url) end))
 
-      assert %User{id: ^id} =
+      assert {:ok, %User{id: ^id}} =
+               Accounts.get_user_by_email_and_password(user.email, valid_user_password())
+    end
+
+    test "returns error if user is not confirmed" do
+      user = user_fixture()
+
+      assert {:error, :user_not_confirmed} =
                Accounts.get_user_by_email_and_password(user.email, valid_user_password())
     end
   end
