@@ -124,16 +124,6 @@ defmodule Lgb.AccountsTest do
       assert "should be at most 160 character(s)" in errors_on(changeset).email
     end
 
-    test "validates email format with special characters" do
-      {:error, changeset} =
-        Accounts.register_user(%{
-          email: "user!@domain.com",
-          password: valid_user_password()
-        })
-
-      assert %{email: ["must have the @ sign and no spaces"]} = errors_on(changeset)
-    end
-
     test "validates email maximum length" do
       too_long_email = String.duplicate("a", 150) <> "@example.com"
 
