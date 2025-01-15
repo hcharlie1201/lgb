@@ -19,7 +19,8 @@ defmodule Lgb.AccountsTest do
 
   describe "get_user_by_email_and_password/2" do
     test "does not return the user if the email does not exist" do
-      refute Accounts.get_user_by_email_and_password("unknown@example.com", "hello world!")
+      assert {:error, :bad_username_or_password} = 
+        Accounts.get_user_by_email_and_password("unknown@example.com", "hello world!")
     end
 
     test "does not return the user if the password is not valid" do
