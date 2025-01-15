@@ -76,6 +76,33 @@ defmodule Lgb.AccountsTest do
              } = errors_on(changeset)
     end
 
+    test "validates email format with multiple @ signs" do
+      {:error, changeset} = Accounts.register_user(%{
+        email: "user@domain@example.com",
+        password: valid_user_password()
+      })
+
+      assert "must have the @ sign and no spaces" in errors_on(changeset).email
+    end
+
+    test "validates email format with spaces" do
+      {:error, changeset} = Accounts.register_user(%{
+        email: "user @ domain.com",
+        password: valid_user_password()
+      })
+
+      assert "must have the @ sign and no spaces" in errors_on(changeset).email
+    end
+
+    test "validates password with common patterns" do
+      {:error, changeset} = Accounts.register_user(%{
+        email: unique_user_email(),
+        password: "password123456"
+      })
+
+      assert "should be at least 12 character(s)" in errors_on(changeset).password
+    end
+
     test "validates maximum values for email and password for security" do
       too_long = String.duplicate("db", 100)
       {:error, changeset} = Accounts.register_user(%{email: too_long, password: too_long})
@@ -100,6 +127,34 @@ defmodule Lgb.AccountsTest do
       assert is_binary(user.hashed_password)
       assert is_nil(user.confirmed_at)
       assert is_nil(user.password)
+    end
+
+    test "does not register users with invalid email format" do
+      {:error, changeset} = Accounts.register_user(%{
+        email: "invalid-email",
+        password: valid_user_password()
+      })
+      
+      assert %{email: ["must have the @ sign and no spaces"]} = errors_on(changeset)
+      assert changeset.valid? == false
+    end
+
+    test "does not register users with blank email" do
+      {:error, changeset} = Accounts.register_user(%{
+        email: "",
+        password: valid_user_password()
+      })
+      
+      assert %{email: ["can't be blank"]} = errors_on(changeset)
+    end
+
+    test "does not register users with blank password" do
+      {:error, changeset} = Accounts.register_user(%{
+        email: unique_user_email(),
+        password: ""
+      })
+      
+      assert %{password: ["can't be blank"]} = errors_on(changeset)
     end
   end
 
