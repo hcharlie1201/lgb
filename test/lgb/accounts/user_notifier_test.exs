@@ -10,7 +10,7 @@ defmodule Lgb.Accounts.UserNotifierTest do
       {:ok, email} =
         UserNotifier.deliver_confirmation_instructions(user, "http://example.com/confirm")
 
-      assert email.to == [user.email]
+      assert email.to == [{"", user.email}]
       assert email.from == {"Lgb", "charlie@bii-bi.com"}
       assert email.provider_options.template_id == "38664718"
       assert email.provider_options.template_model.product_url == "http://example.com/confirm"
@@ -24,7 +24,7 @@ defmodule Lgb.Accounts.UserNotifierTest do
       {:ok, email} =
         UserNotifier.deliver_reset_password_instructions(user, "http://example.com/reset")
 
-      assert email.to == [user.email]
+      assert email.to == [{"", user.email}]
       assert email.from == {"Lgb", "charlie@bii-bi.com"}
       assert email.provider_options.template_id == "38674222"
       assert email.provider_options.template_model.product_url == "http://example.com/reset"
