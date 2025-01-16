@@ -56,13 +56,12 @@ defmodule LgbWeb.ConversationLive.Show do
       {:ok, message} ->
         message = Repo.preload(message, [:conversation, :profile])
 
+        # also broadcast when users are not in the same liveview process
         LgbWeb.Endpoint.broadcast(
           "conversation:#{message.conversation_id}",
           "new_message",
           message
         )
-
-        # also broadcast when users are not in the same liveview process
 
         {:noreply,
          socket
