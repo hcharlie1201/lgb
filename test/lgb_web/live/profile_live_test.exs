@@ -38,7 +38,7 @@ defmodule LgbWeb.ProfileLiveTest do
 
   setup do
     user = user_fixture()
-    profile = profile_fixture(%{user_id: user.id})
+    profile = profile_fixture(user)
     conn = log_in_user(build_conn(), user)
     %{user: user, profile: profile, conn: conn}
   end
