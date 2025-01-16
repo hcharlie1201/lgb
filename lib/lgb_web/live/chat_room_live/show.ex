@@ -14,13 +14,14 @@ defmodule LgbWeb.ChatRoomLive.Show do
 
     # Need to subscribe to the topic to notify the chatroom so all users can view the message
     LgbWeb.Endpoint.subscribe("chat_room:#{id}")
+    presence = Presence.list_online_users(topic)
 
     socket =
       socket
       |> assign(chat_room: chat_room)
       |> assign(form: to_form(%{}, as: "message"))
       |> stream(:messages, messages)
-      |> stream(:presences, [])
+      |> stream(:presences, presence)
 
     if connected?(socket) do
       Presence.track_user(socket.assigns.current_user.id, topic, socket.assigns.current_user)
