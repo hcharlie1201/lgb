@@ -50,8 +50,8 @@ defmodule Lgb.Profiles do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_profile(attrs \\ %{}) do
-    %Profile{}
+  def create_profile(user, attrs \\ %{}) do
+    Ecto.build_assoc(user, :profiles)
     |> Profile.changeset(attrs)
     |> Repo.insert()
   end
