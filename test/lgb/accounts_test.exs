@@ -96,7 +96,7 @@ defmodule Lgb.AccountsTest do
       {:error, changeset} = Accounts.register_user(%{email: "not valid", password: "not valid"})
 
       assert %{
-               email: ["must have the @ sign and no spaces"],
+               email: ["must have exactly one @ sign and no spaces"],
                password: ["should be at least 12 character(s)"]
              } = errors_on(changeset)
     end
@@ -150,7 +150,7 @@ defmodule Lgb.AccountsTest do
           password: valid_user_password()
         })
 
-      assert "must have the @ sign and no spaces" in errors_on(changeset).email
+      assert "must have exactly one @ sign and no spaces" in errors_on(changeset).email
     end
 
     test "validates password with common patterns" do
