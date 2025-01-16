@@ -21,7 +21,7 @@ defmodule LgbWeb.ChatRoomLive.ShowTest do
       assert html =~ "Welcome to chat room #{chat_room.id}"
       assert html =~ message.content
       assert view |> element("#messages-container") |> has_element?()
-      assert view.assigns.form != nil
+      assert view |> element("form") |> has_element?()
     end
 
     test "handles presence joins and leaves", %{conn: conn, chat_room: chat_room, user: user} do
