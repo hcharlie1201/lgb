@@ -12,7 +12,7 @@ defmodule LgbWeb.ProfileLive.MyProfile do
     profile =
       case User.current_profile(user) do
         nil ->
-          {:ok, new_profile} = Profiles.create_profile(%{user_id: user.id})
+          {:ok, new_profile} = Profiles.create_profile(user)
           new_profile
 
         existing_profile ->
@@ -59,16 +59,23 @@ defmodule LgbWeb.ProfileLive.MyProfile do
   def handle_event("map_clicked", %{"lat" => lat, "lng" => lng}, socket) do
     case Lgb.ThirdParty.Google.ReverseGeo.get_address(lat, lng) do
       [city: city, state: state, zip: zip] ->
-        updated_params = %{
-          "geolocation" => %Geo.Point{coordinates: {lat, lng}, srid: 4326},
-          "city" => city,
-          "state" => state,
-          "zip" => zip
-        }
+        updated_params =
+          Map.merge(
+            %{
+              "geolocation" => %Geo.Point{coordinates: {lat, lng}, srid: 4326},
+              "city" => city,
+              "state" => state,
+              "zip" => zip
+            },
+            socket.assigns.form.params
+          )
+
+        IO.inspect(updated_params)
 
         form =
           socket.assigns.profile
           |> Profile.changeset(updated_params)
+          |> Map.put(:action, :validate)
           |> to_form()
 
         {:noreply, assign(socket, form: form)}
