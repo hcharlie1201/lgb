@@ -45,15 +45,7 @@ defmodule Lgb.Profiles.Profile do
       :geolocation
     ])
     |> validate_required([
-      :user_id,
-      :handle,
-      :state,
-      :zip,
-      :age,
-      :height_cm,
-      :weight_lb,
-      :city,
-      :biography
+      :user_id
     ])
     |> validate_number(:age,
       greater_than_or_equal_to: 18,
