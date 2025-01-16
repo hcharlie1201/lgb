@@ -30,6 +30,10 @@ defmodule LgbWeb.ChatRoomLive.Show do
     {:ok, socket}
   end
 
+  def handle_info(%Phoenix.Socket.Broadcast{event: "presence_diff", payload: diff}, socket) do
+    {:noreply, socket}
+  end
+
   def handle_info({Presence, {:join, presence}}, socket) do
     {:noreply, stream_insert(socket, :presences, presence)}
   end
