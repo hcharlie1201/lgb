@@ -4,46 +4,61 @@ defmodule Lgb.ChattingFixtures do
   entities via the `Lgb.Chatting` context.
   """
 
-  @doc """
-  Generate a chat_room.
-  """
+  alias Lgb.Chatting
+  alias Lgb.Profiles
+
   def chat_room_fixture(attrs \\ %{}) do
     {:ok, chat_room} =
       attrs
       |> Enum.into(%{
+        description: "some description",
         limit: 42
       })
-      |> Lgb.Chatting.create_chat_room()
+      |> Chatting.create_chat_room()
 
     chat_room
   end
 
-  @doc """
-  Generate a message.
-  """
-  def message_fixture(attrs \\ %{}) do
-    {:ok, message} =
-      attrs
-      |> Enum.into(%{
-
-      })
-      |> Lgb.Chatting.create_message()
-
-    message
-  end
-
-  @doc """
-  Generate a conversation_message.
-  """
-  def conversation_message_fixture(attrs \\ %{}) do
-    {:ok, conversation_message} =
+  def message_fixture(chat_room, user, attrs \\ %{}) do
+    attrs =
       attrs
       |> Enum.into(%{
         content: "some content",
-        read: true
+        chat_room_id: chat_room.id,
+        user_id: user.id
       })
-      |> Lgb.Chatting.create_conversation_message()
 
-    conversation_message
+    Chatting.create_message!(attrs)
+  end
+
+  def profile_fixture(user, attrs \\ %{}) do
+    attrs =
+      attrs
+      |> Enum.into(%{
+        id: System.unique_integer(),
+        handle: "some-handle-#{System.unique_integer()}",
+        age: 25,
+        height_cm: 170,
+        weight_lb: 150,
+        city: "some city",
+        state: "some state",
+        zip: "12345"
+      })
+
+    {:ok, profile} = Profiles.create_profile(user, attrs)
+    profile
+  end
+
+  def conversation_message_fixture(conversation, profile, attrs \\ %{}) do
+    attrs =
+      attrs
+      |> Enum.into(%{
+        content: "some content",
+        profile_id: profile.id,
+        conversation_id: conversation.id
+      })
+
+    {:ok, message} = Chatting.create_conversation_message(%Chatting.ConversationMessage{}, attrs)
+    message
   end
 end

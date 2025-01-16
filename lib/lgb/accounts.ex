@@ -38,14 +38,17 @@ defmodule Lgb.Accounts do
       nil
 
   """
-  def get_user_by_email_and_password(email, password)
-      when is_binary(email) and is_binary(password) do
-    user = Repo.get_by(User, email: email)
-
-    cond do
-      !User.valid_password?(user, password) -> {:error, :bad_username_or_password}
-      !User.is_confirmed?(user) -> {:error, :user_not_confirmed}
-      true -> {:ok, user}
+  def get_user_by_email_and_password(email, password) do
+    case {email, password} do
+      {email, password} when is_binary(email) and is_binary(password) ->
+        user = Repo.get_by(User, email: email)
+        cond do
+          !User.valid_password?(user, password) -> {:error, :bad_username_or_password}
+          !User.is_confirmed?(user) -> {:error, :user_not_confirmed}
+          true -> {:ok, user}
+        end
+      _ ->
+        {:error, :bad_username_or_password}
     end
   end
 
@@ -129,8 +132,15 @@ defmodule Lgb.Accounts do
   def apply_user_email(user, password, attrs) do
     user
     |> User.email_changeset(attrs)
-    |> User.validate_current_password(password)
+    |> validate_current_password(password)
     |> Ecto.Changeset.apply_action(:update)
+  end
+
+  @doc """
+  Validates the current password.
+  """
+  def validate_current_password(changeset, password) do
+    User.validate_current_password(changeset, password)
   end
 
   @doc """

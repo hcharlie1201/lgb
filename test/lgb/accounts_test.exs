@@ -19,18 +19,52 @@ defmodule Lgb.AccountsTest do
 
   describe "get_user_by_email_and_password/2" do
     test "does not return the user if the email does not exist" do
-      refute Accounts.get_user_by_email_and_password("unknown@example.com", "hello world!")
+      assert {:error, :bad_username_or_password} =
+               Accounts.get_user_by_email_and_password("unknown@example.com", "hello world!")
+    end
+
+    test "returns error with nil email" do
+      assert {:error, :bad_username_or_password} =
+               Accounts.get_user_by_email_and_password(nil, "hello world!")
+    end
+
+    test "returns error with nil password" do
+      user = user_fixture()
+
+      assert {:error, :bad_username_or_password} =
+               Accounts.get_user_by_email_and_password(user.email, nil)
+    end
+
+    test "returns error with empty string email/password" do
+      assert {:error, :bad_username_or_password} =
+               Accounts.get_user_by_email_and_password("", "")
     end
 
     test "does not return the user if the password is not valid" do
       user = user_fixture()
-      refute Accounts.get_user_by_email_and_password(user.email, "invalid")
+
+      assert {:error, :bad_username_or_password} =
+               Accounts.get_user_by_email_and_password(user.email, "invalid")
     end
 
     test "returns the user if the email and password are valid" do
       %{id: id} = user = user_fixture()
 
-      assert %User{id: ^id} =
+      {:ok, _} =
+        Accounts.confirm_user(
+          extract_user_token(fn url ->
+            Accounts.deliver_user_confirmation_instructions(user, url)
+          end)
+        )
+
+      assert {:ok, %User{id: ^id}} =
+               Accounts.get_user_by_email_and_password(user.email, valid_user_password())
+    end
+
+    test "returns error if user is not confirmed" do
+      user = user_fixture()
+
+      assert {:error, :user_not_confirmed} =
                Accounts.get_user_by_email_and_password(user.email, valid_user_password())
     end
   end
@@ -62,9 +96,102 @@ defmodule Lgb.AccountsTest do
       {:error, changeset} = Accounts.register_user(%{email: "not valid", password: "not valid"})
 
       assert %{
-               email: ["must have the @ sign and no spaces"],
+               email: ["must have exactly one @ sign and no spaces"],
                password: ["should be at least 12 character(s)"]
              } = errors_on(changeset)
+    end
+
+    test "rejects email format with multiple @ signs" do
+      {:error, changeset} =
+        Accounts.register_user(%{
+          email: "user@domain@example.com",
+          password: valid_user_password()
+        })
+
+      assert "must have exactly one @ sign and no spaces" in errors_on(changeset).email
+    end
+
+    test "rejects email format with double @ signs" do
+      {:error, changeset} =
+        Accounts.register_user(%{
+          email: "user@@example.com",
+          password: valid_user_password()
+        })
+
+      assert "must have exactly one @ sign and no spaces" in errors_on(changeset).email
+    end
+
+    test "validates email format with special characters" do
+      {:ok, user} =
+        Accounts.register_user(%{
+          email: "user!@domain.com",
+          password: valid_user_password()
+        })
+
+      assert user.email == "user!@domain.com"
+    end
+
+    test "validates email maximum length" do
+      too_long_email = String.duplicate("a", 150) <> "@example.com"
+
+      {:error, changeset} =
+        Accounts.register_user(%{
+          email: too_long_email,
+          password: valid_user_password()
+        })
+
+      assert "should be at most 160 character(s)" in errors_on(changeset).email
+    end
+
+    test "validates email format with spaces" do
+      {:error, changeset} =
+        Accounts.register_user(%{
+          email: "user @ domain.com",
+          password: valid_user_password()
+        })
+
+      assert "must have exactly one @ sign and no spaces" in errors_on(changeset).email
+    end
+
+    test "validates password with common patterns" do
+      {:ok, user} =
+        Accounts.register_user(%{
+          email: unique_user_email(),
+          password: "password123456789"
+        })
+
+      assert user.email != nil
+    end
+
+    test "validates password minimum length" do
+      {:error, changeset} =
+        Accounts.register_user(%{
+          email: unique_user_email(),
+          password: String.duplicate("a", 11)
+        })
+
+      assert "should be at least 12 character(s)" in errors_on(changeset).password
+    end
+
+    test "validates password maximum length" do
+      {:error, changeset} =
+        Accounts.register_user(%{
+          email: unique_user_email(),
+          password: String.duplicate("a", 73)
+        })
+
+      assert "should be at most 72 character(s)" in errors_on(changeset).password
+    end
+
+    test "validates password confirmation match" do
+      {:error, changeset} =
+        Accounts.register_user(%{
+          email: unique_user_email(),
+          password: "valid_password",
+          password_confirmation: "different"
+        })
+
+      assert "does not match password" in errors_on(changeset).password_confirmation
     end
 
     test "validates maximum values for email and password for security" do
@@ -91,6 +218,37 @@ defmodule Lgb.AccountsTest do
       assert is_binary(user.hashed_password)
       assert is_nil(user.confirmed_at)
       assert is_nil(user.password)
+    end
+
+    test "does not register users with invalid email format" do
+      {:error, changeset} =
+        Accounts.register_user(%{
+          email: "invalid-email",
+          password: valid_user_password()
+        })
+
+      assert %{email: ["must have exactly one @ sign and no spaces"]} = errors_on(changeset)
+      assert changeset.valid? == false
+    end
+
+    test "does not register users with blank email" do
+      {:error, changeset} =
+        Accounts.register_user(%{
+          email: "",
+          password: valid_user_password()
+        })
+
+      assert %{email: ["can't be blank"]} = errors_on(changeset)
+    end
+
+    test "does not register users with blank password" do
+      {:error, changeset} =
+        Accounts.register_user(%{
+          email: unique_user_email(),
+          password: ""
+        })
+
+      assert %{password: ["can't be blank"]} = errors_on(changeset)
     end
   end
 
@@ -138,7 +296,7 @@ defmodule Lgb.AccountsTest do
       {:error, changeset} =
         Accounts.apply_user_email(user, valid_user_password(), %{email: "not valid"})
 
-      assert %{email: ["must have the @ sign and no spaces"]} = errors_on(changeset)
+      assert %{email: ["must have exactly one @ sign and no spaces"]} = errors_on(changeset)
     end
 
     test "validates maximum value for email for security", %{user: user} do
@@ -163,6 +321,12 @@ defmodule Lgb.AccountsTest do
       {:error, changeset} =
         Accounts.apply_user_email(user, "invalid", %{email: unique_user_email()})
 
+      assert %{current_password: ["is not valid"]} = errors_on(changeset)
+    end
+
+    test "validates current password with nil password" do
+      user = user_fixture()
+      changeset = Accounts.validate_current_password(user, nil)
       assert %{current_password: ["is not valid"]} = errors_on(changeset)
     end
 
