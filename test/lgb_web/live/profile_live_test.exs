@@ -2,19 +2,21 @@ defmodule LgbWeb.ProfileLiveTest do
   use LgbWeb.ConnCase
 
   import Phoenix.LiveViewTest
+  import Lgb.AccountsFixtures
   import Lgb.ProfilesFixtures
 
   @create_attrs %{handle: "some handle", state: "some state", zip: "some zip", dob: "2024-12-11", height_cm: 42, weight_lb: 42, city: "some city", biography: "some biography"}
   @update_attrs %{handle: "some updated handle", state: "some updated state", zip: "some updated zip", dob: "2024-12-12", height_cm: 43, weight_lb: 43, city: "some updated city", biography: "some updated biography"}
   @invalid_attrs %{handle: nil, state: nil, zip: nil, dob: nil, height_cm: nil, weight_lb: nil, city: nil, biography: nil}
 
-  defp create_profile(_) do
-    profile = profile_fixture()
-    %{profile: profile}
+  setup do
+    user = user_fixture()
+    profile = profile_fixture(%{user_id: user.id})
+    %{user: user, profile: profile}
   end
 
   describe "Index" do
-    setup [:create_profile]
+    setup [:register_and_log_in_user]
 
     test "lists all profiles", %{conn: conn, profile: profile} do
       {:ok, _index_live, html} = live(conn, ~p"/profiles")
@@ -78,7 +80,7 @@ defmodule LgbWeb.ProfileLiveTest do
   end
 
   describe "Show" do
-    setup [:create_profile]
+    setup [:register_and_log_in_user]
 
     test "displays profile", %{conn: conn, profile: profile} do
       {:ok, _show_live, html} = live(conn, ~p"/profiles/#{profile}")
