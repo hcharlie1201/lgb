@@ -15,7 +15,7 @@
     </.table>
   </div>
 </div>
-<.simple_form for={@form} phx-submit="send_message">
+<.simple_form for={@form} phx-submit="send_message" phx-change="update_message">
   <.input field={@form[:content]} label="Chat" phx-change="update_message" />
   <:actions>
     <.button>Send Message</.button>

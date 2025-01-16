@@ -20,7 +20,7 @@ defmodule LgbWeb.ChatRoomLive.ShowTest do
       
       assert html =~ "Welcome to chat room #{chat_room.id}"
       assert html =~ message.content
-      assert view.assigns.chat_room.id == chat_room.id
+      assert view |> element("#messages-container") |> has_element?()
       assert view.assigns.form != nil
     end
 
