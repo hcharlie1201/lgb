@@ -7,21 +7,21 @@ defmodule Lgb.ProfilesFixtures do
   @doc """
   Generate a profile.
   """
-  def profile_fixture(attrs \\ %{}) do
-    {:ok, profile} =
+  def profile_fixture(user, attrs \\ %{}) do
+    attrs =
       attrs
       |> Enum.into(%{
         biography: "some biography",
         city: "some city",
-        dob: ~D[2024-12-11],
-        handle: "some handle",
-        height_cm: 42,
+        handle: "some-handle-#{System.unique_integer()}",
+        height_cm: 170,
         state: "some state",
-        weight_lb: 42,
-        zip: "some zip"
+        weight_lb: 150,
+        age: 25,
+        zip: "12345"
       })
-      |> Lgb.Profiles.create_profile()
 
+    {:ok, profile} = Lgb.Profiles.create_profile(user, attrs)
     profile
   end
 end
