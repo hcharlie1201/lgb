@@ -1,6 +1,8 @@
 <.header class="text-center">
   Welcome to chat room {@chat_room.id}
-  <:subtitle>There are currently {Enum.count(@streams.presences)} users online</:subtitle>
+  <:subtitle data-role="online-count">
+    There are currently {Enum.count(@streams.presences)} users online
+  </:subtitle>
 </.header>
 <div class="flex">
   <div class="flex-2">
@@ -15,8 +17,8 @@
     </.table>
   </div>
 </div>
-<.simple_form for={@form} phx-submit="send_message">
-  <.input field={@form[:content]} label="Chat" phx-change="update_message" />
+<.simple_form for={@form} phx-submit="send_message" phx-change="update_message">
+  <.input field={@form[:content]} label="Chat" />
   <:actions>
     <.button>Send Message</.button>
   </:actions>

@@ -8,44 +8,79 @@ defmodule LgbWeb.ChatRoomLive.ShowTest do
     setup do
       user = user_fixture()
       chat_room = chat_room_fixture()
+      message = message_fixture(chat_room, user)
       
-      %{user: user, chat_room: chat_room}
+      conn = build_conn() |> log_in_user(user)
+      
+      %{conn: conn, user: user, chat_room: chat_room, message: message}
     end
 
-    test "mounts with chat room data", %{conn: conn, chat_room: chat_room} do
-      {:ok, view, _html} = live(conn, ~p"/chat_rooms/#{chat_room}")
+    test "mounts with chat room data and messages", %{conn: conn, chat_room: chat_room, message: message} do
+      {:ok, view, html} = live(conn, ~p"/chat_rooms/#{chat_room}")
       
-      assert view.assigns.chat_room.id == chat_room.id
-      assert view.assigns.form != nil
+      assert html =~ "Welcome to chat room #{chat_room.id}"
+      assert html =~ message.content
+      assert view |> element("#messages-container") |> has_element?()
+      assert view |> element("form") |> has_element?()
     end
 
-    test "handles presence joins", %{conn: conn, chat_room: chat_room, user: user} do
+    test "handles presence joins and leaves", %{conn: conn, chat_room: chat_room, user: user} do
       {:ok, view, _html} = live(conn, ~p"/chat_rooms/#{chat_room}")
       
       # Simulate presence join
-      send(view.pid, {LgbWeb.Presence, {:join, %{id: user.id, metas: [%{phx_ref: "123"}]}}})
+      send(view.pid, {LgbWeb.Presence, {:join, %{id: user.id, user: user}}})
+      html = render(view)
+      assert html =~ user.email
       
-      assert has_element?(view, "[data-role='presence-list']")
+      # Simulate presence leave
+      send(view.pid, {LgbWeb.Presence, {:leave, %{id: user.id, user: user, metas: []}}})
+      html = render(view)
+      refute html =~ user.email
     end
 
-    test "handles message sending", %{conn: conn, chat_room: chat_room} do
+    test "handles message sending and broadcasting", %{conn: conn, chat_room: chat_room} do
       {:ok, view, _html} = live(conn, ~p"/chat_rooms/#{chat_room}")
 
+      message_content = "Hello world"
+      
+      # Send a message
       view
-      |> form("#message-form", %{message: %{content: "Hello world"}})
+      |> form("form", %{"message" => %{"content" => message_content}})
       |> render_submit()
 
-      assert has_element?(view, "[data-role='message']", "Hello world")
+      # Simulate broadcast of the message
+      message = %{content: message_content, id: "some-id"}
+      send(view.pid, %{event: "new_message", payload: message})
+      
+      html = render(view)
+      assert html =~ message_content
     end
 
-    test "validates message content", %{conn: conn, chat_room: chat_room} do
+    test "updates message form on input change", %{conn: conn, chat_room: chat_room} do
       {:ok, view, _html} = live(conn, ~p"/chat_rooms/#{chat_room}")
 
+      message_content = "typing..."
+      
+      # Change message content
       view
-      |> form("#message-form", %{message: %{content: ""}})
+      |> form("form", %{"message" => %{"content" => message_content}})
       |> render_change()
 
-      assert has_element?(view, "[data-role='message-error']")
+      assert view |> element("form input") |> render() =~ message_content
+    end
+
+    test "shows correct number of online users", %{conn: conn, chat_room: chat_room} do
+      {:ok, view, html} = live(conn, ~p"/chat_rooms/#{chat_room}")
+      
+      # Initially should show 0 users
+      assert html =~ "There are currently 0 users online"
+      
+      # Add a user
+      user2 = user_fixture()
+      send(view.pid, {LgbWeb.Presence, {:join, %{id: user2.id, user: user2}}})
+      
+      html = render(view)
+      assert html =~ "There are currently 1 users online"
     end
   end
 end

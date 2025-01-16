@@ -12,12 +12,16 @@ defmodule LgbWeb.ChatRoomLive.Show do
     # Fetch existing messages from the database
     messages = Chatting.list_messages(id)
 
+    # Need to subscribe to the topic to notify the chatroom so all users can view the message
+    LgbWeb.Endpoint.subscribe("chat_room:#{id}")
+    presence = Presence.list_online_users(topic)
+
     socket =
       socket
       |> assign(chat_room: chat_room)
       |> assign(form: to_form(%{}, as: "message"))
       |> stream(:messages, messages)
-      |> stream(:presences, [])
+      |> stream(:presences, presence)
 
     if connected?(socket) do
       Presence.track_user(socket.assigns.current_user.id, topic, socket.assigns.current_user)
@@ -25,6 +29,10 @@ defmodule LgbWeb.ChatRoomLive.Show do
     end
 
     {:ok, socket}
+  end
+
+  def handle_info(%Phoenix.Socket.Broadcast{event: "presence_diff", payload: _diff}, socket) do
+    {:noreply, socket}
   end
 
   def handle_info({Presence, {:join, presence}}, socket) do
@@ -39,6 +47,10 @@ defmodule LgbWeb.ChatRoomLive.Show do
     end
   end
 
+  def handle_info(%{event: "new_message", payload: message}, socket) do
+    {:noreply, stream_insert(socket, :messages, message)}
+  end
+
   def handle_event("send_message", %{"message" => %{"content" => content}}, socket) do
     chat_room = socket.assigns.chat_room
 
@@ -49,10 +61,11 @@ defmodule LgbWeb.ChatRoomLive.Show do
         content: content
       })
 
+    LgbWeb.Endpoint.broadcast("chat_room:#{chat_room.id}", "new_message", message)
+
     socket =
       socket
       |> assign(:form, to_form(%{}, as: "message"))
-      |> stream_insert(:messages, message)
 
     {:noreply, socket}
   end
