@@ -19,7 +19,10 @@ defmodule Lgb.Profiles do
 
   """
   def list_profiles(params) do
-    Flop.validate_and_run(Profile, params, for: Profile)
+    case Flop.validate_and_run(Profile, params, for: Profile) do
+      {:ok, {entries, meta}} -> {:ok, %{entries: entries}}
+      error -> error
+    end
   end
 
   @doc """
@@ -176,7 +179,7 @@ defmodule Lgb.Profiles do
 
   def get_other_profiles_distance(profile) do
     if profile.geolocation == nil do
-      Profile
+      from(p in Profile)
     else
       from p in Profile,
         select_merge: %{
