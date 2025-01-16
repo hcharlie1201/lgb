@@ -38,17 +38,18 @@ defmodule LgbWeb.ProfileLiveTest do
 
   setup do
     user = user_fixture()
-    profile = profile_fixture(user)
-    %{user: user, profile: profile}
+    profile = profile_fixture(%{user_id: user.id})
+    conn = log_in_user(build_conn(), user)
+    %{user: user, profile: profile, conn: conn}
   end
 
   describe "Index" do
     setup [:register_and_log_in_user]
 
     test "lists all profiles", %{conn: conn, profile: profile} do
-      {:ok, _index_live, html} = live(conn, ~p"/profiles")
+      {:ok, _index_live, html} = live(conn, ~p"/profiles/search")
 
-      assert html =~ "Listing Profiles"
+      assert html =~ "Search Profiles"
       assert html =~ profile.handle
     end
 
@@ -78,10 +79,10 @@ defmodule LgbWeb.ProfileLiveTest do
     test "updates profile in listing", %{conn: conn, profile: profile} do
       {:ok, index_live, _html} = live(conn, ~p"/profiles")
 
-      assert index_live |> element("#profiles-#{profile.id} a", "Edit") |> render_click() =~
+      assert index_live |> element("#profile-#{profile.id} a", "Edit") |> render_click() =~
                "Edit Profile"
 
-      assert_patch(index_live, ~p"/profiles/#{profile}/edit")
+      assert_patch(index_live, ~p"/profiles/#{profile.id}/edit")
 
       assert index_live
              |> form("#profile-form", profile: @invalid_attrs)
@@ -101,8 +102,8 @@ defmodule LgbWeb.ProfileLiveTest do
     test "deletes profile in listing", %{conn: conn, profile: profile} do
       {:ok, index_live, _html} = live(conn, ~p"/profiles")
 
-      assert index_live |> element("#profiles-#{profile.id} a", "Delete") |> render_click()
-      refute has_element?(index_live, "#profiles-#{profile.id}")
+      assert index_live |> element("#profile-#{profile.id} a", "Delete") |> render_click()
+      refute has_element?(index_live, "#profile-#{profile.id}")
     end
   end
 
@@ -122,7 +123,7 @@ defmodule LgbWeb.ProfileLiveTest do
       assert show_live |> element("a", "Edit") |> render_click() =~
                "Edit Profile"
 
-      assert_patch(show_live, ~p"/profiles/#{profile}/show/edit")
+      assert_patch(show_live, ~p"/profiles/#{profile.id}/edit")
 
       assert show_live
              |> form("#profile-form", profile: @invalid_attrs)
