@@ -14,6 +14,7 @@ config :lgb,
 # Configures the endpoint
 config :lgb, LgbWeb.Endpoint,
   url: [host: "localhost"],
+  check_origin: ["https://bii-bi.com", "https://lgb-old-cherry-6909.fly.dev"],
   adapter: Bandit.PhoenixAdapter,
   render_errors: [
     formats: [html: LgbWeb.ErrorHTML, json: LgbWeb.ErrorJSON],
