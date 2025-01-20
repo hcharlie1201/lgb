@@ -18,12 +18,12 @@ module.exports = {
     },
     extend: {
       colors: {
-        brand: "#FD4F00",
-        landingPageColor: "#95DFEC",
+        colorSecondary: "#BC3AEC",
+        colorPrimary: "#68DBA5",
       },
       width: {
         'landingPageImageWidth': '240px',
-        'landingPageTextWidth': '550px'
+        'landingPageTextWidth': '550px',
       }
     },
   },

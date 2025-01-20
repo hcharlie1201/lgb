@@ -5,17 +5,14 @@ defmodule LgbWeb.DashboardLive do
 
   def render(assigns) do
     ~H"""
-    <div class="flex">
-      <div class="flex-1">
-        <ul class="flex flex-col">
-          <.link class="hover:bg-sky-200" href={~p"/profiles/current"}>My Profile</.link>
-          <.link class="hover:bg-sky-200" href={~p"/profiles"}>Search profiles</.link>
-          <.link class="hover:bg-sky-200" href={~p"/conversations"}>Inbox/Chats</.link>
-          <.link class="hover:bg-sky-200" href={~p"/chat_rooms"}>Go to chatroom</.link>
+    <div class="flex justify-center w-screen">
+      <div class="flex flex-col border border-colorPrimary rounded-md">
+        <ul class="flex flex-col w-80 text-center">
+          <.link class="hover:bg-colorPrimary p-4" href={~p"/profiles/current"}>My Profile</.link>
+          <.link class="hover:bg-colorPrimary p-4" href={~p"/profiles"}>Search profiles</.link>
+          <.link class="hover:bg-colorPrimary p-4" href={~p"/conversations"}>Inbox/Chats</.link>
+          <.link class="hover:bg-colorPrimary p-4" href={~p"/chat_rooms"}>Go to chatroom</.link>
         </ul>
-      </div>
-      <div class="flex-2">
-        whatever
       </div>
     </div>
     """

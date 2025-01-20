@@ -14,10 +14,10 @@
 
 @layer components {
   .join-button {
-    @apply text-xl bg-black rounded-md text-white px-32 py-3;
+    @apply text-xl bg-colorPrimary transition rounded-md px-32 py-3 hover:scale-110;
   }
   
   .login-button {
-    @apply bg-transparent border-black border rounded-md px-3 py-1;
+    @apply bg-colorSecondary border hover:border hover:transition border-colorSecondary hover:text-colorSecondary hover:bg-transparent text-white rounded-md px-3 py-1;
   }
 }
