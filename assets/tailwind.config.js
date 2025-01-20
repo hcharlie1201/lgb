@@ -18,8 +18,8 @@ module.exports = {
     },
     extend: {
       colors: {
-        buttonPurple: "#BC3AEC",
-        buttonGreen: "#68DBA5",
+        colorSecondary: "#BC3AEC",
+        colorPrimary: "#68DBA5",
       },
       width: {
         'landingPageImageWidth': '240px',
