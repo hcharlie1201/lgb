@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en" class="[scrollbar-gutter:stable]">
   <head>
+    <link rel="icon" type="image/x-icon" href="/images/bibi_logo.png">
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="csrf-token" content={get_csrf_token()} />
@@ -26,7 +27,7 @@
   <body>
     <nav class="flex justify-between py-5 px-10">
       <a href="/">
-        <h1 class="font-MarkoOne text-3xl">bi-bi</h1>
+        <h1 class="font-MarkoOne text-3xl from-buttonPurple to-buttonGreen bg-gradient-to-r bg-clip-text text-transparent">bi-bi</h1>
       </a>
       <ul class="flex gap-4 items-center">
         <%= if @current_user do %>
