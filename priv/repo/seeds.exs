@@ -18,7 +18,7 @@ Lgb.Repo.insert!(%Lgb.Chatting.ChatRoom{
 Lgb.Repo.insert!(%Lgb.Accounts.User{
   email: "bob@gmail.com",
   password: "bob@gmail.com",
-  hashed_password: "bob@gmail.com",
+  hashed_password: Bcrypt.hash_pwd_salt("bob@gmail.com"),
   profiles: [
     %Lgb.Profiles.Profile{
       handle: "John Doe",
@@ -31,7 +31,7 @@ Lgb.Repo.insert!(%Lgb.Accounts.User{
 Lgb.Repo.insert!(%Lgb.Accounts.User{
   email: "james@gmail.com",
   password: "james@gmail.com",
-  hashed_password: "james@gmail.com",
+  hashed_password: Bcrypt.hash_pwd_salt("james@gmail.com"),
   profiles: [
     %Lgb.Profiles.Profile{
       handle: "Lebron James",
@@ -39,4 +39,8 @@ Lgb.Repo.insert!(%Lgb.Accounts.User{
       biography: "Loves basketball and coding."
     }
   ]
+})
+
+Lgb.Repo.insert!(%Lgb.Subscriptions.SubscriptionPlan{
+  stripe_price_id: "price_1Qj7cnJAAjsUxHv9mH5qXwfV"
 })

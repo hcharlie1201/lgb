@@ -1,8 +1,6 @@
 defmodule LgbWeb.DashboardLive do
   use LgbWeb, :live_view
 
-  alias Lgb.Messaging
-
   def render(assigns) do
     ~H"""
     <div class="flex justify-center w-screen">
@@ -12,6 +10,7 @@ defmodule LgbWeb.DashboardLive do
           <.link class="hover:bg-colorPrimary p-4" href={~p"/profiles"}>Search profiles</.link>
           <.link class="hover:bg-colorPrimary p-4" href={~p"/conversations"}>Inbox/Chats</.link>
           <.link class="hover:bg-colorPrimary p-4" href={~p"/chat_rooms"}>Go to chatroom</.link>
+          <.link class="hover:bg-sky-200" href={~p"/subscriptions"}>Premium Features</.link>
         </ul>
       </div>
     </div>
