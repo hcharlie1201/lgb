@@ -1,0 +1,36 @@
+<head>
+  <title>Checkout</title>
+  <script src="https://js.stripe.com/v3/">
+  </script>
+</head>
+<h1>Payment</h1>
+
+<p>
+  Enable more payment method types <a
+    href="https://dashboard.stripe.com/settings/payment_methods"
+    target="_blank"
+  >
+          in your dashboard
+        </a>.
+</p>
+
+<.form
+  phx-submit="submit"
+  phx-hook="StripeAddress"
+  id="address_element"
+  data-stripekey={@stripe_key}
+  data-googlekey={@google_key}
+>
+  <div id="address-element"></div>
+  <.button>
+    <svg class="mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+      <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z" />
+      <path
+        fill-rule="evenodd"
+        d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z"
+        clip-rule="evenodd"
+      />
+    </svg>
+    Go to payment
+  </.button>
+</.form>

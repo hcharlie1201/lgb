@@ -39,7 +39,7 @@ defmodule Lgb.Billing do
 
   @doc """
   Creates a stripe_customer.
-
+  https://docs.stripe.com/api/customers/object?lang=curl
   ## Examples
 
       iex> create_stripe_customer(%{field: value})
@@ -49,10 +49,39 @@ defmodule Lgb.Billing do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_stripe_customer(attrs \\ %{}) do
-    %StripeCustomer{}
-    |> StripeCustomer.changeset(attrs)
-    |> Repo.insert()
+  def create_stripe_customer(user, param_body) do
+    if Lgb.Accounts.get_stripe_customer(user) do
+      {:error, "User already has a Stripe customer"}
+    else
+      params = %{
+        "name" => param_body["name"],
+        "email" => user.email,
+        "address[line1]" => param_body["address"]["line1"],
+        "address[line2]" => param_body["address"]["line2"],
+        "address[city]" => param_body["address"]["city"],
+        "address[state]" => param_body["address"]["state"],
+        "address[postal_code]" => param_body["address"]["postal_code"],
+        "address[country]" => param_body["address"]["country"]
+      }
+
+      body = URI.encode_query(params)
+
+      case Lgb.ThirdParty.Stripe.Customers.post("", body) do
+        {:ok, http_response} ->
+          case Poison.decode(http_response.body) do
+            {:ok, response} ->
+              %StripeCustomer{}
+              |> StripeCustomer.changeset(%{"stripe_id" => response["id"], "user_id" => user.id})
+              |> Repo.insert()
+
+            {:error, reason} ->
+              {:error, reason}
+          end
+
+        {:error, reason} ->
+          {:error, reason}
+      end
+    end
   end
 
   @doc """

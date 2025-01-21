@@ -6,5 +6,8 @@
       <h2>{subscription_plan.interval_count}</h2>
       <h2>{subscription_plan.interval}</h2>
     </div>
+    <.link patch={~p"/subscriptions/#{subscription_plan.id}/checkout"}>
+      <.button>Upgrade</.button>
+    </.link>
   <% end %>
 </div>

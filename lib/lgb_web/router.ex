@@ -87,7 +87,7 @@ defmodule LgbWeb.Router do
 
       scope "/subscriptions", SubscriptionsLive do
         live "/", View
-        live "/:id/edit", Edit, :edit
+        live "/:id/checkout", Checkout, :edit
       end
     end
   end

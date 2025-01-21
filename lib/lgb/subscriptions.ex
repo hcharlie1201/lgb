@@ -55,14 +55,8 @@ defmodule Lgb.Subscriptions do
   """
 
   def fetch_subscription_plan_metadata(subscription_plan) do
-    api_key = System.fetch_env!("STRIPE_API_KEY_TEST")
-
-    headers = [
-      {"Authorization", "Basic " <> Base.encode64("#{api_key}:")}
-    ]
-
     http_response =
-      Lgb.ThirdParty.Stripe.Plans.get!("/" <> subscription_plan.stripe_price_id, headers)
+      Lgb.ThirdParty.Stripe.Plans.get!("/" <> subscription_plan.stripe_price_id)
 
     response =
       Poison.decode!(http_response.body)
