@@ -3,15 +3,19 @@ defmodule LgbWeb.SubscriptionsLive.Checkout do
   alias Lgb.Profiles
   alias Lgb.Profiles.Profile
   alias Lgb.Subscriptions
+  alias Lgb.Billing
   require Logger
   use LgbWeb, :live_view
 
-  def mount(_params, _session, socket) do
-    socket = assign(socket, form: %{})
-    socket = assign(socket, stripe_key: System.fetch_env!("STRIPE_API_PUBLISHABLE_KEY_TEST"))
-    socket = assign(socket, google_key: System.fetch_env!("GOOGLE_MAPS_API_KEY"))
-
-    {:ok, socket}
+  def mount(params, _session, socket) do
+    with {:ok, subscription_plan} <- fetch_subscription_plan(params),
+         {:ok, stripe_customer} <- fetch_stripe_customer(socket, params),
+         {:ok, socket} <- process_subscription(stripe_customer, subscription_plan, socket) do
+      {:ok, socket}
+    else
+      {:redirect, socket} -> {:ok, socket}
+      {:error, error_message} -> {:ok, put_flash(socket, :error, error_message)}
+    end
   end
 
   def handle_params(_params, _url, socket) do
@@ -39,5 +43,32 @@ defmodule LgbWeb.SubscriptionsLive.Checkout do
     new_form = Map.merge(socket.assigns.form, params)
     socket = assign(socket, form: new_form)
     {:noreply, socket}
+  end
+
+  defp fetch_subscription_plan(params) do
+    {:ok, Subscriptions.get_subscription_plan!(params["id"])}
+  rescue
+    _ -> {:error, "Invalid subscription plan"}
+  end
+
+  defp fetch_stripe_customer(socket, params) do
+    case Lgb.Accounts.get_stripe_customer(socket.assigns.current_user) do
+      nil -> {:redirect, push_navigate(socket, to: ~p"/subscriptions/#{params["id"]}/info")}
+      customer -> {:ok, customer}
+    end
+  end
+
+  defp process_subscription(stripe_customer, subscription_plan, socket) do
+    case Billing.current_stripe_subscription(stripe_customer) do
+      nil -> create_new_subscription(stripe_customer, subscription_plan, socket)
+      _existing_subscription -> {:ok, socket}
+    end
+  end
+
+  defp create_new_subscription(stripe_customer, subscription_plan, socket) do
+    case Billing.create_stripe_subscription(stripe_customer, subscription_plan) do
+      {:ok, _stripe_subscription} -> {:ok, socket}
+      {:error, error_message} -> {:error, error_message}
+    end
   end
 end
