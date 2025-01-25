@@ -14,7 +14,7 @@
           Recurring Charging of every {subscription_plan.interval_count} {subscription_plan.interval}
         </h2>
       </div>
-      <%= if !@stripe_subscription do %>
+      <%= if !@completed_initial_checkout do %>
         <.link patch={~p"/shopping/subscriptions/#{subscription_plan.id}/info"}>
           <.button>Upgrade</.button>
         </.link>

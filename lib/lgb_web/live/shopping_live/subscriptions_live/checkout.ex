@@ -24,7 +24,8 @@ defmodule LgbWeb.ShoppingLive.SubscriptionsLive.Checkout do
           socket
           |> assign(
             client_secret: payment_intent["client_secret"],
-            stripe_key: System.fetch_env!("STRIPE_API_PUBLISHABLE_KEY_TEST")
+            stripe_key: System.fetch_env!("STRIPE_API_PUBLISHABLE_KEY_TEST"),
+            stripe_subscription: stripe_subscription
           )
 
         {:ok, socket}
@@ -41,20 +42,17 @@ defmodule LgbWeb.ShoppingLive.SubscriptionsLive.Checkout do
 
   def handle_event("payment_success", params, socket) do
     IO.inspect(params)
+    # update subscription
+    body = %{
+      "metadata[initial_checkout_completed]" => "true"
+    }
 
-    # need to add redirection
-    case Lgb.Billing.create_stripe_customer(socket.assigns.current_user, socket.assigns.form) do
-      {:ok, _stripe_customer} ->
-        {:noreply, assign(socket, form: %{})}
+    inspect(
+      Lgb.ThirdParty.Stripe.update_stripe_subscription!(socket.assigns.stripe_subscription, body)
+    )
 
-      {:error, reason} ->
-        {:noreply,
-         socket
-         |> put_flash(:error, reason)}
-    end
-
-    socket = assign(socket, form: %{})
-    {:noreply, socket}
+    {:noreply,
+     push_navigate(socket, to: ~p"/shopping/subscriptions/confirmed/payment/#{params["id"]}")}
   end
 
   def handle_event("update_address", params, socket) do
@@ -71,8 +69,11 @@ defmodule LgbWeb.ShoppingLive.SubscriptionsLive.Checkout do
 
   defp fetch_stripe_customer(socket, params) do
     case Lgb.Accounts.get_stripe_customer(socket.assigns.current_user) do
-      nil -> {:redirect, push_navigate(socket, to: ~p"/subscriptions/#{params["id"]}/info")}
-      customer -> {:ok, customer}
+      nil ->
+        {:redirect, push_navigate(socket, to: ~p"/shopping/subscriptions/#{params["id"]}/info")}
+
+      customer ->
+        {:ok, customer}
     end
   end
 

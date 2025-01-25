@@ -4,6 +4,7 @@ defmodule Lgb.Billing do
   """
 
   import Ecto.Query, warn: false
+  require Logger
   alias Lgb.Repo
 
   alias Lgb.Billing.StripeCustomer
@@ -190,7 +191,8 @@ defmodule Lgb.Billing do
         "items[0][plan]" => subscription_plan.stripe_price_id,
         "payment_behavior" => "default_incomplete",
         "payment_settings[save_default_payment_method]" => "on_subscription",
-        "expand[]" => "latest_invoice.payment_intent"
+        "expand[]" => "latest_invoice.payment_intent",
+        "metadata[initial_checkout_completed]" => "false"
       }
 
       case Lgb.ThirdParty.Stripe.create_stripe_subscription(params) do
@@ -254,5 +256,16 @@ defmodule Lgb.Billing do
   """
   def change_stripe_subscription(%StripeSubscription{} = stripe_subscription, attrs \\ %{}) do
     StripeSubscription.changeset(stripe_subscription, attrs)
+  end
+
+  def initial_checkout_completed?(stripe_subscription) do
+    case Lgb.ThirdParty.Stripe.fetch_stripe_subscription(stripe_subscription) do
+      {:ok, metadata} ->
+        metadata["metadata"]["initial_checkout_completed"] == "true"
+
+      {:error, message} ->
+        Logger.error(message)
+        false
+    end
   end
 end

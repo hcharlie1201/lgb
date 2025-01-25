@@ -44,6 +44,25 @@ defmodule Lgb.ThirdParty.Stripe do
     end
   end
 
+  def fetch_stripe_subscription(stripe_subscription) do
+    case Lgb.ThirdParty.Stripe.Subscriptions.get("/#{stripe_subscription.subscription_id}") do
+      {:ok, http_response} ->
+        {:ok, Poison.decode!(http_response.body)}
+
+      {:error, whatever} ->
+        {:error, whatever.message}
+    end
+  end
+
+  def update_stripe_subscription!(stripe_subscription, body) do
+    encode_body = URI.encode_query(body)
+
+    Lgb.ThirdParty.Stripe.Subscriptions.post!(
+      "/#{stripe_subscription.subscription_id}",
+      encode_body
+    )
+  end
+
   def create_stripe_customer(body) do
     encoded_body = URI.encode_query(body)
 

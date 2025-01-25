@@ -7,12 +7,20 @@ defmodule LgbWeb.ShoppingLive.SubscriptionsLive.Info do
     # if user has a stripe account then bring them to checkout
     customer = Lgb.Accounts.get_stripe_customer(socket.assigns.current_user)
 
+    stripe_subscription =
+      if customer do
+        Lgb.Billing.get_stripe_subscription(customer)
+      else
+        nil
+      end
+
     cond do
-      customer && Lgb.Billing.get_stripe_subscription(customer) ->
-        {:ok, push_navigate(socket, ~p"/account")}
+      customer &&
+        stripe_subscription && Lgb.Billing.initial_checkout_completed?(stripe_subscription) ->
+        {:ok, push_navigate(socket, to: ~p"/account")}
 
       customer ->
-        {:ok, push_navigate(socket, ~p"/shopping/subscriptions/#{params["id"]}/checkout")}
+        {:ok, push_navigate(socket, to: ~p"/shopping/subscriptions/#{params["id"]}/checkout")}
 
       true ->
         socket = assign(socket, form: %{})

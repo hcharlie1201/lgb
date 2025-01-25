@@ -11,13 +11,20 @@ defmodule LgbWeb.ShoppingLive.SubscriptionsLive.View do
     stripe_customer = Lgb.Accounts.get_stripe_customer(socket.assigns.current_user)
 
     stripe_subscription =
-      stripe_customer && Lgb.Billing.current_stripe_subscription(stripe_customer)
+      if stripe_customer do
+        Lgb.Billing.current_stripe_subscription(stripe_customer)
+      else
+        nil
+      end
+
+    completed_initial_checkout =
+      stripe_subscription && Lgb.Billing.initial_checkout_completed?(stripe_subscription)
 
     {:ok,
      socket
      |> assign(:user, nil)
      |> assign(:subscription_plans, subscription_plans)
-     |> assign(:stripe_subscription, stripe_subscription)}
+     |> assign(:completed_initial_checkout, completed_initial_checkout)}
   end
 
   def handle_params(_params, _url, socket) do
