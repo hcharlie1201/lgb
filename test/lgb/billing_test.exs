@@ -56,4 +56,58 @@ defmodule Lgb.BillingTest do
       assert %Ecto.Changeset{} = Billing.change_stripe_customer(stripe_customer)
     end
   end
+
+  describe "stripe_subscriptions" do
+    alias Lgb.Billing.StripeSubscription
+
+    import Lgb.BillingFixtures
+
+    @invalid_attrs %{subscription_id: nil}
+
+    test "list_stripe_subscriptions/0 returns all stripe_subscriptions" do
+      stripe_subscription = stripe_subscription_fixture()
+      assert Billing.list_stripe_subscriptions() == [stripe_subscription]
+    end
+
+    test "get_stripe_subscription!/1 returns the stripe_subscription with given id" do
+      stripe_subscription = stripe_subscription_fixture()
+      assert Billing.get_stripe_subscription!(stripe_subscription.id) == stripe_subscription
+    end
+
+    test "create_stripe_subscription/1 with valid data creates a stripe_subscription" do
+      valid_attrs = %{subscription_id: "some subscription_id"}
+
+      assert {:ok, %StripeSubscription{} = stripe_subscription} = Billing.create_stripe_subscription(valid_attrs)
+      assert stripe_subscription.subscription_id == "some subscription_id"
+    end
+
+    test "create_stripe_subscription/1 with invalid data returns error changeset" do
+      assert {:error, %Ecto.Changeset{}} = Billing.create_stripe_subscription(@invalid_attrs)
+    end
+
+    test "update_stripe_subscription/2 with valid data updates the stripe_subscription" do
+      stripe_subscription = stripe_subscription_fixture()
+      update_attrs = %{subscription_id: "some updated subscription_id"}
+
+      assert {:ok, %StripeSubscription{} = stripe_subscription} = Billing.update_stripe_subscription(stripe_subscription, update_attrs)
+      assert stripe_subscription.subscription_id == "some updated subscription_id"
+    end
+
+    test "update_stripe_subscription/2 with invalid data returns error changeset" do
+      stripe_subscription = stripe_subscription_fixture()
+      assert {:error, %Ecto.Changeset{}} = Billing.update_stripe_subscription(stripe_subscription, @invalid_attrs)
+      assert stripe_subscription == Billing.get_stripe_subscription!(stripe_subscription.id)
+    end
+
+    test "delete_stripe_subscription/1 deletes the stripe_subscription" do
+      stripe_subscription = stripe_subscription_fixture()
+      assert {:ok, %StripeSubscription{}} = Billing.delete_stripe_subscription(stripe_subscription)
+      assert_raise Ecto.NoResultsError, fn -> Billing.get_stripe_subscription!(stripe_subscription.id) end
+    end
+
+    test "change_stripe_subscription/1 returns a stripe_subscription changeset" do
+      stripe_subscription = stripe_subscription_fixture()
+      assert %Ecto.Changeset{} = Billing.change_stripe_subscription(stripe_subscription)
+    end
+  end
 end

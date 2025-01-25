@@ -7,7 +7,6 @@ defmodule Lgb.Subscriptions do
   alias Lgb.Repo
 
   alias Lgb.Subscriptions.SubscriptionPlan
-  import Ecto.Changeset, only: [change: 2]
 
   @doc """
   Returns the list of subscrpition_plans.

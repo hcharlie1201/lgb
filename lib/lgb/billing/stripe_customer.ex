@@ -3,8 +3,9 @@ defmodule Lgb.Billing.StripeCustomer do
   import Ecto.Changeset
 
   schema "stripe_customers" do
-    field :customer_id, :integer
+    has_one :stripe_subscription, Lgb.Billing.StripeSubscription
     belongs_to :user, Lgb.Accounts.User
+    field :customer_id, :string
 
     timestamps(type: :utc_datetime)
   end

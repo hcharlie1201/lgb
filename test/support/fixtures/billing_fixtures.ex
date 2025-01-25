@@ -17,4 +17,18 @@ defmodule Lgb.BillingFixtures do
 
     stripe_customer
   end
+
+  @doc """
+  Generate a stripe_subscription.
+  """
+  def stripe_subscription_fixture(attrs \\ %{}) do
+    {:ok, stripe_subscription} =
+      attrs
+      |> Enum.into(%{
+        subscription_id: "some subscription_id"
+      })
+      |> Lgb.Billing.create_stripe_subscription()
+
+    stripe_subscription
+  end
 end

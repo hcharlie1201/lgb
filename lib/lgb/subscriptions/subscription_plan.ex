@@ -2,7 +2,7 @@ defmodule Lgb.Subscriptions.SubscriptionPlan do
   use Ecto.Schema
   import Ecto.Changeset
 
-  schema "subscrpition_plans" do
+  schema "subscription_plans" do
     field :name, :string
     field :stripe_price_id, :string
     field :amount, :integer, virtual: true

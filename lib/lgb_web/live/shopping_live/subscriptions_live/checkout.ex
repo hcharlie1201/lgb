@@ -1,7 +1,4 @@
-defmodule LgbWeb.SubscriptionsLive.Checkout do
-  alias Lgb.Accounts.User
-  alias Lgb.Profiles
-  alias Lgb.Profiles.Profile
+defmodule LgbWeb.ShoppingLive.SubscriptionsLive.Checkout do
   alias Lgb.Subscriptions
   alias Lgb.Billing
   require Logger
@@ -10,8 +7,28 @@ defmodule LgbWeb.SubscriptionsLive.Checkout do
   def mount(params, _session, socket) do
     with {:ok, subscription_plan} <- fetch_subscription_plan(params),
          {:ok, stripe_customer} <- fetch_stripe_customer(socket, params),
-         {:ok, socket} <- process_subscription(stripe_customer, subscription_plan, socket) do
-      {:ok, socket}
+         {:ok, stripe_subscription} <-
+           process_subscription(stripe_customer, subscription_plan),
+         {:ok, metadata} <-
+           Lgb.Billing.StripeSubscription.get_metadata(stripe_subscription) do
+      {:ok, payment_intent} =
+        Lgb.Billing.StripeSubscription.get_payment_intent_from_metadata(metadata)
+
+      if payment_intent["status"] == "succeeded" || payment_intent["status"] == "processing" do
+        {:ok,
+         push_navigate(socket,
+           to: ~p"/shopping/subscriptions/confirmed/payment/#{payment_intent["id"]}"
+         )}
+      else
+        socket =
+          socket
+          |> assign(
+            client_secret: payment_intent["client_secret"],
+            stripe_key: System.fetch_env!("STRIPE_API_PUBLISHABLE_KEY_TEST")
+          )
+
+        {:ok, socket}
+      end
     else
       {:redirect, socket} -> {:ok, socket}
       {:error, error_message} -> {:ok, put_flash(socket, :error, error_message)}
@@ -22,9 +39,10 @@ defmodule LgbWeb.SubscriptionsLive.Checkout do
     {:noreply, socket}
   end
 
-  def handle_event("submit", _params, socket) do
-    IO.inspect(socket.assigns.form)
+  def handle_event("payment_success", params, socket) do
+    IO.inspect(params)
 
+    # need to add redirection
     case Lgb.Billing.create_stripe_customer(socket.assigns.current_user, socket.assigns.form) do
       {:ok, _stripe_customer} ->
         {:noreply, assign(socket, form: %{})}
@@ -58,16 +76,16 @@ defmodule LgbWeb.SubscriptionsLive.Checkout do
     end
   end
 
-  defp process_subscription(stripe_customer, subscription_plan, socket) do
+  defp process_subscription(stripe_customer, subscription_plan) do
     case Billing.current_stripe_subscription(stripe_customer) do
-      nil -> create_new_subscription(stripe_customer, subscription_plan, socket)
-      _existing_subscription -> {:ok, socket}
+      nil -> create_new_subscription(stripe_customer, subscription_plan)
+      existing_subscription -> {:ok, existing_subscription}
     end
   end
 
-  defp create_new_subscription(stripe_customer, subscription_plan, socket) do
+  defp create_new_subscription(stripe_customer, subscription_plan) do
     case Billing.create_stripe_subscription(stripe_customer, subscription_plan) do
-      {:ok, _stripe_subscription} -> {:ok, socket}
+      {:ok, stripe_subscription} -> {:ok, stripe_subscription}
       {:error, error_message} -> {:error, error_message}
     end
   end

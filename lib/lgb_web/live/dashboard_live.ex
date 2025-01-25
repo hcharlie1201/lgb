@@ -10,7 +10,14 @@ defmodule LgbWeb.DashboardLive do
           <.link class="hover:bg-colorPrimary p-4" href={~p"/profiles"}>Search profiles</.link>
           <.link class="hover:bg-colorPrimary p-4" href={~p"/conversations"}>Inbox/Chats</.link>
           <.link class="hover:bg-colorPrimary p-4" href={~p"/chat_rooms"}>Go to chatroom</.link>
-          <.link class="hover:bg-sky-200" href={~p"/subscriptions"}>Premium Features</.link>
+          <.link class="hover:bg-colorPrimary p-4" href={~p"/shopping/subscriptions"}>
+            Premium Features
+          </.link>
+          <%= if @stripe_customer do %>
+            <.link class="hover:bg-colorPrimary p-4" href={~p"/account"}>
+              My Account
+            </.link>
+          <% end %>
         </ul>
       </div>
     </div>
@@ -18,6 +25,8 @@ defmodule LgbWeb.DashboardLive do
   end
 
   def mount(_params, _session, socket) do
+    stripe_customer = Lgb.Accounts.get_stripe_customer(socket.assigns.current_user)
+    socket = assign(socket, stripe_customer: stripe_customer)
     {:ok, socket}
   end
 end
