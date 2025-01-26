@@ -5,7 +5,7 @@ defmodule LgbWeb.ShoppingLive.SubscriptionsLive.View do
 
   def mount(_params, _session, socket) do
     subscription_plans =
-      Subscriptions.list_subscription_plans()
+      Subscriptions.list_subscrpition_plans()
       |> Enum.map(&Subscriptions.fetch_subscription_plan_metadata(&1))
 
     stripe_customer = Lgb.Accounts.get_stripe_customer(socket.assigns.current_user)
