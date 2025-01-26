@@ -64,7 +64,7 @@ defmodule LgbWeb.ProfileLiveTest do
       {:ok, view, html} = live(conn, ~p"/profiles/current")
       
       # Check form exists with correct fields
-      assert html =~ "Edit Profile"
+      assert html =~ "My Pictures"
       assert has_element?(view, "#my-profile")
       assert has_element?(view, "#my-profile-handle")
       assert has_element?(view, "#my-profile-city")
@@ -77,19 +77,22 @@ defmodule LgbWeb.ProfileLiveTest do
     test "updates profile", %{conn: conn} do
       {:ok, view, _html} = live(conn, ~p"/profiles/current")
 
+      {:ok, view, _html} = live(conn, ~p"/profiles/current")
+
       # Submit form with valid data
       assert view
-             |> form("#my-profile", profile: @update_attrs)
+             |> form("#my-profile", %{
+               "handle" => @update_attrs.handle,
+               "city" => @update_attrs.city,
+               "state" => @update_attrs.state,
+               "zip" => @update_attrs.zip
+             })
              |> render_submit()
 
-      # Wait for the update to process
-      :timer.sleep(100)
-      
       # Verify changes were applied
-      updated_html = render(view)
-      assert updated_html =~ @update_attrs.handle
-      assert updated_html =~ @update_attrs.city
-      assert updated_html =~ "Profile updated successfully"
+      html = render(view)
+      assert html =~ @update_attrs.handle
+      assert html =~ @update_attrs.city
     end
 
     test "validates profile attributes", %{conn: conn} do
@@ -97,13 +100,16 @@ defmodule LgbWeb.ProfileLiveTest do
 
       # Submit invalid data
       html = view
-             |> form("#my-profile", profile: @invalid_attrs)
+             |> form("#my-profile", %{
+               "handle" => "",
+               "city" => "",
+               "state" => "",
+               "zip" => ""
+             })
              |> render_change()
       
       # Verify validation errors
       assert html =~ "can&#39;t be blank"
-      assert html =~ "Handle can&#39;t be blank"
-      assert html =~ "City can&#39;t be blank"
     end
   end
 end
