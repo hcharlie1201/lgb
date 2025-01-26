@@ -3,16 +3,16 @@ defmodule Lgb.SubscriptionsTest do
 
   alias Lgb.Subscriptions
 
-  describe "subscrpition_plans" do
+  describe "subscription_plans" do
     alias Lgb.Subscriptions.SubscriptionPlan
 
     import Lgb.SubscriptionsFixtures
 
-    @invalid_attrs %{name: nil, stripe_plan_id: nil}
+    @invalid_attrs %{name: nil, stripe_price_id: nil}
 
-    test "list_subscrpition_plans/0 returns all subscrpition_plans" do
+    test "list_subscription_plans/0 returns all subscription_plans" do
       subscription_plan = subscription_plan_fixture()
-      assert Subscriptions.list_subscrpition_plans() == [subscription_plan]
+      assert Subscriptions.list_subscription_plans() == [subscription_plan]
     end
 
     test "get_subscription_plan!/1 returns the subscription_plan with given id" do
@@ -21,11 +21,11 @@ defmodule Lgb.SubscriptionsTest do
     end
 
     test "create_subscription_plan/1 with valid data creates a subscription_plan" do
-      valid_attrs = %{name: "some name", stripe_plan_id: 42}
+      valid_attrs = %{name: "some name", stripe_price_id: "price_123"}
 
       assert {:ok, %SubscriptionPlan{} = subscription_plan} = Subscriptions.create_subscription_plan(valid_attrs)
       assert subscription_plan.name == "some name"
-      assert subscription_plan.stripe_plan_id == 42
+      assert subscription_plan.stripe_price_id == "price_123"
     end
 
     test "create_subscription_plan/1 with invalid data returns error changeset" do
@@ -34,11 +34,11 @@ defmodule Lgb.SubscriptionsTest do
 
     test "update_subscription_plan/2 with valid data updates the subscription_plan" do
       subscription_plan = subscription_plan_fixture()
-      update_attrs = %{name: "some updated name", stripe_plan_id: 43}
+      update_attrs = %{name: "some updated name", stripe_price_id: "price_456"}
 
       assert {:ok, %SubscriptionPlan{} = subscription_plan} = Subscriptions.update_subscription_plan(subscription_plan, update_attrs)
       assert subscription_plan.name == "some updated name"
-      assert subscription_plan.stripe_plan_id == 43
+      assert subscription_plan.stripe_price_id == "price_456"
     end
 
     test "update_subscription_plan/2 with invalid data returns error changeset" do
