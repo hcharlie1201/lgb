@@ -9,8 +9,14 @@ defmodule LgbWeb.ProfileLive.MyProfileTest do
   describe "MyProfile LiveView" do
     setup do
       user = user_fixture()
-      profile = profile_fixture(user)
-      %{user: user}
+      profile = profile_fixture(%{
+        user_id: user.id,
+        handle: "testhandle",
+        city: "Test City",
+        state: "CA", 
+        zip: "12345"
+      })
+      %{user: user, profile: profile}
     end
 
     test "mounts successfully when signed in", %{conn: conn, user: user} do
@@ -45,7 +51,10 @@ defmodule LgbWeb.ProfileLive.MyProfileTest do
         "age" => "25",
         "height_cm" => "170",
         "weight_lb" => "150",
-        "biography" => "Test bio"
+        "biography" => "Test bio",
+        "city" => "Test City",
+        "state" => "CA",
+        "zip" => "12345"
       }
 
       render_submit(view, "update_profile", profile_params)
@@ -64,10 +73,12 @@ defmodule LgbWeb.ProfileLive.MyProfileTest do
 
       profile_params = %{
         "handle" => "TestUser",
-        # Age below 18
-        "age" => "15",
+        "age" => "15", # Age below 18
         "height_cm" => "170",
-        "weight_lb" => "150"
+        "weight_lb" => "150",
+        "city" => "Test City",
+        "state" => "CA",
+        "zip" => "12345"
       }
 
       html = render_submit(view, "update_profile", profile_params)
