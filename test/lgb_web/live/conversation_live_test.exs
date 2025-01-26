@@ -3,16 +3,18 @@ defmodule LgbWeb.ConversationLiveTest do
 
   import Phoenix.LiveViewTest
   import Lgb.MessagingFixtures
+  import Lgb.AccountsFixtures
+  import Lgb.ProfilesFixtures
 
   setup do
     user = user_fixture()
     other_user = user_fixture()
-    
+
     profile = profile_fixture(user)
     other_profile = profile_fixture(other_user)
-    
+
     conversation = conversation_fixture(profile, other_profile)
-    
+
     %{
       user: user,
       profile: profile,
@@ -40,7 +42,7 @@ defmodule LgbWeb.ConversationLiveTest do
       conn = log_in_user(conn, user)
       {:ok, show_live, _html} = live(conn, ~p"/conversations/#{conversation}")
 
-      assert show_live 
+      assert show_live
              |> form("#conversation-form", %{content: "Hello!"})
              |> render_submit()
 
