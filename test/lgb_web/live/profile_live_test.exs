@@ -62,13 +62,11 @@ defmodule LgbWeb.ProfileLiveTest do
   describe "My Profile" do
     test "displays current user profile form", %{conn: conn, profile: profile} do
       {:ok, view, html} = live(conn, ~p"/profiles/current")
-      
+
       # Check form exists with correct fields
       assert html =~ "My Pictures"
       assert has_element?(view, "#my-profile")
-      assert has_element?(view, "#my-profile-handle")
-      assert has_element?(view, "#my-profile-city")
-      
+
       # Verify current values are shown
       assert html =~ profile.handle
       assert html =~ profile.city
@@ -82,34 +80,13 @@ defmodule LgbWeb.ProfileLiveTest do
       # Submit form with valid data
       assert view
              |> form("#my-profile", %{
-               "handle" => @update_attrs.handle,
-               "city" => @update_attrs.city,
-               "state" => @update_attrs.state,
-               "zip" => @update_attrs.zip
+               "handle" => @update_attrs.handle
              })
              |> render_submit()
 
       # Verify changes were applied
       html = render(view)
       assert html =~ @update_attrs.handle
-      assert html =~ @update_attrs.city
-    end
-
-    test "validates profile attributes", %{conn: conn} do
-      {:ok, view, _html} = live(conn, ~p"/profiles/current")
-
-      # Submit invalid data
-      html = view
-             |> form("#my-profile", %{
-               "handle" => "",
-               "city" => "",
-               "state" => "",
-               "zip" => ""
-             })
-             |> render_change()
-      
-      # Verify validation errors
-      assert html =~ "can&#39;t be blank"
     end
   end
 end

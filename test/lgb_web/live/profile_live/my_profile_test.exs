@@ -9,13 +9,7 @@ defmodule LgbWeb.ProfileLive.MyProfileTest do
   describe "MyProfile LiveView" do
     setup do
       user = user_fixture()
-      profile = profile_fixture(%{
-        user_id: user.id,
-        handle: "testhandle",
-        city: "Test City",
-        state: "CA", 
-        zip: "12345"
-      })
+      profile = profile_fixture(user)
       %{user: user, profile: profile}
     end
 
@@ -73,7 +67,8 @@ defmodule LgbWeb.ProfileLive.MyProfileTest do
 
       profile_params = %{
         "handle" => "TestUser",
-        "age" => "15", # Age below 18
+        # Age below 18
+        "age" => "15",
         "height_cm" => "170",
         "weight_lb" => "150",
         "city" => "Test City",

@@ -2,9 +2,9 @@ name: Elixir CI
 
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 
 permissions:
   contents: read
@@ -29,25 +29,27 @@ jobs:
           --health-retries 5
 
     steps:
-    - uses: actions/checkout@v3
-    
-    - name: Set up Elixir
-      uses: erlef/setup-beam@v1
-      with:
-        elixir-version: '1.15.7'
-        otp-version: '26.1.2'
-    
-    - name: Restore dependencies cache
-      uses: actions/cache@v3
-      with:
-        path: deps
-        key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
-        restore-keys: ${{ runner.os }}-mix-
-    
-    - name: Install dependencies
-      run: mix deps.get
-    
-    - name: Run tests
-      run: mix test
-      env:
-        STRIPE_API_KEY_TEST: ${{ secrets.STRIPE_API_KEY_TEST }}
+      - uses: actions/checkout@v3
+
+      - name: Set up Elixir
+        uses: erlef/setup-beam@v1
+        with:
+          elixir-version: "1.15.7"
+          otp-version: "26.1.2"
+
+      - name: Restore dependencies cache
+        uses: actions/cache@v3
+        with:
+          path: deps
+          key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
+          restore-keys: ${{ runner.os }}-mix-
+
+      - name: Install dependencies
+        run: mix deps.get
+
+      - name: Run tests
+        run: mix test
+        env:
+          STRIPE_API_KEY_TEST: ${{ secrets.STRIPE_API_KEY_TEST }}
+          STRIPE_API_PUBLISHABLE_KEY_TEST: ${{ secrets.STRIPE_API_PUBLISHABLE_KEY_TEST }}
+          GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
