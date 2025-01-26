@@ -85,7 +85,7 @@ defmodule LgbWeb.ProfileLiveTest do
 
       assert edit_live
              |> form("#my-profile", profile: @invalid_attrs)
-             |> render_change() =~ "can&#39;t be blank"
+             |> render_change() =~ "Select your height"
     end
   end
 end
