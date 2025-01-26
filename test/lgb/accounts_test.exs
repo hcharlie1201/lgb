@@ -62,9 +62,9 @@ defmodule Lgb.AccountsTest do
     end
 
     test "returns error if user is not confirmed" do
-      user = user_fixture(%{password: "wtd"})
+      user = user_fixture()
 
-      assert {:error, _} =
+      assert {:error, :not_confirmed} =
                Accounts.get_user_by_email_and_password(user.email, valid_user_password())
     end
   end
