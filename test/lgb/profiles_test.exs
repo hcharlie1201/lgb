@@ -15,9 +15,10 @@ defmodule Lgb.ProfilesTest do
       %{user: user}
     end
 
-    test "list_profiles/1 returns all profiles with pagination", %{user: user} do
+    test "list_profiles/1 returns profiles with pagination metadata", %{user: user} do
       profile = profile_fixture(user)
       {:ok, %{entries: profiles}} = Profiles.list_profiles(%{})
+      assert length(profiles) > 0
       assert profile in profiles
     end
 
@@ -125,7 +126,7 @@ defmodule Lgb.ProfilesTest do
       %{profile: profile}
     end
 
-    test "create_filter/1 creates search filters" do
+    test "create_filter/1 creates search filters with all parameters" do
       params = %{
         "min_height_cm" => "165",
         "max_height_cm" => "175",
@@ -137,30 +138,56 @@ defmodule Lgb.ProfilesTest do
 
       filters = Profiles.create_filter(params)
       
-      assert Enum.any?(filters, fn filter ->
-        filter.field == :height_cm and filter.op == :>= and filter.value == 165
-      end)
-      assert Enum.any?(filters, fn filter ->
-        filter.field == :height_cm and filter.op == :<= and filter.value == 175
-      end)
-      assert Enum.any?(filters, fn filter ->
-        filter.field == :age and filter.op == :>= and filter.value == 20
+      # Test all filter combinations
+      expected_filters = [
+        %{field: :height_cm, op: :>=, value: 165},
+        %{field: :height_cm, op: :<=, value: 175},
+        %{field: :age, op: :>=, value: 20},
+        %{field: :age, op: :<=, value: 30},
+        %{field: :weight_lb, op: :>=, value: 140},
+        %{field: :weight_lb, op: :<=, value: 160}
+      ]
+
+      assert length(filters) == length(expected_filters)
+      
+      Enum.each(expected_filters, fn expected ->
+        assert Enum.any?(filters, fn filter ->
+          filter.field == expected.field and 
+          filter.op == expected.op and 
+          filter.value == expected.value
+        end)
       end)
     end
 
-    test "get_other_profiles_distance/1 returns query with distance when geolocation present", %{profile: profile} do
+    test "create_filter/1 handles empty parameters" do
+      params = %{"min_height_cm" => "", "max_age" => nil}
+      filters = Profiles.create_filter(params)
+      assert filters == []
+    end
+
+    test "get_other_profiles_distance/1 returns query with distance calculation when geolocation present", %{profile: profile} do
       # Add a geolocation point to the profile
       {:ok, updated_profile} = Profiles.update_profile(profile, %{
         geolocation: %Geo.Point{coordinates: {-122.27652, 37.80574}, srid: 4326}
       })
 
       query = Profiles.get_other_profiles_distance(updated_profile)
+      
       assert query.__struct__ == Ecto.Query
+      # Verify the query includes distance calculation
+      assert Enum.any?(query.select.expressions, fn expr ->
+        case expr do
+          {:selected_as, _, _} -> true
+          _ -> false
+        end
+      end)
     end
 
-    test "get_other_profiles_distance/1 returns basic query when no geolocation", %{profile: profile} do
+    test "get_other_profiles_distance/1 returns basic query without distance when no geolocation", %{profile: profile} do
       query = Profiles.get_other_profiles_distance(profile)
       assert query.__struct__ == Ecto.Query
+      # Verify no distance calculation is included
+      refute query.select
     end
   end
 end
