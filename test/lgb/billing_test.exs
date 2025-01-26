@@ -150,4 +150,29 @@ defmodule Lgb.BillingTest do
       assert %Ecto.Changeset{} = Billing.change_stripe_subscription(stripe_subscription)
     end
   end
+
+  describe "subscription management" do
+    test "current_stripe_subscription/1 returns current subscription" do
+      stripe_customer = stripe_customer_fixture()
+      subscription_plan = subscription_plan_fixture()
+      stripe_subscription = stripe_subscription_fixture(subscription_plan, stripe_customer)
+      
+      assert Billing.current_stripe_subscription(stripe_customer) == stripe_subscription
+    end
+
+    test "initial_checkout_completed?/1 returns false for new subscription" do
+      subscription_plan = subscription_plan_fixture()
+      stripe_subscription = stripe_subscription_fixture(subscription_plan)
+      
+      refute Billing.initial_checkout_completed?(stripe_subscription)
+    end
+
+    test "get_stripe_subscription/1 returns subscription for customer" do
+      stripe_customer = stripe_customer_fixture()
+      subscription_plan = subscription_plan_fixture()
+      stripe_subscription = stripe_subscription_fixture(subscription_plan, stripe_customer)
+      
+      assert Billing.get_stripe_subscription(stripe_customer) == stripe_subscription
+    end
+  end
 end
