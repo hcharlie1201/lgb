@@ -94,8 +94,6 @@ defmodule LgbWeb.ProfileLive.Search do
     to_form(params, errors: errors, action: :validate)
   end
 
-  defp validate_age_order(errors, _params), do: errors
-
   defp validate_age_order(errors, %{"min_age" => min_age, "max_age" => max_age})
        when min_age != "" and max_age != "" do
     if String.to_integer(max_age) < String.to_integer(min_age) do
