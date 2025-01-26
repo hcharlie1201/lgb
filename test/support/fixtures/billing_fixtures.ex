@@ -31,18 +31,31 @@ defmodule Lgb.BillingFixtures do
   @doc """
   Generate a stripe_subscription.
   """
+  def subscription_plan_fixture(attrs \\ %{}) do
+    {:ok, subscription_plan} =
+      attrs
+      |> Enum.into(%{
+        id: 42,
+        stripe_price_id: "price_123"
+      })
+      |> then(&struct!(Lgb.Subscriptions.SubscriptionPlan, &1))
+      |> Lgb.Repo.insert()
+
+    subscription_plan
+  end
+
   def stripe_subscription_fixture(attrs \\ %{}) do
     stripe_customer = stripe_customer_fixture()
+    subscription_plan = subscription_plan_fixture()
     
     {:ok, stripe_subscription} =
       attrs
       |> Enum.into(%{
-        subscription_id: "some subscription_id",
+        subscription_id: "sub_123",
         stripe_customer_id: stripe_customer.id,
-        subscription_plan_id: 42
+        subscription_plan_id: subscription_plan.id
       })
-      |> then(&struct!(Lgb.Billing.StripeSubscription, &1))
-      |> Lgb.Repo.insert()
+      |> then(&Lgb.Billing.create_stripe_subscription(stripe_customer, subscription_plan))
 
     stripe_subscription
   end

@@ -15,7 +15,9 @@ defmodule Lgb.Billing.StripeSubscription do
   def changeset(stripe_subscription, attrs) do
     stripe_subscription
     |> cast(attrs, [:subscription_id, :stripe_customer_id, :subscription_plan_id])
-    |> validate_required([:subscription_id, :stripe_customer_id, :subscription_plan_id])
+    |> validate_required([:stripe_customer_id, :subscription_plan_id])
+    |> foreign_key_constraint(:subscription_plan_id)
+    |> foreign_key_constraint(:stripe_customer_id)
   end
 
   def get_metadata(stripe_subscription) do

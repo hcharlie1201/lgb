@@ -45,10 +45,10 @@ defmodule Lgb.BillingTest do
 
     test "update_stripe_customer/2 with valid data updates the stripe_customer" do
       stripe_customer = stripe_customer_fixture()
-      update_attrs = %{customer_id: 43}
+      update_attrs = %{customer_id: "cus_new123"}
 
       assert {:ok, %StripeCustomer{} = stripe_customer} = Billing.update_stripe_customer(stripe_customer, update_attrs)
-      assert stripe_customer.customer_id == 43
+      assert stripe_customer.customer_id == "cus_new123"
     end
 
     test "update_stripe_customer/2 with invalid data returns error changeset" do
@@ -88,16 +88,18 @@ defmodule Lgb.BillingTest do
 
     test "create_stripe_subscription/2 with valid data creates a stripe_subscription" do
       stripe_customer = stripe_customer_fixture()
-      subscription_plan = %{id: 42, stripe_price_id: "price_123"}
+      subscription_plan = subscription_plan_fixture()
 
       assert {:ok, %StripeSubscription{} = stripe_subscription} = 
         Billing.create_stripe_subscription(stripe_customer, subscription_plan)
-      assert stripe_subscription.subscription_id != nil
+      assert stripe_subscription.subscription_id == "sub_123"
+      assert stripe_subscription.subscription_plan_id == subscription_plan.id
     end
 
     test "create_stripe_subscription/2 with invalid data returns error" do
       stripe_customer = stripe_customer_fixture()
-      assert {:error, _} = Billing.create_stripe_subscription(stripe_customer, %{})
+      invalid_plan = %{id: 999, stripe_price_id: nil}
+      assert {:error, _} = Billing.create_stripe_subscription(stripe_customer, invalid_plan)
     end
 
     test "update_stripe_subscription/2 with valid data updates the stripe_subscription" do
