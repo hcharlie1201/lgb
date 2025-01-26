@@ -174,8 +174,8 @@ defmodule Lgb.ProfilesTest do
       query = Profiles.get_other_profiles_distance(updated_profile)
       
       assert query.__struct__ == Ecto.Query
-      # Verify the query includes distance calculation
-      assert query.select.expr |> elem(1) |> Enum.at(1) |> elem(1) |> Keyword.has_key?(:distance)
+      # Verify the query includes distance calculation in select_merge
+      assert %{expr: {:merge, _, [_, {:%{}, _, [{:distance, _}]}]}} = query.select
     end
 
     test "get_other_profiles_distance/1 returns basic query without distance when no geolocation", %{profile: profile} do
