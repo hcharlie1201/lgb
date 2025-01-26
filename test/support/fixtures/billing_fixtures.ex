@@ -8,12 +8,22 @@ defmodule Lgb.BillingFixtures do
   Generate a stripe_customer.
   """
   def stripe_customer_fixture(attrs \\ %{}) do
+    user = Lgb.AccountsFixtures.user_fixture()
+    
     {:ok, stripe_customer} =
       attrs
       |> Enum.into(%{
-        customer_id: 42
+        "name" => "Test Customer",
+        "address" => %{
+          "line1" => "123 Test St",
+          "line2" => "",
+          "city" => "Test City", 
+          "state" => "TS",
+          "postal_code" => "12345",
+          "country" => "US"
+        }
       })
-      |> Lgb.Billing.create_stripe_customer()
+      |> then(&Lgb.Billing.create_stripe_customer(user, &1))
 
     stripe_customer
   end

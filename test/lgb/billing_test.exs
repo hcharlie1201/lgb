@@ -20,15 +20,27 @@ defmodule Lgb.BillingTest do
       assert Billing.get_stripe_customer!(stripe_customer.id) == stripe_customer
     end
 
-    test "create_stripe_customer/1 with valid data creates a stripe_customer" do
-      valid_attrs = %{customer_id: 42}
+    test "create_stripe_customer/2 with valid data creates a stripe_customer" do
+      user = Lgb.AccountsFixtures.user_fixture()
+      valid_attrs = %{
+        "name" => "Test Customer",
+        "address" => %{
+          "line1" => "123 Test St",
+          "line2" => "",
+          "city" => "Test City",
+          "state" => "TS",
+          "postal_code" => "12345",
+          "country" => "US"
+        }
+      }
 
-      assert {:ok, %StripeCustomer{} = stripe_customer} = Billing.create_stripe_customer(valid_attrs)
-      assert stripe_customer.customer_id == 42
+      assert {:ok, %StripeCustomer{} = stripe_customer} = Billing.create_stripe_customer(user, valid_attrs)
+      assert stripe_customer.customer_id != nil
     end
 
-    test "create_stripe_customer/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Billing.create_stripe_customer(@invalid_attrs)
+    test "create_stripe_customer/2 with invalid data returns error" do
+      user = Lgb.AccountsFixtures.user_fixture()
+      assert {:error, _} = Billing.create_stripe_customer(user, @invalid_attrs)
     end
 
     test "update_stripe_customer/2 with valid data updates the stripe_customer" do
@@ -74,20 +86,18 @@ defmodule Lgb.BillingTest do
       assert Billing.get_stripe_subscription!(stripe_subscription.id) == stripe_subscription
     end
 
-    test "create_stripe_subscription/1 with valid data creates a stripe_subscription" do
+    test "create_stripe_subscription/2 with valid data creates a stripe_subscription" do
       stripe_customer = stripe_customer_fixture()
-      valid_attrs = %{
-        subscription_id: "some subscription_id",
-        stripe_customer_id: stripe_customer.id,
-        subscription_plan_id: 42
-      }
+      subscription_plan = %{id: 42, stripe_price_id: "price_123"}
 
-      assert {:ok, %StripeSubscription{} = stripe_subscription} = Billing.create_stripe_subscription(valid_attrs)
-      assert stripe_subscription.subscription_id == "some subscription_id"
+      assert {:ok, %StripeSubscription{} = stripe_subscription} = 
+        Billing.create_stripe_subscription(stripe_customer, subscription_plan)
+      assert stripe_subscription.subscription_id != nil
     end
 
-    test "create_stripe_subscription/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Billing.create_stripe_subscription(@invalid_attrs)
+    test "create_stripe_subscription/2 with invalid data returns error" do
+      stripe_customer = stripe_customer_fixture()
+      assert {:error, _} = Billing.create_stripe_subscription(stripe_customer, %{})
     end
 
     test "update_stripe_subscription/2 with valid data updates the stripe_subscription" do
