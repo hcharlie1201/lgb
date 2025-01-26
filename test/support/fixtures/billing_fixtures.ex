@@ -35,17 +35,16 @@ defmodule Lgb.BillingFixtures do
     {:ok, subscription_plan} =
       attrs
       |> Enum.into(%{
-        id: 42,
+        name: "test plan",
         stripe_price_id: "price_123"
       })
-      |> then(&struct!(Lgb.Subscriptions.SubscriptionPlan, &1))
-      |> Lgb.Repo.insert()
+      |> Lgb.Subscriptions.create_subscription_plan()
 
     subscription_plan
   end
 
-  def stripe_subscription_fixture(subscription_plan) do
-    stripe_customer = stripe_customer_fixture()
+  def stripe_subscription_fixture(subscription_plan, stripe_customer \\ nil) do
+    stripe_customer = stripe_customer || stripe_customer_fixture()
 
     {:ok, stripe_subscription} =
       Lgb.Billing.create_stripe_subscription(stripe_customer, subscription_plan)
