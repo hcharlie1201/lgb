@@ -17,7 +17,7 @@ defmodule Lgb.Subscriptions do
       [%SubscriptionPlan{}, ...]
 
   """
-  def list_subscription_plans do
+  def list_subscription_plans() do
     Repo.all(SubscriptionPlan)
   end
 

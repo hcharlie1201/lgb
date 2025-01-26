@@ -2,11 +2,10 @@ defmodule Lgb.BillingTest do
   use Lgb.DataCase
 
   alias Lgb.Billing
+  import Lgb.BillingFixtures
 
   describe "stripe_customers" do
     alias Lgb.Billing.StripeCustomer
-
-    import Lgb.BillingFixtures
 
     @invalid_attrs %{customer_id: nil}
 
@@ -74,7 +73,6 @@ defmodule Lgb.BillingTest do
 
   describe "stripe_subscriptions" do
     alias Lgb.Billing.StripeSubscription
-    import Lgb.BillingFixtures
 
     @invalid_attrs %{subscription_id: nil, stripe_customer_id: nil, subscription_plan_id: nil}
 
@@ -156,14 +154,14 @@ defmodule Lgb.BillingTest do
       stripe_customer = stripe_customer_fixture()
       subscription_plan = subscription_plan_fixture()
       stripe_subscription = stripe_subscription_fixture(subscription_plan, stripe_customer)
-      
+
       assert Billing.current_stripe_subscription(stripe_customer) == stripe_subscription
     end
 
     test "initial_checkout_completed?/1 returns false for new subscription" do
       subscription_plan = subscription_plan_fixture()
       stripe_subscription = stripe_subscription_fixture(subscription_plan)
-      
+
       refute Billing.initial_checkout_completed?(stripe_subscription)
     end
 
@@ -171,7 +169,7 @@ defmodule Lgb.BillingTest do
       stripe_customer = stripe_customer_fixture()
       subscription_plan = subscription_plan_fixture()
       stripe_subscription = stripe_subscription_fixture(subscription_plan, stripe_customer)
-      
+
       assert Billing.get_stripe_subscription(stripe_customer) == stripe_subscription
     end
   end
