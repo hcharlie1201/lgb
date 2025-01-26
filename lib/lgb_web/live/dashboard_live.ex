@@ -6,11 +6,11 @@ defmodule LgbWeb.DashboardLive do
     <div class="flex justify-center w-screen">
       <div class="flex flex-col border border-colorPrimary rounded-md">
         <ul class="flex flex-col w-80 text-center">
-          <.link class="hover:bg-colorPrimary p-4" href={~p"/profiles/current"}>My Profile</.link>
-          <.link class="hover:bg-colorPrimary p-4" href={~p"/profiles"}>Search profiles</.link>
-          <.link class="hover:bg-colorPrimary p-4" href={~p"/conversations"}>Inbox/Chats</.link>
-          <.link class="hover:bg-colorPrimary p-4" href={~p"/chat_rooms"}>Go to chatroom</.link>
-          <.link class="hover:bg-colorPrimary p-4" href={~p"/shopping/subscriptions"}>
+          <.link class="hover:bg-colorPrimary p-4" navigate={~p"/profiles/current"}>My Profile</.link>
+          <.link class="hover:bg-colorPrimary p-4" navigate={~p"/profiles"}>Search profiles</.link>
+          <.link class="hover:bg-colorPrimary p-4" navigate={~p"/conversations"}>Inbox/Chats</.link>
+          <.link class="hover:bg-colorPrimary p-4" navigate={~p"/chat_rooms"}>Go to chatroom</.link>
+          <.link class="hover:bg-colorPrimary p-4" navigate={~p"/shopping/subscriptions"}>
             Premium Features
           </.link>
           <%= if @stripe_customer do %>
