@@ -50,16 +50,15 @@ defmodule LgbWeb.ProfileLive.SearchTest do
         })
         |> render_submit()
 
-      IO.inspect(result)
-
-      assert has_element?(result, ".invalid-feedback", "Age must be between 18 and 100")
+      assert result =~ "Age must be between 18 and 100"
 
       # Test maximum age validation
-      view
-      |> form("#search-profile", %{"max_age" => "101"})
-      |> render_change()
+      result = 
+        view
+        |> form("#search-profile", %{"max_age" => "101"})
+        |> render_change()
 
-      assert has_element?(view, ".invalid-feedback", "Age must be between 18 and 100")
+      assert result =~ "Age must be between 18 and 100"
 
       # Test age order validation
       view
@@ -82,9 +81,7 @@ defmodule LgbWeb.ProfileLive.SearchTest do
         |> form("#search-profile", %{"min_weight" => 0})
         |> render_submit()
 
-      IO.inspect(result)
-
-      assert has_element?(result, "Weight must be between greater than 0")
+      assert result =~ "Weight must be between greater than 0"
 
       # Test maximum weight validation
       result =
@@ -92,7 +89,7 @@ defmodule LgbWeb.ProfileLive.SearchTest do
         |> form("#search-profile", %{"max_weight" => "401"})
         |> render_change()
 
-      assert has_element?(result, "Weight must be between less than 400 lbs")
+      assert result =~ "Weight must be between less than 400 lbs"
 
       # Test weight order validation
       result =
@@ -100,10 +97,7 @@ defmodule LgbWeb.ProfileLive.SearchTest do
         |> form("#search-profile", %{"min_weight" => "200", "max_weight" => "150"})
         |> render_change()
 
-      assert has_element?(
-               result,
-               "Maximum weight must be greater than or equal to minimum weight"
-             )
+      assert result =~ "Maximum weight must be greater than or equal to minimum weight"
     end
 
     test "navigates to results page on valid search", %{conn: conn} do
