@@ -70,8 +70,6 @@ defmodule LgbWeb.ProfileLive.MyProfile do
             socket.assigns.form.params
           )
 
-        IO.inspect(updated_params)
-
         form =
           socket.assigns.profile
           |> Profile.changeset(updated_params)

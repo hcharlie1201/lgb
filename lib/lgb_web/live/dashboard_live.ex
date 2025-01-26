@@ -1,8 +1,6 @@
 defmodule LgbWeb.DashboardLive do
   use LgbWeb, :live_view
 
-  alias Lgb.Messaging
-
   def render(assigns) do
     ~H"""
     <div class="flex justify-center w-screen">
@@ -12,6 +10,14 @@ defmodule LgbWeb.DashboardLive do
           <.link class="hover:bg-colorPrimary p-4" href={~p"/profiles"}>Search profiles</.link>
           <.link class="hover:bg-colorPrimary p-4" href={~p"/conversations"}>Inbox/Chats</.link>
           <.link class="hover:bg-colorPrimary p-4" href={~p"/chat_rooms"}>Go to chatroom</.link>
+          <.link class="hover:bg-colorPrimary p-4" href={~p"/shopping/subscriptions"}>
+            Premium Features
+          </.link>
+          <%= if @stripe_customer do %>
+            <.link class="hover:bg-colorPrimary p-4" href={~p"/account"}>
+              My Account
+            </.link>
+          <% end %>
         </ul>
       </div>
     </div>
@@ -19,6 +25,8 @@ defmodule LgbWeb.DashboardLive do
   end
 
   def mount(_params, _session, socket) do
+    stripe_customer = Lgb.Accounts.get_stripe_customer(socket.assigns.current_user)
+    socket = assign(socket, stripe_customer: stripe_customer)
     {:ok, socket}
   end
 end

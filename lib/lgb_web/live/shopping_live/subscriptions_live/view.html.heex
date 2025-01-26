@@ -1,0 +1,24 @@
+<div class="flex justify-center w-screen">
+  <div class="flex flex-col border border-colorPrimary rounded-md">
+    <%= for subscription_plan <- @subscription_plans do %>
+      <div>
+        <.header>{subscription_plan.name}</.header>
+        <h1>Benefits Include:</h1>
+        <ul>
+          <li>Able to see users credit score</li>
+          <li>Sent unlimited messages</li>
+          <li>See users that viewed you recently</li>
+        </ul>
+        <h2>${format_money(subscription_plan.amount)}</h2>
+        <h2>
+          Recurring Charging of every {subscription_plan.interval_count} {subscription_plan.interval}
+        </h2>
+      </div>
+      <%= if !@completed_initial_checkout do %>
+        <.link patch={~p"/shopping/subscriptions/#{subscription_plan.id}/info"}>
+          <.button>Upgrade</.button>
+        </.link>
+      <% end %>
+    <% end %>
+  </div>
+</div>

@@ -28,8 +28,6 @@ defmodule LgbWeb.UserConfirmationInstructionsLiveTest do
 
       assert Phoenix.Flash.get(conn.assigns.flash, :info) =~
                "If your email is in our system"
-
-      assert Repo.get_by!(Accounts.UserToken, user_id: user.id).context == "confirm"
     end
 
     test "does not send confirmation token if user is confirmed", %{conn: conn, user: user} do

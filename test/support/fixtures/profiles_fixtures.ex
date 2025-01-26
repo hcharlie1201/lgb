@@ -8,6 +8,13 @@ defmodule Lgb.ProfilesFixtures do
   Generate a profile.
   """
   def profile_fixture(user, attrs \\ %{}) do
+    # Ensure user is a proper Ecto struct
+    user = 
+      case user do
+        %Lgb.Accounts.User{} -> user
+        _ -> struct(Lgb.Accounts.User, user)
+      end
+
     attrs =
       attrs
       |> Enum.into(%{

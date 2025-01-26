@@ -3,106 +3,51 @@ defmodule LgbWeb.ConversationLiveTest do
 
   import Phoenix.LiveViewTest
   import Lgb.MessagingFixtures
+  import Lgb.AccountsFixtures
+  import Lgb.ProfilesFixtures
 
-  @create_attrs %{}
-  @update_attrs %{}
-  @invalid_attrs %{}
+  setup do
+    user = user_fixture()
+    other_user = user_fixture()
 
-  defp create_conversation(_) do
-    conversation = conversation_fixture()
-    %{conversation: conversation}
+    profile = profile_fixture(user)
+    other_profile = profile_fixture(other_user)
+
+    conversation = conversation_fixture(profile, other_profile)
+
+    %{
+      user: user,
+      profile: profile,
+      other_profile: other_profile,
+      conversation: conversation
+    }
   end
 
   describe "Index" do
-    setup [:create_conversation]
-
-    test "lists all conversations", %{conn: conn} do
+    test "lists all conversations", %{conn: conn, user: user} do
+      conn = log_in_user(conn, user)
       {:ok, _index_live, html} = live(conn, ~p"/conversations")
-
-      assert html =~ "Listing Conversations"
-    end
-
-    test "saves new conversation", %{conn: conn} do
-      {:ok, index_live, _html} = live(conn, ~p"/conversations")
-
-      assert index_live |> element("a", "New Conversation") |> render_click() =~
-               "New Conversation"
-
-      assert_patch(index_live, ~p"/conversations/new")
-
-      assert index_live
-             |> form("#conversation-form", conversation: @invalid_attrs)
-             |> render_change() =~ "can&#39;t be blank"
-
-      assert index_live
-             |> form("#conversation-form", conversation: @create_attrs)
-             |> render_submit()
-
-      assert_patch(index_live, ~p"/conversations")
-
-      html = render(index_live)
-      assert html =~ "Conversation created successfully"
-    end
-
-    test "updates conversation in listing", %{conn: conn, conversation: conversation} do
-      {:ok, index_live, _html} = live(conn, ~p"/conversations")
-
-      assert index_live |> element("#conversations-#{conversation.id} a", "Edit") |> render_click() =~
-               "Edit Conversation"
-
-      assert_patch(index_live, ~p"/conversations/#{conversation}/edit")
-
-      assert index_live
-             |> form("#conversation-form", conversation: @invalid_attrs)
-             |> render_change() =~ "can&#39;t be blank"
-
-      assert index_live
-             |> form("#conversation-form", conversation: @update_attrs)
-             |> render_submit()
-
-      assert_patch(index_live, ~p"/conversations")
-
-      html = render(index_live)
-      assert html =~ "Conversation updated successfully"
-    end
-
-    test "deletes conversation in listing", %{conn: conn, conversation: conversation} do
-      {:ok, index_live, _html} = live(conn, ~p"/conversations")
-
-      assert index_live |> element("#conversations-#{conversation.id} a", "Delete") |> render_click()
-      refute has_element?(index_live, "#conversations-#{conversation.id}")
+      assert html =~ "Messages" || html =~ "Inbox"
     end
   end
 
   describe "Show" do
-    setup [:create_conversation]
-
-    test "displays conversation", %{conn: conn, conversation: conversation} do
+    test "displays conversation", %{conn: conn, user: user, conversation: conversation} do
+      conn = log_in_user(conn, user)
       {:ok, _show_live, html} = live(conn, ~p"/conversations/#{conversation}")
-
-      assert html =~ "Show Conversation"
+      assert html =~ "Send"
     end
 
-    test "updates conversation within modal", %{conn: conn, conversation: conversation} do
+    test "can send message", %{conn: conn, user: user, conversation: conversation} do
+      conn = log_in_user(conn, user)
       {:ok, show_live, _html} = live(conn, ~p"/conversations/#{conversation}")
 
-      assert show_live |> element("a", "Edit") |> render_click() =~
-               "Edit Conversation"
-
-      assert_patch(show_live, ~p"/conversations/#{conversation}/show/edit")
-
       assert show_live
-             |> form("#conversation-form", conversation: @invalid_attrs)
-             |> render_change() =~ "can&#39;t be blank"
-
-      assert show_live
-             |> form("#conversation-form", conversation: @update_attrs)
+             |> form("#conversation-form", %{content: "Hello!"})
              |> render_submit()
 
-      assert_patch(show_live, ~p"/conversations/#{conversation}")
-
       html = render(show_live)
-      assert html =~ "Conversation updated successfully"
+      assert html =~ "Hello!"
     end
   end
 end

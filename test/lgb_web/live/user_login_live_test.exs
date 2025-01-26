@@ -18,7 +18,7 @@ defmodule LgbWeb.UserLoginLiveTest do
         conn
         |> log_in_user(user_fixture())
         |> live(~p"/users/log_in")
-        |> follow_redirect(conn, "/")
+        |> follow_redirect(conn, "/dashboard")
 
       assert {:ok, _conn} = result
     end
@@ -27,7 +27,7 @@ defmodule LgbWeb.UserLoginLiveTest do
   describe "user login" do
     test "redirects if user login with valid credentials", %{conn: conn} do
       password = "123456789abcd"
-      user = user_fixture(%{password: password})
+      user = user_fixture(%{password: password, password_confirmation: password})
 
       {:ok, lv, _html} = live(conn, ~p"/users/log_in")
 
@@ -36,7 +36,7 @@ defmodule LgbWeb.UserLoginLiveTest do
 
       conn = submit_form(form, conn)
 
-      assert redirected_to(conn) == ~p"/"
+      assert redirected_to(conn) == ~p"/dashboard"
     end
 
     test "redirects to login page with a flash error if there are no valid credentials", %{
@@ -51,7 +51,7 @@ defmodule LgbWeb.UserLoginLiveTest do
 
       conn = submit_form(form, conn)
 
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "Invalid email or password"
+      assert Phoenix.Flash.get(conn.assigns.flash, :error) == "Invalid email or password."
 
       assert redirected_to(conn) == "/users/log_in"
     end

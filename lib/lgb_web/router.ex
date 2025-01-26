@@ -64,7 +64,7 @@ defmodule LgbWeb.Router do
   scope "/", LgbWeb do
     pipe_through [:browser, :require_authenticated_user]
 
-    live_session :require_authenticated_user,
+    live_session :ensure_authenticated,
       on_mount: [{LgbWeb.UserAuth, :ensure_authenticated}] do
       live "/dashboard", DashboardLive
       live "/users/settings", LoginLive.UserSettingsLive, :edit
@@ -77,13 +77,26 @@ defmodule LgbWeb.Router do
 
       scope "/profiles", ProfileLive do
         live "/current", MyProfile
-        live "/", Search, :index
+        live "/", Search
         live "/results", Results, :index
         live "/:id", Show, :show
       end
 
       live "/conversations", ConversationLive.Index, :index
       live "/conversations/:id", ConversationLive.Show, :show
+
+      scope "/shopping", ShoppingLive do
+        scope "/subscriptions", SubscriptionsLive do
+          live "/", View
+          live "/:id/info", Info
+          live "/:id/checkout", Checkout
+          live "/confirmed/payment/:id", Confirmed
+        end
+      end
+
+      scope "/account", AccountLive do
+        live "/", View
+      end
     end
   end
 

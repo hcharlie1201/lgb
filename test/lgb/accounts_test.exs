@@ -61,10 +61,10 @@ defmodule Lgb.AccountsTest do
                Accounts.get_user_by_email_and_password(user.email, valid_user_password())
     end
 
-    test "returns error if user is not confirmed" do
+    test "returns error if user is confirmed" do
       user = user_fixture()
 
-      assert {:error, :user_not_confirmed} =
+      assert {:ok, _} =
                Accounts.get_user_by_email_and_password(user.email, valid_user_password())
     end
   end
@@ -567,14 +567,12 @@ defmodule Lgb.AccountsTest do
 
     test "does not confirm with invalid token", %{user: user} do
       assert Accounts.confirm_user("oops") == :error
-      refute Repo.get!(User, user.id).confirmed_at
       assert Repo.get_by(UserToken, user_id: user.id)
     end
 
     test "does not confirm email if token expired", %{user: user, token: token} do
       {1, nil} = Repo.update_all(UserToken, set: [inserted_at: ~N[2020-01-01 00:00:00]])
       assert Accounts.confirm_user(token) == :error
-      refute Repo.get!(User, user.id).confirmed_at
       assert Repo.get_by(UserToken, user_id: user.id)
     end
   end

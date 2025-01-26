@@ -14,27 +14,28 @@ defmodule Lgb.ThirdParty.Google.ReverseGeo do
 
     response = HTTPoison.get!(url)
 
-    %{"results" => [address | _]} = Poison.decode!(response.body)
+    case Poison.decode!(response.body) do
+      %{"results" => []} -> []
+      %{"status" => "INVALID_REQUEST"} -> []
+      %{"results" => [address | _]} ->
+        %{"address_components" => address_components} = address
 
-    %{
-      "address_components" => address_components
-    } = address
+        city =
+          Enum.find(address_components, fn component -> "locality" in component["types"] end)[
+            "long_name"
+          ]
 
-    city =
-      Enum.find(address_components, fn component -> "locality" in component["types"] end)[
-        "long_name"
-      ]
+        state =
+          Enum.find(address_components, fn component ->
+            "administrative_area_level_1" in component["types"]
+          end)["short_name"]
 
-    state =
-      Enum.find(address_components, fn component ->
-        "administrative_area_level_1" in component["types"]
-      end)["short_name"]
+        zip =
+          Enum.find(address_components, fn component -> "postal_code" in component["types"] end)[
+            "short_name"
+          ]
 
-    zip =
-      Enum.find(address_components, fn component -> "postal_code" in component["types"] end)[
-        "short_name"
-      ]
-
-    [city: city, state: state, zip: zip]
+        [city: city, state: state, zip: zip]
+    end
   end
 end

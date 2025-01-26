@@ -26,6 +26,15 @@ defmodule Lgb.Accounts do
     Repo.get_by(User, email: email)
   end
 
+  def get_stripe_customer(user) do
+    query =
+      from sc in Lgb.Billing.StripeCustomer,
+        where: sc.user_id == ^user.id,
+        select: sc
+
+    Repo.one(query)
+  end
+
   @doc """
   Gets a user by email and password.
 
@@ -42,11 +51,13 @@ defmodule Lgb.Accounts do
     case {email, password} do
       {email, password} when is_binary(email) and is_binary(password) ->
         user = Repo.get_by(User, email: email)
+
         cond do
           !User.valid_password?(user, password) -> {:error, :bad_username_or_password}
           !User.is_confirmed?(user) -> {:error, :user_not_confirmed}
           true -> {:ok, user}
         end
+
       _ ->
         {:error, :bad_username_or_password}
     end

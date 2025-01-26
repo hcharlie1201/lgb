@@ -22,13 +22,15 @@ defmodule LgbWeb.ConversationLive.Show do
 
     {:noreply,
      socket
+     |> assign(:page_title, "Chat")
      |> assign(
        form:
          to_form(
            ConversationMessage.changeset(%ConversationMessage{}, %{
              "conversation_id" => conversation.id,
              "profile_id" => current_profile.id
-           })
+           }),
+           id: "conversation-form"
          )
      )
      |> assign(

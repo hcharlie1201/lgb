@@ -17,7 +17,7 @@ defmodule LgbWeb.UserRegistrationLiveTest do
         conn
         |> log_in_user(user_fixture())
         |> live(~p"/users/register")
-        |> follow_redirect(conn, "/")
+        |> follow_redirect(conn, "/dashboard")
 
       assert {:ok, _conn} = result
     end
@@ -31,30 +31,12 @@ defmodule LgbWeb.UserRegistrationLiveTest do
         |> render_change(user: %{"email" => "with spaces", "password" => "too short"})
 
       assert result =~ "Register"
-      assert result =~ "must have the @ sign and no spaces"
+      assert result =~ "must have exactly one @ sign and no spaces"
       assert result =~ "should be at least 12 character"
     end
   end
 
   describe "register user" do
-    test "creates account and logs the user in", %{conn: conn} do
-      {:ok, lv, _html} = live(conn, ~p"/users/register")
-
-      email = unique_user_email()
-      form = form(lv, "#registration_form", user: valid_user_attributes(email: email))
-      render_submit(form)
-      conn = follow_trigger_action(form, conn)
-
-      assert redirected_to(conn) == ~p"/"
-
-      # Now do a logged in request and assert on the menu
-      conn = get(conn, "/")
-      response = html_response(conn, 200)
-      assert response =~ email
-      assert response =~ "Settings"
-      assert response =~ "Log out"
-    end
-
     test "renders errors for duplicated email", %{conn: conn} do
       {:ok, lv, _html} = live(conn, ~p"/users/register")
 

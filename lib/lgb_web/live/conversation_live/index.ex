@@ -9,6 +9,7 @@ defmodule LgbWeb.ConversationLive.Index do
 
     {:ok,
      socket
+     |> assign(:page_title, "Messages")
      |> stream(:conversations, Chatting.list_conversations(profile))}
   end
 end

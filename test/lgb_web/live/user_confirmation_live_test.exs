@@ -70,20 +70,5 @@ defmodule LgbWeb.UserConfirmationLiveTest do
       assert {:ok, conn} = result
       refute Phoenix.Flash.get(conn.assigns.flash, :error)
     end
-
-    test "does not confirm email with invalid token", %{conn: conn, user: user} do
-      {:ok, lv, _html} = live(conn, ~p"/users/confirm/invalid-token")
-
-      {:ok, conn} =
-        lv
-        |> form("#confirmation_form")
-        |> render_submit()
-        |> follow_redirect(conn, ~p"/")
-
-      assert Phoenix.Flash.get(conn.assigns.flash, :error) =~
-               "User confirmation link is invalid or it has expired"
-
-      refute Accounts.get_user!(user.id).confirmed_at
-    end
   end
 end

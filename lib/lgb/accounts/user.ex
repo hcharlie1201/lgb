@@ -4,6 +4,7 @@ defmodule Lgb.Accounts.User do
 
   schema "users" do
     has_many :profiles, Lgb.Profiles.Profile
+    has_one :stripe_customer, Lgb.Billing.StripeCustomer
     field :email, :string
     field :password, :string, virtual: true, redact: true
     field :hashed_password, :string, redact: true

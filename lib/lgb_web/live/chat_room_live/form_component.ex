@@ -19,6 +19,7 @@ defmodule LgbWeb.ChatRoomLive.FormComponent do
         phx-change="validate"
         phx-submit="save"
       >
+        <.input field={@form[:description]} type="text" label="Description" />
         <.input field={@form[:limit]} type="number" label="Limit" />
         <:actions>
           <.button phx-disable-with="Saving...">Save Chat room</.button>

@@ -20,7 +20,7 @@ defmodule Lgb.Profiles do
   """
   def list_profiles(params) do
     case Flop.validate_and_run(Profile, params, for: Profile) do
-      {:ok, {entries, meta}} -> {:ok, %{entries: entries}}
+      {:ok, {entries, _meta}} -> {:ok, %{entries: entries}}
       error -> error
     end
   end
