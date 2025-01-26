@@ -8,23 +8,24 @@ defmodule LgbWeb.ProfileLive.SearchTest do
     setup :register_and_log_in_user
 
     test "renders search form", %{conn: conn} do
-      {:ok, view, _html} = live(conn, ~p"/profiles/search")
+      {:ok, view, _html} = live(conn, ~p"/profiles")
       assert has_element?(view, "form")
     end
 
     test "has basic search fields", %{conn: conn} do
-      {:ok, view, _html} = live(conn, ~p"/profiles/search")
-      
-      assert has_element?(view, "form input[name='age_min']")
-      assert has_element?(view, "form input[name='age_max']")
-      assert has_element?(view, "form input[name='city']")
-      assert has_element?(view, "form input[name='state']")
-      assert has_element?(view, "form button[type='submit']", "Search")
+      {:ok, view, _html} = live(conn, ~p"/profiles")
+
+      assert has_element?(view, "form input[name='min_height_cm']")
+      assert has_element?(view, "form input[name='max_height_cm']")
+      assert has_element?(view, "form input[name='min_age']")
+      assert has_element?(view, "form input[name='max_age']")
+      assert has_element?(view, "form input[name='min_weight']")
+      assert has_element?(view, "form input[name='max_weight']")
     end
 
     test "shows no results initially", %{conn: conn} do
-      {:ok, view, _html} = live(conn, ~p"/profiles/search")
-      refute has_element?(view, "[data-role='search-results']")
+      {:ok, view, _html} = live(conn, ~p"/profiles")
+      refute has_element?(view, "[id='search-profile']")
     end
   end
 end
