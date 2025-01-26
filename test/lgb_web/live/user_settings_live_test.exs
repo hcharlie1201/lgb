@@ -62,7 +62,7 @@ defmodule LgbWeb.UserSettingsLiveTest do
         })
 
       assert result =~ "Change Email"
-      assert result =~ "must have the @ sign and no spaces"
+      assert result =~ "must have exactly one @ sign and no spaces"
     end
 
     test "renders errors with invalid data (phx-submit)", %{conn: conn, user: user} do

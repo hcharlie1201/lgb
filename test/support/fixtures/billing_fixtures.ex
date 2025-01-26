@@ -9,7 +9,7 @@ defmodule Lgb.BillingFixtures do
   """
   def stripe_customer_fixture(attrs \\ %{}) do
     user = Lgb.AccountsFixtures.user_fixture()
-    
+
     {:ok, stripe_customer} =
       attrs
       |> Enum.into(%{
@@ -17,7 +17,7 @@ defmodule Lgb.BillingFixtures do
         "address" => %{
           "line1" => "123 Test St",
           "line2" => "",
-          "city" => "Test City", 
+          "city" => "Test City",
           "state" => "TS",
           "postal_code" => "12345",
           "country" => "US"
@@ -44,18 +44,11 @@ defmodule Lgb.BillingFixtures do
     subscription_plan
   end
 
-  def stripe_subscription_fixture(attrs \\ %{}) do
+  def stripe_subscription_fixture(subscription_plan) do
     stripe_customer = stripe_customer_fixture()
-    subscription_plan = subscription_plan_fixture()
-    
+
     {:ok, stripe_subscription} =
-      attrs
-      |> Enum.into(%{
-        subscription_id: "sub_123",
-        stripe_customer_id: stripe_customer.id,
-        subscription_plan_id: subscription_plan.id
-      })
-      |> then(&Lgb.Billing.create_stripe_subscription(stripe_customer, subscription_plan))
+      Lgb.Billing.create_stripe_subscription(stripe_customer, subscription_plan)
 
     stripe_subscription
   end

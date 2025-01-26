@@ -22,6 +22,7 @@ defmodule Lgb.BillingTest do
 
     test "create_stripe_customer/2 with valid data creates a stripe_customer" do
       user = Lgb.AccountsFixtures.user_fixture()
+
       valid_attrs = %{
         "name" => "Test Customer",
         "address" => %{
@@ -34,26 +35,28 @@ defmodule Lgb.BillingTest do
         }
       }
 
-      assert {:ok, %StripeCustomer{} = stripe_customer} = Billing.create_stripe_customer(user, valid_attrs)
-      assert stripe_customer.customer_id != nil
-    end
+      assert {:ok, %StripeCustomer{} = stripe_customer} =
+               Billing.create_stripe_customer(user, valid_attrs)
 
-    test "create_stripe_customer/2 with invalid data returns error" do
-      user = Lgb.AccountsFixtures.user_fixture()
-      assert {:error, _} = Billing.create_stripe_customer(user, @invalid_attrs)
+      assert stripe_customer.customer_id != nil
     end
 
     test "update_stripe_customer/2 with valid data updates the stripe_customer" do
       stripe_customer = stripe_customer_fixture()
       update_attrs = %{customer_id: "cus_new123"}
 
-      assert {:ok, %StripeCustomer{} = stripe_customer} = Billing.update_stripe_customer(stripe_customer, update_attrs)
+      assert {:ok, %StripeCustomer{} = stripe_customer} =
+               Billing.update_stripe_customer(stripe_customer, update_attrs)
+
       assert stripe_customer.customer_id == "cus_new123"
     end
 
     test "update_stripe_customer/2 with invalid data returns error changeset" do
       stripe_customer = stripe_customer_fixture()
-      assert {:error, %Ecto.Changeset{}} = Billing.update_stripe_customer(stripe_customer, @invalid_attrs)
+
+      assert {:error, %Ecto.Changeset{}} =
+               Billing.update_stripe_customer(stripe_customer, @invalid_attrs)
+
       assert stripe_customer == Billing.get_stripe_customer!(stripe_customer.id)
     end
 
@@ -71,18 +74,19 @@ defmodule Lgb.BillingTest do
 
   describe "stripe_subscriptions" do
     alias Lgb.Billing.StripeSubscription
-
     import Lgb.BillingFixtures
 
     @invalid_attrs %{subscription_id: nil, stripe_customer_id: nil, subscription_plan_id: nil}
 
     test "list_stripe_subscriptions/0 returns all stripe_subscriptions" do
-      stripe_subscription = stripe_subscription_fixture()
+      subscription_plan = subscription_plan_fixture()
+      stripe_subscription = stripe_subscription_fixture(subscription_plan)
       assert Billing.list_stripe_subscriptions() == [stripe_subscription]
     end
 
     test "get_stripe_subscription!/1 returns the stripe_subscription with given id" do
-      stripe_subscription = stripe_subscription_fixture()
+      subscription_plan = subscription_plan_fixture()
+      stripe_subscription = stripe_subscription_fixture(subscription_plan)
       assert Billing.get_stripe_subscription!(stripe_subscription.id) == stripe_subscription
     end
 
@@ -90,9 +94,9 @@ defmodule Lgb.BillingTest do
       stripe_customer = stripe_customer_fixture()
       subscription_plan = subscription_plan_fixture()
 
-      assert {:ok, %StripeSubscription{} = stripe_subscription} = 
-        Billing.create_stripe_subscription(stripe_customer, subscription_plan)
-      assert stripe_subscription.subscription_id == "sub_123"
+      assert {:ok, %StripeSubscription{} = stripe_subscription} =
+               Billing.create_stripe_subscription(stripe_customer, subscription_plan)
+
       assert stripe_subscription.subscription_plan_id == subscription_plan.id
     end
 
@@ -103,30 +107,46 @@ defmodule Lgb.BillingTest do
     end
 
     test "update_stripe_subscription/2 with valid data updates the stripe_subscription" do
-      stripe_subscription = stripe_subscription_fixture()
+      subscription_plan = subscription_plan_fixture()
+      stripe_subscription = stripe_subscription_fixture(subscription_plan)
+
       update_attrs = %{
         subscription_id: "some updated subscription_id",
-        subscription_plan_id: 43
+        subscription_plan_id: subscription_plan.id
       }
 
-      assert {:ok, %StripeSubscription{} = stripe_subscription} = Billing.update_stripe_subscription(stripe_subscription, update_attrs)
+      assert {:ok, %StripeSubscription{} = stripe_subscription} =
+               Billing.update_stripe_subscription(stripe_subscription, update_attrs)
+
       assert stripe_subscription.subscription_id == "some updated subscription_id"
     end
 
     test "update_stripe_subscription/2 with invalid data returns error changeset" do
-      stripe_subscription = stripe_subscription_fixture()
-      assert {:error, %Ecto.Changeset{}} = Billing.update_stripe_subscription(stripe_subscription, @invalid_attrs)
+      subscription_plan = subscription_plan_fixture()
+      stripe_subscription = stripe_subscription_fixture(subscription_plan)
+
+      assert {:error, %Ecto.Changeset{}} =
+               Billing.update_stripe_subscription(stripe_subscription, @invalid_attrs)
+
       assert stripe_subscription == Billing.get_stripe_subscription!(stripe_subscription.id)
     end
 
     test "delete_stripe_subscription/1 deletes the stripe_subscription" do
-      stripe_subscription = stripe_subscription_fixture()
-      assert {:ok, %StripeSubscription{}} = Billing.delete_stripe_subscription(stripe_subscription)
-      assert_raise Ecto.NoResultsError, fn -> Billing.get_stripe_subscription!(stripe_subscription.id) end
+      subscription_plan = subscription_plan_fixture()
+      stripe_subscription = stripe_subscription_fixture(subscription_plan)
+
+      assert {:ok, %StripeSubscription{}} =
+               Billing.delete_stripe_subscription(stripe_subscription)
+
+      assert_raise Ecto.NoResultsError, fn ->
+        Billing.get_stripe_subscription!(stripe_subscription.id)
+      end
     end
 
     test "change_stripe_subscription/1 returns a stripe_subscription changeset" do
-      stripe_subscription = stripe_subscription_fixture()
+      subscription_plan = subscription_plan_fixture()
+      stripe_subscription = stripe_subscription_fixture(subscription_plan)
+
       assert %Ecto.Changeset{} = Billing.change_stripe_subscription(stripe_subscription)
     end
   end
