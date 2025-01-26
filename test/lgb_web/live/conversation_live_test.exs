@@ -5,6 +5,7 @@ defmodule LgbWeb.ConversationLiveTest do
   import Lgb.MessagingFixtures
   import Lgb.AccountsFixtures
   import Lgb.ProfilesFixtures
+  alias Lgb.Profiles
 
   setup do
     user = user_fixture()
