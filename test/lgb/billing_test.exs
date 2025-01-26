@@ -62,7 +62,7 @@ defmodule Lgb.BillingTest do
 
     import Lgb.BillingFixtures
 
-    @invalid_attrs %{subscription_id: nil}
+    @invalid_attrs %{subscription_id: nil, stripe_customer_id: nil, subscription_plan_id: nil}
 
     test "list_stripe_subscriptions/0 returns all stripe_subscriptions" do
       stripe_subscription = stripe_subscription_fixture()
@@ -75,7 +75,12 @@ defmodule Lgb.BillingTest do
     end
 
     test "create_stripe_subscription/1 with valid data creates a stripe_subscription" do
-      valid_attrs = %{subscription_id: "some subscription_id"}
+      stripe_customer = stripe_customer_fixture()
+      valid_attrs = %{
+        subscription_id: "some subscription_id",
+        stripe_customer_id: stripe_customer.id,
+        subscription_plan_id: 42
+      }
 
       assert {:ok, %StripeSubscription{} = stripe_subscription} = Billing.create_stripe_subscription(valid_attrs)
       assert stripe_subscription.subscription_id == "some subscription_id"
@@ -87,7 +92,10 @@ defmodule Lgb.BillingTest do
 
     test "update_stripe_subscription/2 with valid data updates the stripe_subscription" do
       stripe_subscription = stripe_subscription_fixture()
-      update_attrs = %{subscription_id: "some updated subscription_id"}
+      update_attrs = %{
+        subscription_id: "some updated subscription_id",
+        subscription_plan_id: 43
+      }
 
       assert {:ok, %StripeSubscription{} = stripe_subscription} = Billing.update_stripe_subscription(stripe_subscription, update_attrs)
       assert stripe_subscription.subscription_id == "some updated subscription_id"
