@@ -11,9 +11,9 @@ defmodule LgbWeb.ShoppingLive.SubscriptionsLive.ViewTest do
       assert html =~ "Subscription Plans"
     end
 
-    test "displays subscription plans", %{conn: conn, subscription_plans: plans} do
+    test "displays subscription plans", %{conn: conn, subscription_plan: plans} do
       {:ok, _view, html} = live(conn, ~p"/shopping/subscriptions")
-      
+
       for plan <- plans do
         assert html =~ plan.name
         assert html =~ plan.stripe_price_id
@@ -21,11 +21,8 @@ defmodule LgbWeb.ShoppingLive.SubscriptionsLive.ViewTest do
     end
 
     defp create_subscription_plans(_) do
-      plans = [
-        subscription_plan_fixture(%{name: "Basic Plan", stripe_price_id: "price_basic123"}),
-        subscription_plan_fixture(%{name: "Premium Plan", stripe_price_id: "price_premium456"})
-      ]
-      %{subscription_plans: plans}
+      plan = subscription_plan_fixture()
+      %{subscription_plan: plan}
     end
   end
 end
