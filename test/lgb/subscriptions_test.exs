@@ -8,7 +8,7 @@ defmodule Lgb.SubscriptionsTest do
 
     import Lgb.SubscriptionsFixtures
 
-    @invalid_attrs %{name: nil, stripe_price_id: nil}
+    @invalid_attrs %{stripe_price_id: nil}
 
     test "list_subscription_plans/0 returns all subscription_plans" do
       subscription_plan = subscription_plan_fixture()
@@ -21,10 +21,10 @@ defmodule Lgb.SubscriptionsTest do
     end
 
     test "create_subscription_plan/1 with valid data creates a subscription_plan" do
-      valid_attrs = %{name: "some name", stripe_price_id: "price_123"}
+      valid_attrs = %{stripe_price_id: "price_123", name: "Basic Plan"}
 
       assert {:ok, %SubscriptionPlan{} = subscription_plan} = Subscriptions.create_subscription_plan(valid_attrs)
-      assert subscription_plan.name == "some name"
+      assert subscription_plan.name == "Basic Plan"
       assert subscription_plan.stripe_price_id == "price_123"
     end
 
@@ -34,10 +34,10 @@ defmodule Lgb.SubscriptionsTest do
 
     test "update_subscription_plan/2 with valid data updates the subscription_plan" do
       subscription_plan = subscription_plan_fixture()
-      update_attrs = %{name: "some updated name", stripe_price_id: "price_456"}
+      update_attrs = %{name: "Premium Plan", stripe_price_id: "price_456"}
 
       assert {:ok, %SubscriptionPlan{} = subscription_plan} = Subscriptions.update_subscription_plan(subscription_plan, update_attrs)
-      assert subscription_plan.name == "some updated name"
+      assert subscription_plan.name == "Premium Plan"
       assert subscription_plan.stripe_price_id == "price_456"
     end
 
