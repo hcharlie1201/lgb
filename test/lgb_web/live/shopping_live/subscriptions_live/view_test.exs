@@ -17,6 +17,7 @@ defmodule LgbWeb.ShoppingLive.SubscriptionsLive.ViewTest do
       for plan <- plans do
         assert html =~ plan.name
         assert html =~ plan.stripe_price_id
+        assert html =~ "$#{plan.amount |> Decimal.new() |> Decimal.div(100)}"
       end
     end
 
