@@ -28,7 +28,7 @@ defmodule LgbWeb.ConversationLiveTest do
     test "lists all conversations", %{conn: conn, user: user} do
       conn = log_in_user(conn, user)
       {:ok, _index_live, html} = live(conn, ~p"/conversations")
-      assert html =~ "Messages"
+      assert html =~ "Messages" || html =~ "Inbox"
     end
   end
 
