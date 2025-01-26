@@ -72,19 +72,23 @@ defmodule LgbWeb.ProfileLiveTest do
     test "updates profile", %{conn: conn} do
       {:ok, edit_live, _html} = live(conn, ~p"/profiles/current")
 
-      assert edit_live
-             |> form("#my-profile", profile: @update_attrs)
+      {:ok, view, _html} = live(conn, ~p"/profiles/current")
+
+      assert view
+             |> form("#my-profile", handle: "some updated handle")
              |> render_submit()
 
-      html = render(edit_live)
+      html = render(view)
       assert html =~ "some updated handle"
     end
 
     test "validates profile attributes", %{conn: conn} do
       {:ok, edit_live, _html} = live(conn, ~p"/profiles/current")
 
-      assert edit_live
-             |> form("#my-profile", profile: @invalid_attrs)
+      {:ok, view, _html} = live(conn, ~p"/profiles/current")
+
+      assert view
+             |> form("#my-profile", handle: nil)
              |> render_change() =~ "Select your height"
     end
   end
