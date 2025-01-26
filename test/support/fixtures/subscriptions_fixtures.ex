@@ -11,8 +11,9 @@ defmodule Lgb.SubscriptionsFixtures do
     {:ok, subscription_plan} =
       attrs
       |> Enum.into(%{
-        name: "some name",
-        stripe_price_id: "price_123",
+        name: "Premium Plan",
+        stripe_price_id:
+          "price_#{"#{:crypto.strong_rand_bytes(24) |> Base.url_encode64(padding: false)}"}",
         amount: 1000
       })
       |> Lgb.Subscriptions.create_subscription_plan()

@@ -8,7 +8,7 @@ defmodule Lgb.ProfilesTest do
   describe "profiles" do
     alias Lgb.Profiles.Profile
 
-    @invalid_attrs %{handle: nil, state: nil, zip: nil, dob: nil, height_cm: nil, weight_lb: nil, city: nil, biography: nil}
+    @invalid_attrs %{age: 0}
 
     setup do
       user = user_fixture()
@@ -55,6 +55,7 @@ defmodule Lgb.ProfilesTest do
 
     test "update_profile/2 with valid data updates the profile", %{user: user} do
       profile = profile_fixture(user)
+
       update_attrs = %{
         handle: "updated handle",
         state: "updated state",
@@ -97,19 +98,24 @@ defmodule Lgb.ProfilesTest do
     test "generate_height_options/0 returns list of height options" do
       options = Profiles.generate_height_options()
       assert length(options) > 0
+
       assert Enum.all?(options, fn {label, value} ->
-        is_binary(label) and is_integer(value)
-      end)
+               is_binary(label) and is_integer(value)
+             end)
+
       # Test a specific value
       assert {"5 ft 8 in", 173} in options
     end
 
     test "generate_weight_options/0 returns list of weight options" do
       options = Profiles.generate_weight_options()
-      assert length(options) == 201  # 100 to 300 lbs
+      # 100 to 300 lbs
+      assert length(options) == 201
+
       assert Enum.all?(options, fn {label, value} ->
-        is_binary(label) and is_integer(value)
-      end)
+               is_binary(label) and is_integer(value)
+             end)
+
       # Test a specific value
       assert {"150 lbs", 150} in options
     end
@@ -118,11 +124,14 @@ defmodule Lgb.ProfilesTest do
   describe "profile search" do
     setup do
       user = user_fixture()
-      profile = profile_fixture(user, %{
-        height_cm: 170,
-        weight_lb: 150,
-        age: 25
-      })
+
+      profile =
+        profile_fixture(user, %{
+          height_cm: 170,
+          weight_lb: 150,
+          age: 25
+        })
+
       %{profile: profile}
     end
 
@@ -137,7 +146,7 @@ defmodule Lgb.ProfilesTest do
       }
 
       filters = Profiles.create_filter(params)
-      
+
       # Test all filter combinations
       expected_filters = [
         %{field: :height_cm, op: :>=, value: 165},
@@ -149,13 +158,13 @@ defmodule Lgb.ProfilesTest do
       ]
 
       assert length(filters) == length(expected_filters)
-      
+
       Enum.each(expected_filters, fn expected ->
         assert Enum.any?(filters, fn filter ->
-          filter.field == expected.field and 
-          filter.op == expected.op and 
-          filter.value == expected.value
-        end)
+                 filter.field == expected.field and
+                   filter.op == expected.op and
+                   filter.value == expected.value
+               end)
       end)
     end
 
@@ -165,20 +174,23 @@ defmodule Lgb.ProfilesTest do
       assert filters == []
     end
 
-    test "get_other_profiles_distance/1 returns query with distance calculation when geolocation present", %{profile: profile} do
+    test "get_other_profiles_distance/1 returns query with distance calculation when geolocation present",
+         %{profile: profile} do
       # Add a geolocation point to the profile
-      {:ok, updated_profile} = Profiles.update_profile(profile, %{
-        geolocation: %Geo.Point{coordinates: {-122.27652, 37.80574}, srid: 4326}
-      })
+      {:ok, updated_profile} =
+        Profiles.update_profile(profile, %{
+          geolocation: %Geo.Point{coordinates: {-122.27652, 37.80574}, srid: 4326}
+        })
 
       query = Profiles.get_other_profiles_distance(updated_profile)
-      
+
       assert query.__struct__ == Ecto.Query
       # Verify the query includes distance calculation in select_merge
       assert %{expr: {:merge, _, [_, {:%{}, _, [{:distance, _}]}]}} = query.select
     end
 
-    test "get_other_profiles_distance/1 returns basic query without distance when no geolocation", %{profile: profile} do
+    test "get_other_profiles_distance/1 returns basic query without distance when no geolocation",
+         %{profile: profile} do
       query = Profiles.get_other_profiles_distance(profile)
       assert query.__struct__ == Ecto.Query
       # Verify no distance calculation is included

@@ -61,8 +61,6 @@ defmodule Lgb.ChattingTest do
   end
 
   describe "messages" do
-    alias Lgb.Chatting.Message
-
     setup do
       chat_room = chat_room_fixture()
       user = user_fixture()
@@ -90,8 +88,6 @@ defmodule Lgb.ChattingTest do
   end
 
   describe "conversations" do
-    alias Lgb.Chatting.Conversation
-
     setup do
       user1 = user_fixture()
       user2 = user_fixture()
