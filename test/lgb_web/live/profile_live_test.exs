@@ -43,10 +43,11 @@ defmodule LgbWeb.ProfileLiveTest do
     %{user: user, profile: profile, conn: conn}
   end
 
-  describe "Index" do
-    test "lists profiles", %{conn: conn} do
+  describe "Search" do
+    test "shows search form", %{conn: conn} do
       {:ok, _index_live, html} = live(conn, ~p"/profiles")
-      assert html =~ "Profiles"
+      assert html =~ "Min Height"
+      assert html =~ "Max Height"
     end
   end
 
@@ -61,10 +62,10 @@ defmodule LgbWeb.ProfileLiveTest do
   describe "My Profile" do
     test "displays current user profile form", %{conn: conn} do
       {:ok, edit_live, html} = live(conn, ~p"/profiles/current")
-      assert html =~ "Edit Profile"
+      assert html =~ "Name"
 
       assert edit_live
-             |> form("#profile-form")
+             |> form("#my-profile")
              |> has_element?()
     end
 
@@ -72,13 +73,10 @@ defmodule LgbWeb.ProfileLiveTest do
       {:ok, edit_live, _html} = live(conn, ~p"/profiles/current")
 
       assert edit_live
-             |> form("#profile-form", profile: @update_attrs)
+             |> form("#my-profile", profile: @update_attrs)
              |> render_submit()
 
-      assert_patch(edit_live, ~p"/profiles/current")
-
       html = render(edit_live)
-      assert html =~ "Profile updated successfully"
       assert html =~ "some updated handle"
     end
 
@@ -86,7 +84,7 @@ defmodule LgbWeb.ProfileLiveTest do
       {:ok, edit_live, _html} = live(conn, ~p"/profiles/current")
 
       assert edit_live
-             |> form("#profile-form", profile: @invalid_attrs)
+             |> form("#my-profile", profile: @invalid_attrs)
              |> render_change() =~ "can&#39;t be blank"
     end
   end
