@@ -175,12 +175,7 @@ defmodule Lgb.ProfilesTest do
       
       assert query.__struct__ == Ecto.Query
       # Verify the query includes distance calculation
-      assert Enum.any?(query.select.expressions, fn expr ->
-        case expr do
-          {:selected_as, _, _} -> true
-          _ -> false
-        end
-      end)
+      assert query.select.expr |> elem(1) |> Enum.at(1) |> elem(1) |> Keyword.has_key?(:distance)
     end
 
     test "get_other_profiles_distance/1 returns basic query without distance when no geolocation", %{profile: profile} do

@@ -56,6 +56,7 @@ defmodule Lgb.Profiles do
   def create_profile(user, attrs \\ %{}) do
     Ecto.build_assoc(user, :profiles)
     |> Profile.changeset(attrs)
+    |> validate_required_fields()
     |> Repo.insert()
   end
 
@@ -74,6 +75,7 @@ defmodule Lgb.Profiles do
   def update_profile(%Profile{} = profile, attrs) do
     profile
     |> Profile.changeset(attrs)
+    |> validate_required_fields() 
     |> Repo.update()
   end
 
@@ -223,6 +225,12 @@ defmodule Lgb.Profiles do
           acc
       end
     end)
+  end
+
+  defp validate_required_fields(changeset) do
+    # Add validation for required fields
+    changeset
+    |> Ecto.Changeset.validate_required([:handle, :state, :zip, :city])
   end
 
   def sanitize(params) do
