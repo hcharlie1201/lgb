@@ -60,36 +60,50 @@ defmodule LgbWeb.ProfileLiveTest do
   end
 
   describe "My Profile" do
-    test "displays current user profile form", %{conn: conn} do
-      {:ok, edit_live, html} = live(conn, ~p"/profiles/current")
-      assert html =~ "Name"
-
-      assert edit_live
-             |> form("#my-profile")
-             |> has_element?()
+    test "displays current user profile form", %{conn: conn, profile: profile} do
+      {:ok, view, html} = live(conn, ~p"/profiles/current")
+      
+      # Check form exists with correct fields
+      assert html =~ "Edit Profile"
+      assert has_element?(view, "#my-profile")
+      assert has_element?(view, "#my-profile-handle")
+      assert has_element?(view, "#my-profile-city")
+      
+      # Verify current values are shown
+      assert html =~ profile.handle
+      assert html =~ profile.city
     end
 
     test "updates profile", %{conn: conn} do
-      {:ok, edit_live, _html} = live(conn, ~p"/profiles/current")
-
       {:ok, view, _html} = live(conn, ~p"/profiles/current")
 
+      # Submit form with valid data
       assert view
-             |> form("#my-profile", handle: "some updated handle")
+             |> form("#my-profile", profile: @update_attrs)
              |> render_submit()
 
-      html = render(view)
-      assert html =~ "some updated handle"
+      # Wait for the update to process
+      :timer.sleep(100)
+      
+      # Verify changes were applied
+      updated_html = render(view)
+      assert updated_html =~ @update_attrs.handle
+      assert updated_html =~ @update_attrs.city
+      assert updated_html =~ "Profile updated successfully"
     end
 
     test "validates profile attributes", %{conn: conn} do
-      {:ok, edit_live, _html} = live(conn, ~p"/profiles/current")
-
       {:ok, view, _html} = live(conn, ~p"/profiles/current")
 
-      assert view
-             |> form("#my-profile", handle: nil)
-             |> render_change() =~ "Select your height"
+      # Submit invalid data
+      html = view
+             |> form("#my-profile", profile: @invalid_attrs)
+             |> render_change()
+      
+      # Verify validation errors
+      assert html =~ "can&#39;t be blank"
+      assert html =~ "Handle can&#39;t be blank"
+      assert html =~ "City can&#39;t be blank"
     end
   end
 end
