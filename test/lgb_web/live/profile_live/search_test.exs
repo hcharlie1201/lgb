@@ -13,7 +13,8 @@ defmodule LgbWeb.ProfileLive.SearchTest do
         age: 25,
         geolocation: %Geo.Point{coordinates: {-122.27652, 37.80574}, srid: 4326}
       }
-      {:ok, profile} = Lgb.Profiles.create_profile(attrs, user)
+
+      {:ok, profile} = Lgb.Profiles.create_profile(user, attrs)
       %{profile: profile}
     end
 
@@ -42,11 +43,16 @@ defmodule LgbWeb.ProfileLive.SearchTest do
       {:ok, view, _html} = live(conn, ~p"/profiles")
 
       # Test minimum age validation
-      view
-      |> form("#search-profile", %{"min_age" => "15"})
-      |> render_change()
+      result =
+        view
+        |> form("#search-profile", %{
+          min_age: 10
+        })
+        |> render_submit()
 
-      assert has_element?(view, ".invalid-feedback", "Age must be between 18 and 100")
+      IO.inspect(result)
+
+      assert has_element?(result, ".invalid-feedback", "Age must be between 18 and 100")
 
       # Test maximum age validation
       view
@@ -60,32 +66,44 @@ defmodule LgbWeb.ProfileLive.SearchTest do
       |> form("#search-profile", %{"min_age" => "30", "max_age" => "25"})
       |> render_change()
 
-      assert has_element?(view, ".invalid-feedback", "Maximum age must be greater than or equal to minimum age")
+      assert has_element?(
+               view,
+               ".invalid-feedback",
+               "Maximum age must be greater than or equal to minimum age"
+             )
     end
 
     test "validates weight range", %{conn: conn} do
-      {:ok, view, _html} = live(conn, ~p"/profiles")
+      {:ok, view, _html} = live(conn, ~p"/profiles/")
 
       # Test minimum weight validation
-      view
-      |> form("#search-profile", %{"min_weight" => "0"})
-      |> render_change()
+      result =
+        view
+        |> form("#search-profile", %{"min_weight" => 0})
+        |> render_submit()
 
-      assert has_element?(view, ".invalid-feedback", "Weight must be between greater than 0")
+      IO.inspect(result)
+
+      assert has_element?(result, "Weight must be between greater than 0")
 
       # Test maximum weight validation
-      view
-      |> form("#search-profile", %{"max_weight" => "401"})
-      |> render_change()
+      result =
+        view
+        |> form("#search-profile", %{"max_weight" => "401"})
+        |> render_change()
 
-      assert has_element?(view, ".invalid-feedback", "Weight must be between less than 400 lbs")
+      assert has_element?(result, "Weight must be between less than 400 lbs")
 
       # Test weight order validation
-      view
-      |> form("#search-profile", %{"min_weight" => "200", "max_weight" => "150"})
-      |> render_change()
+      result =
+        view
+        |> form("#search-profile", %{"min_weight" => "200", "max_weight" => "150"})
+        |> render_change()
 
-      assert has_element?(view, ".invalid-feedback", "Maximum weight must be greater than or equal to minimum weight")
+      assert has_element?(
+               result,
+               "Maximum weight must be greater than or equal to minimum weight"
+             )
     end
 
     test "navigates to results page on valid search", %{conn: conn} do
