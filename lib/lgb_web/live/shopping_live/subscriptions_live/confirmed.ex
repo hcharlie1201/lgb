@@ -1,13 +1,8 @@
 defmodule LgbWeb.ShoppingLive.SubscriptionsLive.Confirmed do
-  alias Lgb.Accounts.User
-  alias Lgb.Profiles
-  alias Lgb.Profiles.Profile
-  alias Lgb.Subscriptions
-  alias Lgb.Billing
-  require Logger
   use LgbWeb, :live_view
+  require Logger
 
-  def mount(params, _session, socket) do
+  def mount(_params, _session, socket) do
     {:ok, socket}
   end
 

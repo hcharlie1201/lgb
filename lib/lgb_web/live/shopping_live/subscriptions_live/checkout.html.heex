@@ -1,6 +1,7 @@
 <script src="https://js.stripe.com/v3/">
 </script>
 <.form
+  for={%{}}
   phx-hook="StripeCheckout"
   id="stripe-checkout-form"
   data-clientsecret={@client_secret}
