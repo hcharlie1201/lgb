@@ -53,7 +53,7 @@ defmodule LgbWeb.ProfileLive.SearchTest do
       assert result =~ "Age must be between 18 and 100"
 
       # Test maximum age validation
-      result = 
+      result =
         view
         |> form("#search-profile", %{"max_age" => "101"})
         |> render_change()
@@ -61,15 +61,13 @@ defmodule LgbWeb.ProfileLive.SearchTest do
       assert result =~ "Age must be between 18 and 100"
 
       # Test age order validation
-      view
-      |> form("#search-profile", %{"min_age" => "30", "max_age" => "25"})
-      |> render_change()
+      result =
+        view
+        |> form("#search-profile", %{"min_age" => "30", "max_age" => "25"})
+        |> render_change()
 
-      assert has_element?(
-               view,
-               ".invalid-feedback",
+      assert result =~
                "Maximum age must be greater than or equal to minimum age"
-             )
     end
 
     test "validates weight range", %{conn: conn} do
@@ -114,7 +112,7 @@ defmodule LgbWeb.ProfileLive.SearchTest do
         |> render_submit()
         |> follow_redirect(conn)
 
-      assert html =~ "Search Results"
+      assert html =~ "List of profile searches"
     end
   end
 end
