@@ -2,8 +2,6 @@ defmodule LgbWeb.ProfileLive.MyProfileTest do
   use LgbWeb.ConnCase
   import Lgb.AccountsFixtures
   import Phoenix.LiveViewTest
-  alias Lgb.Accounts
-  alias Lgb.Profiles
 
   describe "MyProfile LiveView" do
     setup do
@@ -42,7 +40,10 @@ defmodule LgbWeb.ProfileLive.MyProfileTest do
         "age" => "25",
         "height_cm" => "170",
         "weight_lb" => "150",
-        "biography" => "Test bio"
+        "biography" => "Test bio",
+        "city" => "Test City",
+        "state" => "CA",
+        "zip" => "12345"
       }
 
       render_submit(view, "update_profile", profile_params)
@@ -53,6 +54,9 @@ defmodule LgbWeb.ProfileLive.MyProfileTest do
       assert profile.height_cm == 170
       assert profile.weight_lb == 150
       assert profile.biography == "Test bio"
+      assert profile.city == "Test City"
+      assert profile.state == "CA"
+      assert profile.zip == "12345"
     end
 
     test "shows error with invalid age", %{conn: conn, user: user} do
@@ -61,8 +65,7 @@ defmodule LgbWeb.ProfileLive.MyProfileTest do
 
       profile_params = %{
         "handle" => "TestUser",
-        # Age below 18
-        "age" => "15",
+        "age" => "15", # Age below 18
         "height_cm" => "170",
         "weight_lb" => "150"
       }
@@ -71,19 +74,34 @@ defmodule LgbWeb.ProfileLive.MyProfileTest do
       assert html =~ "Age must be between 18 and 100"
     end
 
-    test "handles map click event", %{conn: conn, user: user} do
+    test "validates required fields", %{conn: conn, user: user} do
       conn = log_in_user(conn, user)
       {:ok, view, _html} = live(conn, ~p"/profiles/current")
 
-      # Mock response from Google Reverse Geocoding
-      lat = 37.7749
-      lng = -122.4194
+      profile_params = %{
+        "handle" => "",
+        "age" => "",
+        "height_cm" => "",
+        "weight_lb" => ""
+      }
 
-      # Simulate map click
-      render_hook(view, "map_clicked", %{"lat" => lat, "lng" => lng})
+      html = render_submit(view, "update_profile", profile_params)
+      assert html =~ "can&#39;t be blank"
+    end
 
-      # Verify the form was updated with the new location
-      assert has_element?(view, "#mapid")
+    test "validates handle format", %{conn: conn, user: user} do
+      conn = log_in_user(conn, user)
+      {:ok, view, _html} = live(conn, ~p"/profiles/current")
+
+      profile_params = %{
+        "handle" => "test@invalid",
+        "age" => "25",
+        "height_cm" => "170",
+        "weight_lb" => "150"
+      }
+
+      html = render_submit(view, "update_profile", profile_params)
+      assert html =~ "has invalid format"
     end
   end
 end
