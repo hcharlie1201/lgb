@@ -9,15 +9,15 @@ defmodule Lgb.Subscriptions do
   alias Lgb.Subscriptions.SubscriptionPlan
 
   @doc """
-  Returns the list of subscrpition_plans.
+  Returns the list of subscription_plans.
 
   ## Examples
 
-      iex> list_subscrpition_plans()
+      iex> list_subscription_plans()
       [%SubscriptionPlan{}, ...]
 
   """
-  def list_subscrpition_plans do
+  def list_subscription_plans do
     Repo.all(SubscriptionPlan)
   end
 
@@ -54,20 +54,18 @@ defmodule Lgb.Subscriptions do
   """
 
   def fetch_subscription_plan_metadata(subscription_plan) do
-    http_response =
-      Lgb.ThirdParty.Stripe.Plans.get!("/" <> subscription_plan.stripe_price_id)
+    case Lgb.ThirdParty.Stripe.Plans.get("/" <> subscription_plan.stripe_price_id) do
+      {:ok, http_response} ->
+        case Poison.decode(http_response.body) do
+          {:ok, response} ->
+            subscription_plan
+            |> Map.put(:amount, response["unit_amount"])
+            |> Map.put(:interval_count, response["recurring"]["interval_count"])
+            |> Map.put(:interval, response["recurring"]["interval"])
 
-    response =
-      Poison.decode!(http_response.body)
-
-    case Lgb.Repo.transaction(fn ->
-           subscription_plan
-           |> Map.put(:amount, response["unit_amount"])
-           |> Map.put(:interval_count, response["recurring"]["interval_count"])
-           |> Map.put(:interval, response["recurring"]["interval"])
-         end) do
-      {:ok, updated_subscription_plan} ->
-        updated_subscription_plan
+          {:error, _} ->
+            subscription_plan
+        end
 
       {:error, _} ->
         subscription_plan
