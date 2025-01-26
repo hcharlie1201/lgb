@@ -103,11 +103,13 @@ defmodule LgbWeb.ProfileLive.Search do
     end
   end
 
+  defp validate_age_order(errors, _params), do: errors
+
   defp validate_weight_order(errors, %{"min_weight" => min_weight, "max_weight" => max_weight})
        when min_weight != "" and max_weight != "" do
     if String.to_integer(max_weight) < String.to_integer(min_weight) do
       [
-        {:max_weight, {"Maximum weight must be greater than or equal to minimum age", []}}
+        {:max_weight, {"Maximum weight must be greater than or equal to minimum weight", []}}
         | errors
       ]
     else

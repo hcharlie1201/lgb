@@ -5,7 +5,17 @@ defmodule LgbWeb.ProfileLive.SearchTest do
   import Lgb.ProfilesFixtures
 
   describe "Profile search" do
-    setup :register_and_log_in_user
+    setup [:register_and_log_in_user, :create_profile]
+
+    def create_profile(%{user: user}) do
+      attrs = %{
+        handle: "test_user",
+        age: 25,
+        geolocation: %Geo.Point{coordinates: {-122.27652, 37.80574}, srid: 4326}
+      }
+      {:ok, profile} = Lgb.Profiles.create_profile(attrs, user)
+      %{profile: profile}
+    end
 
     test "renders search form", %{conn: conn} do
       {:ok, view, _html} = live(conn, ~p"/profiles")
