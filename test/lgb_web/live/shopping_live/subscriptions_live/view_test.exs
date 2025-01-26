@@ -1,6 +1,7 @@
 defmodule LgbWeb.ShoppingLive.SubscriptionsLive.ViewTest do
   use LgbWeb.ConnCase
   import Phoenix.LiveViewTest
+  import Lgb.SubscriptionsFixtures
   alias Lgb.Subscriptions
   alias Lgb.Accounts
 
@@ -19,19 +20,22 @@ defmodule LgbWeb.ShoppingLive.SubscriptionsLive.ViewTest do
 
     test "shows completed checkout for subscribed users", %{conn: conn, user: user} do
       # Create stripe customer and subscription for user
-      {:ok, stripe_customer} = Accounts.create_stripe_customer(user, %{
-        "name" => "Test User",
-        "address" => %{
-          "line1" => "123 Test St",
-          "city" => "Test City",
-          "state" => "TS",
-          "postal_code" => "12345",
-          "country" => "US"
-        }
-      })
+      {:ok, stripe_customer} =
+        Lgb.Billing.create_stripe_customer(user, %{
+          "name" => "Test User",
+          "address" => %{
+            "line1" => "123 Test St",
+            "city" => "Test City",
+            "state" => "TS",
+            "postal_code" => "12345",
+            "country" => "US"
+          }
+        })
 
-      subscription_plan = Subscriptions.get_subscription_plan!("test_plan")
-      {:ok, _subscription} = Lgb.Billing.create_stripe_subscription(stripe_customer, subscription_plan)
+      subscription_plan = subscription_plan_fixture()
+
+      {:ok, _subscription} =
+        Lgb.Billing.create_stripe_subscription(stripe_customer, subscription_plan)
 
       {:ok, view, _html} = live(conn, ~p"/shopping/subscriptions")
       assert has_element?(view, "[data-role='subscription-plans']")
