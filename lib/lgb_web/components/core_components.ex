@@ -778,4 +778,19 @@ defmodule LgbWeb.CoreComponents do
     </div>
     """
   end
+
+  @doc """
+  card component
+  """
+
+  attr :class, :string, default: nil, doc: "Custom CSS classes to be added to the card."
+  slot :inner_block, required: true
+
+  def card(assigns) do
+    ~H"""
+    <div class={["border border-gray-200 p-4 rounded-md", @class]}>
+      {render_slot(@inner_block)}
+    </div>
+    """
+  end
 end

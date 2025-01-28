@@ -1,21 +1,43 @@
-<.header class="text-center">
-  Welcome to your chat convo {@conversation.id}
-</.header>
-<div>
-  <div
-    id="conversation-message-#{@conversation.id}"
-    phx-update="stream"
-    phx-viewport-top="load_more"
-  >
-    <div :for={{dom_id, message} <- @streams.all_messages} id={dom_id}>
-      <p>{message.content} {message.profile.id}</p>
+<.page_align>
+  <.card class="flex flex-col h-screen">
+    <!-- Chat Header -->
+    <.card class="flex justify-between items-center">
+      <div class="flex items-center align-middle gap-2">
+        <img
+          src={Lgb.Profiles.ProfilePicture.get_picture_url(@other_profile.first_picture)}
+          alt="Avatar"
+          class="w-12 h-12 sm:w-16 sm:h-16 rounded-full object-cover"
+        />
+        <span class="font-semibold text-lg">{@other_profile.handle}</span>
+      </div>
+      <span class="text-sm text-green-500">Online</span>
+    </.card>
+    <div
+      id="conversation-message-#{@conversation.id}"
+      phx-update="stream"
+      phx-viewport-top="load_more"
+      class="flex-1 overflow-y-auto bg-white pt-4 space-y-2 w-full"
+    >
+      <div :for={{dom_id, message} <- @streams.all_messages} id={dom_id}>
+        <div class={"flex " <> if message.profile.id == @current_user.id, do: "justify-end", else: "justify-start"}>
+          <div class={"p-3 rounded-lg max-w-[70%] " <> if message.profile.id == @current_user.id, do: "bg-green-100", else: "bg-purple-100"}>
+            {message.content} - {Calendar.strftime(message.inserted_at, "%I:%M %p")}
+          </div>
+        </div>
+      </div>
     </div>
-  </div>
-  <.simple_form for={@form} phx-change="validate" phx-submit="send">
-    <.input field={@form[:content]} name="content" />
-    <:actions>
-      <.button>Send</.button>
-    </:actions>
-  </.simple_form>
-  <.back navigate={~p"/conversations"}>Back to conversations</.back>
-</div>
+    <.simple_form for={@form} phx-change="validate" phx-submit="send">
+      <div class="flex w-full space-x-2 p-4 bg-white rounded-b-lg shadow-sm">
+        <.input
+          class="flex-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          field={@form[:content]}
+          name="content"
+          placeholder="Type a message..."
+        />
+        <.button class="px-4 py-2 bg-colorPrimary text-white rounded-lg hover:bg-colorPrimary focus:outline-none focus:ring-2 focus:ring-blue-500">
+          Send
+        </.button>
+      </div>
+    </.simple_form>
+  </.card>
+</.page_align>

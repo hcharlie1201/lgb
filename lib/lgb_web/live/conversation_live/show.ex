@@ -12,6 +12,17 @@ defmodule LgbWeb.ConversationLive.Show do
   def handle_params(%{"id" => id}, _url, socket) do
     conversation = Chatting.get_conversation(id)
     current_user = socket.assigns.current_user
+
+    # Determine the "other profile" (the person the current user is chatting with)
+    other_profile =
+      cond do
+        conversation.sender_profile_id == current_user.id -> conversation.receiver_profile
+        conversation.receiver_profile_id == current_user.id -> conversation.sender_profile
+        # Handle the case where the current user is not part of the conversation
+        true -> nil
+      end
+
+    other_profile = Repo.preload(other_profile, :first_picture)
     current_profile = Lgb.Accounts.User.current_profile(current_user)
 
     all_messages =
@@ -22,7 +33,6 @@ defmodule LgbWeb.ConversationLive.Show do
 
     {:noreply,
      socket
-     |> assign(:page_title, "Chat")
      |> assign(
        form:
          to_form(
@@ -41,6 +51,7 @@ defmodule LgbWeb.ConversationLive.Show do
          })
      )
      |> assign(conversation: conversation)
+     |> assign(other_profile: other_profile)
      |> stream(:all_messages, all_messages)}
   end
 

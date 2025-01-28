@@ -234,6 +234,39 @@ defmodule Lgb.Chatting do
     Repo.all(query)
   end
 
+  def list_conversation_messages_and_metadata(conversation_id, current_profile_id) do
+    conversations = get_conversation(conversation_id)
+
+    conversations
+    |> Repo.preload([:conversation_messages])
+    |> Enum.map(fn conversation ->
+      # Determine which profile is the "other" person
+      other_profile =
+        case conversation do
+          %{sender_profile_id: ^current_profile_id} -> conversation.receiver_profile
+          %{receiver_profile_id: ^current_profile_id} -> conversation.sender_profile
+        end
+
+      # Preload the other profile's first picture
+      other_profile = Repo.get(Profile, other_profile.id) |> Repo.preload(:first_picture)
+
+      # # Separate messages into "my_messages" and "other_messages"
+      # {my_messages, other_messages} =
+      #   conversation.conversation_messages
+      #   |> Enum.split_with(fn message ->
+      #     message.sender_profile_id == current_profile_id
+      #   end)
+
+      # # Sort messages by inserted_at (most recent first)
+      # sorted_my_messages = Enum.sort_by(my_messages, & &1.inserted_at, :desc)
+      # sorted_other_messages = Enum.sort_by(other_messages, & &1.inserted_at, :desc)
+
+      # Add metadata to the conversation struct
+      conversation
+      |> Map.put(:other_profile, other_profile)
+    end)
+  end
+
   @doc """
   Gets a single conversation_message.
 
