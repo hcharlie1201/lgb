@@ -316,6 +316,7 @@ defmodule Lgb.Chatting do
   end
 
   alias Lgb.Chatting.Conversation
+  alias Lgb.Profiles.Profile
 
   def list_conversations(profile) do
     query =
@@ -324,6 +325,35 @@ defmodule Lgb.Chatting do
         order_by: [asc: c.inserted_at]
 
     Repo.all(query)
+  end
+
+  def preload_and_transform_conversations(conversations, current_profile_id) do
+    conversations
+    |> Repo.preload([:sender_profile, :receiver_profile, :conversation_messages])
+    |> Enum.map(fn conversation ->
+      # Determine which profile is the "other" person
+      other_profile =
+        case conversation do
+          %{sender_profile_id: ^current_profile_id} -> conversation.receiver_profile
+          %{receiver_profile_id: ^current_profile_id} -> conversation.sender_profile
+        end
+
+      # Add the other_profile to the conversation struct
+      other_profile = Repo.get(Profile, other_profile.id) |> Repo.preload(:first_picture)
+
+      last_message =
+        conversation.conversation_messages
+        |> Enum.sort_by(& &1.inserted_at, :desc)
+        |> List.first()
+
+      conversation
+      |> Map.put(:other_profile, other_profile)
+      |> Map.put(:last_message, last_message)
+    end)
+  end
+
+  def get_profile_picture(profile) do
+    Repo.get(Profile, profile.id) |> Repo.preload(:latest_picture)
   end
 
   def get_conversation(id) do

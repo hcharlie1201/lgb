@@ -3,24 +3,26 @@ defmodule LgbWeb.DashboardLive do
 
   def render(assigns) do
     ~H"""
-    <div class="flex justify-center w-screen">
-      <div class="flex flex-col border border-colorPrimary rounded-md">
-        <ul class="flex flex-col w-80 text-center">
-          <.link class="hover:bg-colorPrimary p-4" navigate={~p"/profiles/current"}>My Profile</.link>
-          <.link class="hover:bg-colorPrimary p-4" navigate={~p"/profiles"}>Search profiles</.link>
-          <.link class="hover:bg-colorPrimary p-4" navigate={~p"/conversations"}>Inbox/Chats</.link>
-          <.link class="hover:bg-colorPrimary p-4" navigate={~p"/chat_rooms"}>Go to chatroom</.link>
-          <.link class="hover:bg-colorPrimary p-4" navigate={~p"/shopping/subscriptions"}>
-            Premium Features
-          </.link>
-          <%= if @stripe_customer do %>
-            <.link class="hover:bg-colorPrimary p-4" href={~p"/account"}>
-              My Account
-            </.link>
-          <% end %>
-        </ul>
-      </div>
-    </div>
+    <.page_align>
+      <.header>
+        Hi welcome to BiBi. This site is a meeting place for bisexual men and women who are looking for genuine connections,
+        meaningful relationships, and long-term love. Whether you’re seeking a deep emotional bond or a
+        committed partnership, this platform offers a welcoming space to connect, chat, and build something real – and it’s free!
+      </.header>
+      <br />
+      <.header>
+        Global Users
+      </.header>
+      <.header>
+        New users
+      </.header>
+      <.header>
+        Members that viewed you
+      </.header>
+      <.header>
+        Members that heart you
+      </.header>
+    </.page_align>
     """
   end
 

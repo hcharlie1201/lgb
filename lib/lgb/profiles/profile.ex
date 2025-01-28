@@ -14,6 +14,7 @@ defmodule Lgb.Profiles.Profile do
 
   schema "profiles" do
     has_many :profile_pictures, Lgb.Profiles.ProfilePicture
+    has_one :first_picture, Lgb.Profiles.ProfilePicture, foreign_key: :profile_id
     belongs_to :user, Lgb.Accounts.User
     field :handle, :string
     field :state, :string

@@ -16,6 +16,10 @@ defmodule LgbWeb.CoreComponents do
   """
   use Phoenix.Component
 
+  use Phoenix.VerifiedRoutes,
+    endpoint: LgbWeb.Endpoint,
+    router: LgbWeb.Router
+
   alias Phoenix.LiveView.JS
   import LgbWeb.Gettext
 
@@ -685,5 +689,93 @@ defmodule LgbWeb.CoreComponents do
   """
   def translate_errors(errors, field) when is_list(errors) do
     for {^field, {msg, opts}} <- errors, do: translate_error({msg, opts})
+  end
+
+  @doc """
+  Page Align
+  """
+  slot :inner_block, required: true
+
+  def page_align(assigns) do
+    ~H"""
+    <div class="min-h-screen flex">
+      <nav class="fixed md:relative md:h-screen w-full md:w-20 bg-gray-50 flex flex-row md:flex-col justify-around md:justify-start items-center py-4 bottom-0 md:top-0 md:left-0">
+        <.link
+          navigate={~p"/profiles/current"}
+          class="flex flex-col items-center p-4 hover:bg-colorPrimary hover:text-white transition-colors duration-200"
+        >
+          My Profile
+        </.link>
+        <.link
+          class="flex flex-col items-center p-4 hover:bg-colorPrimary hover:text-white transition-colors duration-200"
+          navigate={~p"/profiles"}
+        >
+          Search profiles
+        </.link>
+        <.link
+          class="flex flex-col items-center p-4 hover:bg-colorPrimary hover:text-white transition-colors duration-200"
+          navigate={~p"/conversations"}
+        >
+          Inbox/Chats
+        </.link>
+        <.link
+          class="flex flex-col items-center p-4 hover:bg-colorPrimary hover:text-white transition-colors duration-200"
+          navigate={~p"/chat_rooms"}
+        >
+          Go to chatroom
+        </.link>
+        <.link
+          class="flex flex-col items-center p-4 hover:bg-colorPrimary hover:text-white transition-colors duration-200"
+          navigate={~p"/shopping/subscriptions"}
+        >
+          Premium Features
+        </.link>
+        <.link
+          class="flex flex-col items-center p-4 hover:bg-colorPrimary hover:text-white transition-colors duration-200"
+          href={~p"/account"}
+        >
+          My Account
+        </.link>
+      </nav>
+      <!-- Main Content -->
+      <main class="flex-1 p-4 pb-24 md:pb-4 md:pl-4">
+        <div class="max-w-5xl mx-auto">
+          {render_slot(@inner_block)}
+        </div>
+      </main>
+    </div>
+    """
+  end
+
+  attr :title, :string, required: true
+  attr :subtitle, :string
+  attr :picture_url, :string, required: true
+  attr :read, :boolean, default: false
+  slot :trailer, required: true
+
+  def list_tile(assigns) do
+    ~H"""
+    <div class="bg-white rounded-lg shadow p-3 sm:p-4">
+      <div class="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+        <img
+          src={@picture_url}
+          alt="Avatar"
+          class="w-12 h-12 sm:w-16 sm:h-16 rounded-full object-cover"
+        />
+        <div class="flex-1 min-w-0">
+          <h3 class="text-base sm:text-lg font-semibold text-gray-900 truncate">{@title}</h3>
+          <p class="text-sm sm:text-base text-gray-500 truncate">
+            {@subtitle}
+          </p>
+        </div>
+        <div class="flex items-center justify-between sm:justify-end w-full sm:w-auto gap-2">
+          <%= if !@read do %>
+            <div class="w-2 h-2 bg-colorSecondary rounded-full"></div>
+          <% end %>
+          {render_slot(@trailer)}
+        </div>
+      </div>
+    </div>
+    """
   end
 end
