@@ -206,6 +206,20 @@ defmodule Lgb.Chatting do
 
   alias Lgb.Chatting.ConversationMessage
 
+  def list_conversation_messages_by_page(conversation_id, page, per_page) do
+    offset = (page - 1) * per_page
+
+    query =
+      from cm in ConversationMessage,
+        where: cm.conversation_id == ^conversation_id,
+        order_by: [desc: cm.inserted_at],
+        limit: ^per_page,
+        offset: ^offset,
+        preload: [:profile, :conversation]
+
+    Repo.all(query)
+  end
+
   @doc """
   Returns the list of conversation_messages.
 

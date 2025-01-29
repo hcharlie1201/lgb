@@ -2,10 +2,12 @@ defmodule LgbWeb.ConversationLive.Show do
   alias Lgb.Chatting.ConversationMessage
   alias Lgb.Repo
   use LgbWeb, :live_view
+  @per_page 20
 
   alias Lgb.Chatting
 
   def mount(_params, _session, socket) do
+    socket = socket |> assign(:page, 1)
     {:ok, socket}
   end
 
@@ -26,7 +28,7 @@ defmodule LgbWeb.ConversationLive.Show do
     current_profile = Lgb.Accounts.User.current_profile(current_user)
 
     all_messages =
-      Chatting.list_conversation_messages!(conversation.id)
+      Chatting.list_conversation_messages_by_page(conversation.id, socket.assigns.page, @per_page)
 
     # gotta subscribe brotha
     LgbWeb.Endpoint.subscribe("conversation:#{id}")
@@ -91,6 +93,26 @@ defmodule LgbWeb.ConversationLive.Show do
       _ ->
         {:error, socket}
     end
+  end
+
+  def handle_event("load_more", _, socket) do
+    {:noreply, paginate_message(socket)}
+  end
+
+  defp paginate_message(socket) do
+    socket =
+      socket
+      |> update(:page, &(&1 + 1))
+
+    previous_messages =
+      Chatting.list_conversation_messages_by_page(
+        socket.assigns.conversation.id,
+        socket.assigns.page,
+        @per_page
+      )
+
+    socket = stream(socket, :all_messages, previous_messages, at: 0)
+    socket
   end
 
   def handle_info(%{event: "new_message", payload: message}, socket) do

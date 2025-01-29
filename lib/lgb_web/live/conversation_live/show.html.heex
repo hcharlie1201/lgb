@@ -1,3 +1,26 @@
+<script>
+  function scrollToBottom() {
+    const container = document.getElementById("conversation-messages");
+    if (container) {
+      container.scrollTo(0, container.scrollHeight);
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", scrollToBottom);
+
+  const observer = new MutationObserver((mutations) => {
+    for (const mutation of mutations) {
+      if (mutation.type === "childList") {
+        scrollToBottom();
+      }
+    }
+  });
+
+  const container = document.getElementById("conversation-messages");
+  if (container) {
+    observer.observe(container, { childList: true });
+  }
+</script>
 <.page_align>
   <.card class="flex flex-col h-screen">
     <!-- Chat Header -->
@@ -13,7 +36,7 @@
       <span class="text-sm text-green-500">Online</span>
     </.card>
     <div
-      id="conversation-message-#{@conversation.id}"
+      id="conversation-messages"
       phx-update="stream"
       phx-viewport-top="load_more"
       class="flex-1 overflow-y-auto bg-white pt-4 space-y-2 w-full"
