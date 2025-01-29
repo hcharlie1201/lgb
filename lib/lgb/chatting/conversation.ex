@@ -5,6 +5,7 @@ defmodule Lgb.Chatting.Conversation do
   schema "conversations" do
     belongs_to :sender_profile, Lgb.Profiles.Profile
     belongs_to :receiver_profile, Lgb.Profiles.Profile
+    has_many :conversation_messages, Lgb.Chatting.ConversationMessage
 
     timestamps(type: :utc_datetime)
   end

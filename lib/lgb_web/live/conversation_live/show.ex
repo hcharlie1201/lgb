@@ -2,10 +2,12 @@ defmodule LgbWeb.ConversationLive.Show do
   alias Lgb.Chatting.ConversationMessage
   alias Lgb.Repo
   use LgbWeb, :live_view
+  @per_page 20
 
   alias Lgb.Chatting
 
   def mount(_params, _session, socket) do
+    socket = socket |> assign(:page, 1)
     {:ok, socket}
   end
 
@@ -14,15 +16,25 @@ defmodule LgbWeb.ConversationLive.Show do
     current_user = socket.assigns.current_user
     current_profile = Lgb.Accounts.User.current_profile(current_user)
 
+    # Determine the "other profile" (the person the current user is chatting with)
+    other_profile =
+      cond do
+        conversation.sender_profile_id == current_profile.id -> conversation.receiver_profile
+        conversation.receiver_profile_id == current_profile.id -> conversation.sender_profile
+        # Handle the case where the current user is not part of the conversation
+        true -> nil
+      end
+
+    other_profile = Repo.preload(other_profile, :first_picture)
+
     all_messages =
-      Chatting.list_conversation_messages!(conversation.id)
+      Chatting.list_conversation_messages_by_page(conversation.id, socket.assigns.page, @per_page)
 
     # gotta subscribe brotha
     LgbWeb.Endpoint.subscribe("conversation:#{id}")
 
     {:noreply,
      socket
-     |> assign(:page_title, "Chat")
      |> assign(
        form:
          to_form(
@@ -41,6 +53,7 @@ defmodule LgbWeb.ConversationLive.Show do
          })
      )
      |> assign(conversation: conversation)
+     |> assign(other_profile: other_profile)
      |> stream(:all_messages, all_messages)}
   end
 
@@ -80,6 +93,26 @@ defmodule LgbWeb.ConversationLive.Show do
       _ ->
         {:error, socket}
     end
+  end
+
+  def handle_event("load_more", _, socket) do
+    {:noreply, paginate_message(socket)}
+  end
+
+  defp paginate_message(socket) do
+    socket =
+      socket
+      |> update(:page, &(&1 + 1))
+
+    previous_messages =
+      Chatting.list_conversation_messages_by_page(
+        socket.assigns.conversation.id,
+        socket.assigns.page,
+        @per_page
+      )
+
+    socket = stream(socket, :all_messages, previous_messages, at: 0)
+    socket
   end
 
   def handle_info(%{event: "new_message", payload: message}, socket) do

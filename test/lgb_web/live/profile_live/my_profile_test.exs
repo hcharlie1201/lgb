@@ -17,7 +17,7 @@ defmodule LgbWeb.ProfileLive.MyProfileTest do
       conn = log_in_user(conn, user)
       {:ok, view, html} = live(conn, ~p"/profiles/current")
 
-      assert html =~ "My Pictures"
+      assert html =~ "Gallery"
       assert html =~ "Bio"
 
       # Verify form fields are present

@@ -5,6 +5,7 @@ defmodule LgbWeb.ConversationLiveTest do
   import Lgb.MessagingFixtures
   import Lgb.AccountsFixtures
   import Lgb.ProfilesFixtures
+  import Lgb.ChattingFixtures
 
   setup do
     user = user_fixture()
@@ -14,6 +15,7 @@ defmodule LgbWeb.ConversationLiveTest do
     other_profile = profile_fixture(other_user)
 
     conversation = conversation_fixture(profile, other_profile)
+    conversation_message_fixture(conversation, profile, %{content: "wsup"})
 
     %{
       user: user,
@@ -34,13 +36,13 @@ defmodule LgbWeb.ConversationLiveTest do
   describe "Show" do
     test "displays conversation", %{conn: conn, user: user, conversation: conversation} do
       conn = log_in_user(conn, user)
-      {:ok, _show_live, html} = live(conn, ~p"/conversations/#{conversation}")
+      {:ok, _show_live, html} = live(conn, ~p"/conversations/#{conversation.id}")
       assert html =~ "Send"
     end
 
     test "can send message", %{conn: conn, user: user, conversation: conversation} do
       conn = log_in_user(conn, user)
-      {:ok, show_live, _html} = live(conn, ~p"/conversations/#{conversation}")
+      {:ok, show_live, _html} = live(conn, ~p"/conversations/#{conversation.id}")
 
       assert show_live
              |> form("#conversation-form", %{content: "Hello!"})

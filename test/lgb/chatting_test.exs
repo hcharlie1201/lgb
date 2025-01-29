@@ -4,6 +4,7 @@ defmodule Lgb.ChattingTest do
   alias Lgb.Chatting
   import Lgb.ChattingFixtures
   import Lgb.AccountsFixtures
+  import Lgb.ProfilesFixtures
 
   describe "chat_rooms" do
     alias Lgb.Chatting.ChatRoom

@@ -5,7 +5,6 @@ defmodule Lgb.ChattingFixtures do
   """
 
   alias Lgb.Chatting
-  alias Lgb.Profiles
 
   def chat_room_fixture(attrs \\ %{}) do
     {:ok, chat_room} =
@@ -29,24 +28,6 @@ defmodule Lgb.ChattingFixtures do
       })
 
     Chatting.create_message!(attrs)
-  end
-
-  def profile_fixture(user, attrs \\ %{}) do
-    attrs =
-      attrs
-      |> Enum.into(%{
-        id: System.unique_integer(),
-        handle: "some-handle-#{System.unique_integer()}",
-        age: 25,
-        height_cm: 170,
-        weight_lb: 150,
-        city: "some city",
-        state: "some state",
-        zip: "12345"
-      })
-
-    {:ok, profile} = Profiles.create_profile(user, attrs)
-    profile
   end
 
   def conversation_message_fixture(conversation, profile, attrs \\ %{}) do
