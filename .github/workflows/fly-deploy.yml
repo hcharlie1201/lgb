@@ -11,18 +11,52 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      # Set up Elixir (if not already done)
+      # Set up Elixir
       - name: Set up Elixir
         uses: erlef/setup-beam@v1
         with:
-          elixir-version: "1.14" # Use your Elixir version
-          otp-version: "25" # Use your OTP version
+          elixir-version: "1.15.7"
+          otp-version: "26.1.2"
+
+      # Set up Node.js (if needed)
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "18"
+
+      # Cache dependencies
+      - name: Restore dependencies cache
+        uses: actions/cache@v3
+        with:
+          path: deps
+          key: ${{ runner.os }}-mix-${{ hashFiles('**/mix.lock') }}
+          restore-keys: ${{ runner.os }}-mix-
+
+      - name: Cache Node.js dependencies
+        uses: actions/cache@v3
+        with:
+          path: assets/node_modules
+          key: ${{ runner.os }}-node-${{ hashFiles('assets/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
 
       # Install dependencies
       - name: Install dependencies
         run: mix deps.get
 
-      # Run Sentry package source code task
+      # Compile project
+      - name: Compile project
+        run: mix compile --warnings-as-errors
+
+      # Run tests
+      - name: Run tests
+        run: mix test
+
+      # Compile assets
+      - name: Compile assets
+        run: mix assets.deploy
+
+      # Package source code for Sentry
       - name: Package source code for Sentry
         run: mix sentry.package_source_code
 
@@ -31,3 +65,7 @@ jobs:
       - run: flyctl deploy --remote-only
         env:
           FLY_API_TOKEN: ${{ secrets.FLY_API_TOKEN }}
+
+      # Run database migrations (if needed)
+      - name: Run database migrations
+        run: flyctl migrate
