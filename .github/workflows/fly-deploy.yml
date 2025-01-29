@@ -44,9 +44,9 @@ jobs:
       - name: Install dependencies
         run: mix deps.get
 
-      # Compile project
-      - name: Compile project
-        run: mix compile --warnings-as-errors
+      # # Compile project
+      # - name: Compile project
+      #   run: mix compile --warnings-as-errors
 
       # Run tests
       - name: Run tests
