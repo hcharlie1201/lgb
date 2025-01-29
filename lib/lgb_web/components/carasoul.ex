@@ -6,7 +6,7 @@ defmodule MyAppWeb.Components.Carousel do
 
   def carousel(assigns) do
     ~H"""
-    <div class="relative w-full max-w-6xl mx-auto overflow-hidden rounded-lg shadow-lg">
+    <div class="relative w-full max-w-6xl mx-auto overflow-hidden border border-gray-200 p-4 rounded-md">
       <!-- Carousel Container -->
       <div
         class="relative h-96 flex space-x-4 transition-transform duration-500 ease-in-out"
@@ -28,7 +28,7 @@ defmodule MyAppWeb.Components.Carousel do
           </div>
         <% end %>
       </div>
-      
+
     <!-- Previous Button -->
       <button
         phx-click="prev"
@@ -36,7 +36,7 @@ defmodule MyAppWeb.Components.Carousel do
       >
         ←
       </button>
-      
+
     <!-- Next Button -->
       <button
         phx-click="next"
@@ -44,7 +44,7 @@ defmodule MyAppWeb.Components.Carousel do
       >
         →
       </button>
-      
+
     <!-- Indicators -->
       <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
         <%= for {_uploaded_file, index} <- Enum.with_index(@uploaded_files) do %>
