@@ -1,4 +1,5 @@
 defmodule LgbWeb.Endpoint do
+  use Sentry.PlugCapture
   use Phoenix.Endpoint, otp_app: :lgb
 
   # The session will be stored in the cookie and signed,
@@ -24,6 +25,8 @@ defmodule LgbWeb.Endpoint do
     from: :lgb,
     gzip: false,
     only: LgbWeb.static_paths()
+
+  plug Sentry.PlugContext
 
   # Code reloading can be explicitly enabled under the
   # :code_reloader configuration of your endpoint.

@@ -1,5 +1,3 @@
-# See https://fly.io/docs/app-guides/continuous-deployment-with-github-actions/
-
 name: Fly Deploy
 on:
   push:
@@ -9,9 +7,26 @@ jobs:
   deploy:
     name: Deploy app
     runs-on: ubuntu-latest
-    concurrency: deploy-group    # optional: ensure only one action runs at a time
+    concurrency: deploy-group # optional: ensure only one action runs at a time
     steps:
       - uses: actions/checkout@v4
+
+      # Set up Elixir (if not already done)
+      - name: Set up Elixir
+        uses: erlef/setup-beam@v1
+        with:
+          elixir-version: "1.14" # Use your Elixir version
+          otp-version: "25" # Use your OTP version
+
+      # Install dependencies
+      - name: Install dependencies
+        run: mix deps.get
+
+      # Run Sentry package source code task
+      - name: Package source code for Sentry
+        run: mix sentry.package_source_code
+
+      # Deploy to Fly.io
       - uses: superfly/flyctl-actions/setup-flyctl@master
       - run: flyctl deploy --remote-only
         env:
