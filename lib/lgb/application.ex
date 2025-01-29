@@ -21,6 +21,10 @@ defmodule Lgb.Application do
       LgbWeb.Endpoint
     ]
 
+    :logger.add_handler(:my_sentry_handler, Sentry.LoggerHandler, %{
+       config: %{metadata: [:file, :line]}
+     })
+
     # See https://hexdocs.pm/elixir/Supervisor.html
     # for other strategies and supported options
     opts = [strategy: :one_for_one, name: Lgb.Supervisor]
