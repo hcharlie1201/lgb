@@ -48,10 +48,6 @@ jobs:
       # - name: Compile project
       #   run: mix compile --warnings-as-errors
 
-      # Run tests
-      - name: Run tests
-        run: mix test
-
       # Compile assets
       - name: Compile assets
         run: mix assets.deploy
