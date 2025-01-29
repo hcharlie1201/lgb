@@ -31,7 +31,9 @@
           alt="Avatar"
           class="w-12 h-12 sm:w-16 sm:h-16 rounded-full object-cover"
         />
-        <span class="font-semibold text-lg">{@other_profile.handle}</span>
+        <span class="font-semibold text-lg">
+          <.link navigate={~p"/profiles/#{@other_profile.id}"}>{@other_profile.handle}</.link>
+        </span>
       </div>
       <span class="text-sm text-green-500">Online</span>
     </.card>

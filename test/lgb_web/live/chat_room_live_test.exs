@@ -12,7 +12,7 @@ defmodule LgbWeb.ChatRoomLiveTest do
   defp create_chat_room(_) do
     chat_room = chat_room_fixture()
     user = user_fixture()
-    %{chat_room: chat_room, user: user_fixture()}
+    %{chat_room: chat_room, user: user}
   end
 
   describe "Index" do

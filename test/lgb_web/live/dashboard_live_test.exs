@@ -8,11 +8,12 @@ defmodule LgbWeb.DashboardLiveTest do
     test "renders navigation links when logged in", %{conn: conn} do
       {:ok, view, _html} = live(conn, ~p"/dashboard")
 
-      assert has_element?(view, "a[href='/profiles/current']", "My Profile")
-      assert has_element?(view, "a[href='/profiles']", "Search profiles")
-      assert has_element?(view, "a[href='/conversations']", "Inbox/Chats")
-      assert has_element?(view, "a[href='/chat_rooms']", "Go to chatroom")
-      assert has_element?(view, "a[href='/shopping/subscriptions']", "Premium Features")
+      assert has_element?(view, "a[href='/profiles/current']", "Profile")
+      assert has_element?(view, "a[href='/profiles']", "Search")
+      assert has_element?(view, "a[href='/conversations']", "Inbox")
+      assert has_element?(view, "a[href='/chat_rooms']", "Chatroom")
+      assert has_element?(view, "a[href='/shopping/subscriptions']", "Premium")
+      assert has_element?(view, "a[href='/account']", "Account")
     end
 
     test "does not show My Account link without stripe customer", %{conn: conn} do
@@ -31,7 +32,7 @@ defmodule LgbWeb.DashboardLiveTest do
 
       {:ok, view, _html} = live(conn, ~p"/dashboard")
 
-      assert has_element?(view, "a[href='/account']", "My Account")
+      assert has_element?(view, "a[href='/account']", "Account")
     end
   end
 end

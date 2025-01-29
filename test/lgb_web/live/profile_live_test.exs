@@ -64,7 +64,7 @@ defmodule LgbWeb.ProfileLiveTest do
       {:ok, view, html} = live(conn, ~p"/profiles/current")
 
       # Check form exists with correct fields
-      assert html =~ "My Pictures"
+      assert html =~ "Gallery"
       assert has_element?(view, "#my-profile")
 
       # Verify current values are shown
@@ -73,8 +73,6 @@ defmodule LgbWeb.ProfileLiveTest do
     end
 
     test "updates profile", %{conn: conn} do
-      {:ok, view, _html} = live(conn, ~p"/profiles/current")
-
       {:ok, view, _html} = live(conn, ~p"/profiles/current")
 
       # Submit form with valid data
