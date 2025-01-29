@@ -82,5 +82,46 @@ defmodule LgbWeb.ChatRoomLive.ShowTest do
       html = render(view)
       assert html =~ "There are currently 1 users online"
     end
+
+    test "renders chat room with proper layout structure", %{conn: conn, chat_room: chat_room} do
+      {:ok, _view, html} = live(conn, ~p"/chat_rooms/#{chat_room}")
+      
+      # Verify main layout elements
+      assert html =~ ~r/<div class="flex">/
+      assert html =~ ~r/<div class="flex-2">/
+      assert html =~ ~r/<div class="flex-1 shadow-md outline h-\[400px\] overflow-y-auto"/
+    end
+
+    test "messages container has proper styling", %{conn: conn, chat_room: chat_room} do
+      {:ok, view, _html} = live(conn, ~p"/chat_rooms/#{chat_room}")
+      
+      container = view |> element("#messages-container")
+      html = render(container)
+      
+      # Verify container styling
+      assert html =~ "shadow-md"
+      assert html =~ "outline"
+      assert html =~ "overflow-y-auto"
+      assert html =~ "h-[400px]"
+    end
+
+    test "chat form has expected input and button", %{conn: conn, chat_room: chat_room} do
+      {:ok, view, _html} = live(conn, ~p"/chat_rooms/#{chat_room}")
+      
+      # Verify form elements
+      assert view |> element("form input[label='Chat']") |> has_element?()
+      assert view |> element("form button", "Send Message") |> has_element?()
+    end
+
+    test "displays messages in proper format", %{conn: conn, chat_room: chat_room, message: message} do
+      {:ok, view, _html} = live(conn, ~p"/chat_rooms/#{chat_room}")
+      
+      messages_table = view |> element("#messages")
+      html = render(messages_table)
+      
+      # Verify message display
+      assert html =~ message.content
+      assert view |> element("#messages-container .table") |> has_element?()
+    end
   end
 end
