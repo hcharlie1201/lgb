@@ -2,6 +2,7 @@ defmodule LgbWeb.ProfileLive.MyProfile do
   alias Lgb.Accounts.User
   alias Lgb.Profiles
   alias Lgb.Profiles.Profile
+  alias MyAppWeb.Components.Carousel
   require Logger
   use LgbWeb, :live_view
 
@@ -22,6 +23,7 @@ defmodule LgbWeb.ProfileLive.MyProfile do
     socket =
       socket
       |> assign(:uploaded_files, Profiles.list_profile_pictures(profile))
+      |> assign(:current_index, 0)
       |> allow_upload(:avatar, accept: ~w(image/*), max_entries: 3)
 
     {:ok, assign(socket, profile: profile, form: to_form(Profile.changeset(profile, %{})))}
@@ -99,6 +101,21 @@ defmodule LgbWeb.ProfileLive.MyProfile do
   @impl Phoenix.LiveView
   def handle_event("cancel-upload", %{"ref" => ref}, socket) do
     {:noreply, cancel_upload(socket, :avatar, ref)}
+  end
+
+  def handle_event("next", _, socket) do
+    current_index = rem(socket.assigns.current_index + 1, length(socket.assigns.uploaded_files))
+    {:noreply, assign(socket, current_index: current_index)}
+  end
+
+  def handle_event("prev", _, socket) do
+    current_index =
+      rem(
+        socket.assigns.current_index - 1 + length(socket.assigns.uploaded_files),
+        length(socket.assigns.uploaded_files)
+      )
+
+    {:noreply, assign(socket, current_index: current_index)}
   end
 
   # special case since form doesn't accept struct so we have to update it manually

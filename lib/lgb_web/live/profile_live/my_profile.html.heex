@@ -1,28 +1,6 @@
 <.page_align>
-  <div>
-    <h1>My Pictures</h1>
-    <table>
-      <tbody>
-        <%= for uploaded_file <- @uploaded_files do %>
-          <tr id={"uploaded-file-#{uploaded_file.id}"}>
-            <td>
-              <img
-                src={
-                  Lgb.Profiles.ProfilePictureUploader.url(
-                    {uploaded_file.image, uploaded_file},
-                    :original,
-                    signed: true
-                  )
-                }
-                alt="Uploaded file"
-              />
-            </td>
-          </tr>
-        <% end %>
-      </tbody>
-    </table>
-  </div>
-
+  <.header>Gallery</.header>
+  <Carousel.carousel current_index={@current_index} uploaded_files={@uploaded_files} />
   <.simple_form for={@form} id="my-profile" phx-submit="update_profile" phx-change="validate">
     <section phx-drop-target={@uploads.avatar.ref} class="flex flex-wrap">
       <article :for={entry <- @uploads.avatar.entries}>

@@ -1,5 +1,5 @@
-<div class="flex justify-center w-screen">
-  <div class="flex flex-col border border-colorPrimary rounded-md">
+<.page_align>
+  <.card class="flex flex-col">
     <%= for subscription_plan <- @subscription_plans do %>
       <div>
         <.header>{subscription_plan.name}</.header>
@@ -20,5 +20,5 @@
         </.link>
       <% end %>
     <% end %>
-  </div>
-</div>
+  </.card>
+</.page_align>
