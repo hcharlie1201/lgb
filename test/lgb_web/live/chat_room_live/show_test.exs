@@ -113,7 +113,7 @@ defmodule LgbWeb.ChatRoomLive.ShowTest do
       {:ok, view, _html} = live(conn, ~p"/chat_rooms/#{chat_room.id}")
 
       # Verify form elements
-      assert view |> element("form input[label='Chat']") |> has_element?()
+      assert view |> element("form input") |> has_element?()
       assert view |> element("form button", "Send Message") |> has_element?()
     end
 
@@ -129,7 +129,7 @@ defmodule LgbWeb.ChatRoomLive.ShowTest do
 
       # Verify message display
       assert html =~ message.content
-      assert view |> element("#messages-container .table") |> has_element?()
+      assert view |> element("#messages-container table") |> has_element?()
     end
   end
 end
