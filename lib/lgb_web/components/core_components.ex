@@ -827,7 +827,7 @@ defmodule LgbWeb.CoreComponents do
         if @no_padding do
           "p-0"
         else
-          "p-4 pb-24 md:pb-4 md:pl-24"
+          "p-4 pb-24 md:pb-4 md:px-24"
         end
       ]}>
         <div class={[

@@ -1,27 +1,4 @@
-<script>
-  function scrollToBottom() {
-    const container = document.getElementById("conversation-messages");
-    if (container) {
-      container.scrollTo(0, container.scrollHeight);
-    }
-  }
-
-  document.addEventListener("DOMContentLoaded", scrollToBottom);
-
-  const observer = new MutationObserver((mutations) => {
-    for (const mutation of mutations) {
-      if (mutation.type === "childList") {
-        scrollToBottom();
-      }
-    }
-  });
-
-  const container = document.getElementById("conversation-messages");
-  if (container) {
-    observer.observe(container, { childList: true });
-  }
-</script>
-<.page_align>
+<.page_align no_padding={true}>
   <.card class="flex flex-col h-screen">
     <!-- Chat Header -->
     <.card class="flex justify-between items-center">
@@ -41,7 +18,8 @@
       id="conversation-messages"
       phx-update="stream"
       phx-viewport-top="load_more"
-      class="flex-1 overflow-y-auto bg-white pt-4 space-y-2 w-full"
+      class="flex-1 h-[800px] overflow-y-auto"
+      phx-hook="ScrollBottom"
     >
       <div :for={{dom_id, message} <- @streams.all_messages} id={dom_id}>
         <div class={"flex " <> if message.profile.id == @current_user.id, do: "justify-end", else: "justify-start"}>
@@ -54,6 +32,7 @@
     <.simple_form for={@form} phx-change="validate" phx-submit="send">
       <div class="flex w-full space-x-2 p-4 bg-white rounded-b-lg shadow-sm">
         <.input
+          id="one-one-message"
           class="flex-1 p-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
           field={@form[:content]}
           name="content"
