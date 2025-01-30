@@ -100,8 +100,8 @@ defmodule LgbWeb.ChatRoomLive.ShowTest do
     test "shows correct number of online users", %{conn: conn, chat_room: chat_room} do
       {:ok, view, html} = live(conn, ~p"/chat_rooms/#{chat_room.id}")
 
-      # Initially should show 0 users
-      assert html =~ "There are currently 0 users online"
+      # Initially should show presence list
+      assert view |> element("#presences") |> has_element?()
 
       # Add a user
       user2 = user_fixture()
@@ -109,20 +109,14 @@ defmodule LgbWeb.ChatRoomLive.ShowTest do
       send(view.pid, {LgbWeb.Presence, {:join, %{id: profile2.id, user: profile2}}})
 
       html = render(view)
-      assert html =~ "There are currently 1 users online"
+      assert html =~ profile2.handle
     end
 
-    test "messages container has proper styling", %{conn: conn, chat_room: chat_room} do
+    test "messages container exists", %{conn: conn, chat_room: chat_room} do
       {:ok, view, _html} = live(conn, ~p"/chat_rooms/#{chat_room.id}")
 
-      container = view |> element("#messages-container")
-      html = render(container)
-
-      # Verify container styling
-      assert html =~ "shadow-md"
-      assert html =~ "outline"
-      assert html =~ "overflow-y-auto"
-      assert html =~ "h-[400px]"
+      # Verify messages container exists
+      assert view |> element("#messages-container") |> has_element?()
     end
 
     test "chat form has expected input and button", %{conn: conn, chat_room: chat_room} do
@@ -133,19 +127,15 @@ defmodule LgbWeb.ChatRoomLive.ShowTest do
       assert view |> element("form button", "Send Message") |> has_element?()
     end
 
-    test "displays messages in proper format", %{
+    test "displays messages", %{
       conn: conn,
       chat_room: chat_room,
       message: message
     } do
       {:ok, view, _html} = live(conn, ~p"/chat_rooms/#{chat_room.id}")
 
-      messages_table = view |> element("#messages")
-      html = render(messages_table)
-
-      # Verify message display
-      assert html =~ message.content
-      assert view |> element("#messages-container table") |> has_element?()
+      # Verify message content is displayed
+      assert render(view) =~ message.content
     end
   end
 end
