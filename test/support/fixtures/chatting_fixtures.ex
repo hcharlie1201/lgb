@@ -18,13 +18,13 @@ defmodule Lgb.ChattingFixtures do
     chat_room
   end
 
-  def message_fixture(chat_room, user, attrs \\ %{}) do
+  def message_fixture(chat_room, profile, attrs \\ %{}) do
     attrs =
       attrs
       |> Enum.into(%{
         content: "some content",
         chat_room_id: chat_room.id,
-        user_id: user.id
+        profile_id: profile.id
       })
 
     Chatting.create_message!(attrs)

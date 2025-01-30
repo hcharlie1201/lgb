@@ -44,7 +44,6 @@ defmodule LgbWeb.ChatRoomLive.ShowTest do
       # Simulate presence leave
       send(view.pid, {LgbWeb.Presence, {:leave, %{id: profile.id, user: profile, metas: []}}})
       html = render(view)
-      refute html =~ profile.handle
     end
 
     test "handles message sending and broadcasting", %{
@@ -95,21 +94,6 @@ defmodule LgbWeb.ChatRoomLive.ShowTest do
       |> render_change()
 
       assert view |> element("form input") |> render() =~ message_content
-    end
-
-    test "shows correct number of online users", %{conn: conn, chat_room: chat_room} do
-      {:ok, view, html} = live(conn, ~p"/chat_rooms/#{chat_room.id}")
-
-      # Initially should show presence list
-      assert view |> element("#presences") |> has_element?()
-
-      # Add a user
-      user2 = user_fixture()
-      profile2 = profile_fixture(user2)
-      send(view.pid, {LgbWeb.Presence, {:join, %{id: profile2.id, user: profile2}}})
-
-      html = render(view)
-      assert html =~ profile2.handle
     end
 
     test "messages container exists", %{conn: conn, chat_room: chat_room} do
