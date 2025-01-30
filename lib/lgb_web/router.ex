@@ -71,8 +71,6 @@ defmodule LgbWeb.Router do
       live "/users/settings/confirm_email/:token", LoginLive.UserSettingsLive, :confirm_email
 
       live "/chat_rooms", ChatRoomLive.Index, :index
-      live "/chat_rooms/new", ChatRoomLive.Index, :new
-      live "/chat_rooms/:id/edit", ChatRoomLive.Index, :edit
       live "/chat_rooms/:id", ChatRoomLive.Show, :show
 
       scope "/profiles", ProfileLive do

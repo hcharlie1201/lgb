@@ -1,48 +1,11 @@
 <.page_align>
-<.header>
-  Listing Chat rooms
-  <:actions>
-    <.link patch={~p"/chat_rooms/new"}>
-      <.button>New Chat room</.button>
-    </.link>
-  </:actions>
-</.header>
-
-<.table
-  id="chat_rooms"
-  rows={@streams.chat_rooms}
-  row_click={fn {_id, chat_room} -> JS.navigate(~p"/chat_rooms/#{chat_room}") end}
->
-  <:col :let={{_id, chat_room}} label="Room Limit"><%= chat_room.limit %></:col>
-  <:col :let={{_id, chat_room}} label="Description"><%= chat_room.description %></:col>
-  <:action :let={{_id, chat_room}}>
-    <div class="sr-only">
-      <.link navigate={~p"/chat_rooms/#{chat_room}"}>Show</.link>
-    </div>
-    <.link patch={~p"/chat_rooms/#{chat_room}/edit"}>Edit</.link>
-  </:action>
-  <:action :let={{id, chat_room}}>
-    <.link
-      phx-click={JS.push("delete", value: %{id: chat_room.id}) |> hide("##{id}")}
-      data-confirm="Are you sure?"
-    >
-      Delete
-    </.link>
-  </:action>
-</.table>
+  <.table
+    id="chat_rooms"
+    rows={@streams.chat_rooms}
+    row_click={fn {_id, chat_room} -> JS.navigate(~p"/chat_rooms/#{chat_room}") end}
+  >
+    <:col :let={{_id, chat_room}} label="Title">{chat_room.title}</:col>
+    <:col :let={{_id, chat_room}} label="Room Limit">{chat_room.limit}</:col>
+    <:col :let={{_id, chat_room}} label="Description">{chat_room.description}</:col>
+  </.table>
 </.page_align>
-<.modal
-  :if={@live_action in [:new, :edit]}
-  id="chat_room-modal"
-  show
-  on_cancel={JS.patch(~p"/chat_rooms")}
->
-  <.live_component
-    module={LgbWeb.ChatRoomLive.FormComponent}
-    id={@chat_room.id || :new}
-    title={@page_title}
-    action={@live_action}
-    chat_room={@chat_room}
-    patch={~p"/chat_rooms"}
-  />
-</.modal>

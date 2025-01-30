@@ -1,25 +1,61 @@
-<.header class="text-center">
-  Welcome to chat room {@chat_room.id}
-  <:subtitle>
-    There are currently {Enum.count(@streams.presences)} users online
-  </:subtitle>
-</.header>
-<div class="flex">
-  <div class="flex-2">
-    <.table id="users-online" rows={@streams.presences}>
-      <:col :let={{_presence, %{user: user}}} label="id">{user.id}</:col>
-      <:col :let={{_presence, %{user: user}}} label="email">{user.email}</:col>
-    </.table>
+<.page_align no_padding={true}>
+  <.header class="text-center">
+    <h1 class="text-3xl font-bold text-green-600">Welcome to Chat Room {@chat_room.id}</h1>
+    <:subtitle class="text-purple-500 mt-2">
+      There are currently {Enum.count(@streams.presences)} users online
+    </:subtitle>
+  </.header>
+
+  <div class="flex gap-6 mt-8 h-[65vh]">
+    <!-- Chat Messages Section -->
+    <.card class="flex-[75%]">
+      <h2 class="text-xl font-semibold text-colorSecondary mb-4">Messages</h2>
+      <div class="h-[800px] overflow-y-auto" id="messages-container" phx-hook="ScrollBottom">
+        <.table id="messages" rows={@streams.messages} class="w-full">
+          <:col :let={{_presence, message}} label="Content">
+            <div class="flex justify-between">
+              <div>
+                {message.profile.handle}
+                {if message.profile.state do
+                  "(#{message.profile.state})"
+                end}: {message.content}
+              </div>
+              <div class="font-light">
+                {parse_time(message.inserted_at)}
+              </div>
+            </div>
+          </:col>
+        </.table>
+      </div>
+    </.card>
+
+<!-- Online Users Section -->
+    <.card class="flex-[25%]">
+      <h2 class="text-xl font-semibold text-colorSecondary mb-4">Online Users</h2>
+      <div class="h-[800px] overflow-y-auto" id="presence-container" phx-hook="ScrollBottom">
+        <.table id="users-online" rows={@streams.presences} class="w-full">
+          <:col :let={{_presence, %{user: profile}}} label="Name" class="font-medium">
+            {profile.handle}
+            {if profile.state do
+              "(#{profile.state})"
+            end}
+          </:col>
+        </.table>
+      </div>
+    </.card>
   </div>
-  <div class="flex-1 shadow-md outline h-[400px] overflow-y-auto" id="messages-container">
-    <.table id="messages" rows={@streams.messages}>
-      <:col :let={{_presence, message}} label="content">{message.content}</:col>
-    </.table>
-  </div>
-</div>
-<.simple_form for={@form} phx-submit="send_message" phx-change="update_message">
-  <.input field={@form[:content]} label="Chat" />
-  <:actions>
-    <.button>Send Message</.button>
-  </:actions>
-</.simple_form>
+
+<!-- Chat Input Form -->
+  <.simple_form for={@form} phx-submit="send_message" phx-change="update_message" class="mt-8">
+    <.input
+      field={@form[:content]}
+      label="Chat"
+      class="w-full p-3 rounded-lg border border-purple-300 focus:border-green-500 focus:ring-2 focus:ring-green-200"
+    />
+    <:actions class="mt-4">
+      <.button class="w-full bg-green-600 text-white py-2 px-4 rounded-lg hover:bg-green-700 focus:ring-2 focus:ring-green-500">
+        Send Message
+      </.button>
+    </:actions>
+  </.simple_form>
+</.page_align>
