@@ -6,11 +6,11 @@
     </:subtitle>
   </.header>
 
-  <div class="flex gap-6 mt-8 h-[65vh]">
+  <div class="flex gap-6 mt-8">
     <!-- Chat Messages Section -->
     <.card class="flex-[75%]">
-      <h2 class="text-xl font-semibold text-colorSecondary mb-4">Messages</h2>
-      <div class="h-[800px] overflow-y-auto" id="messages-container" phx-hook="ScrollBottom">
+      <h2 class="text-xl font-semibold mb-4">Messages</h2>
+      <div class="h-[60vh] overflow-y-auto" id="messages-container" phx-hook="ScrollBottom">
         <.table id="messages" rows={@streams.messages} class="w-full">
           <:col :let={{_presence, message}} label="Content">
             <div class="flex justify-between">
@@ -28,10 +28,10 @@
         </.table>
       </div>
     </.card>
-
+    
 <!-- Online Users Section -->
     <.card class="flex-[25%]">
-      <h2 class="text-xl font-semibold text-colorSecondary mb-4">Online Users</h2>
+      <h2 class="text-xl font-semibold mb-4">Online Users</h2>
       <div class="h-[800px] overflow-y-auto" id="presence-container" phx-hook="ScrollBottom">
         <.table id="users-online" rows={@streams.presences} class="w-full">
           <:col :let={{_presence, %{user: profile}}} label="Name" class="font-medium">
@@ -44,7 +44,7 @@
       </div>
     </.card>
   </div>
-
+  
 <!-- Chat Input Form -->
   <.simple_form for={@form} phx-submit="send_message" phx-change="update_message" class="mt-8">
     <.input
