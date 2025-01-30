@@ -63,13 +63,13 @@ defmodule LgbWeb.ChatRoomLive.ShowTest do
 
       # Verify message appears after broadcast
       broadcast_message = %{
-        "id" => Ecto.UUID.generate(),
-        "content" => message_content,
-        "profile" => %{
-          "id" => profile.id,
-          "handle" => profile.handle
+        id: System.unique_integer([:positive]),
+        content: message_content,
+        profile: %{
+          id: profile.id,
+          handle: profile.handle
         },
-        "inserted_at" => DateTime.utc_now()
+        inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
       }
 
       send(view.pid, %Phoenix.Socket.Broadcast{
