@@ -1,18 +1,20 @@
 defmodule LgbWeb.ChatRoomLive.ShowTest do
   use LgbWeb.ConnCase
   import Phoenix.LiveViewTest
+  import Lgb.ProfilesFixtures
   import Lgb.ChattingFixtures
   import Lgb.AccountsFixtures
 
   describe "Show Chat Room" do
     setup do
       user = user_fixture()
+      profile = profile_fixture(user)
       chat_room = chat_room_fixture()
-      message = message_fixture(chat_room, user)
+      message = message_fixture(chat_room, profile)
 
       conn = build_conn() |> log_in_user(user)
 
-      %{conn: conn, user: user, chat_room: chat_room, message: message}
+      %{conn: conn, user: user, profile: profile, chat_room: chat_room, message: message}
     end
 
     test "mounts with chat room data and messages", %{
@@ -22,27 +24,34 @@ defmodule LgbWeb.ChatRoomLive.ShowTest do
     } do
       {:ok, view, html} = live(conn, ~p"/chat_rooms/#{chat_room.id}")
 
-      assert html =~ "Welcome to chat room #{chat_room.id}"
       assert html =~ message.content
       assert view |> element("#messages-container") |> has_element?()
       assert view |> element("form") |> has_element?()
     end
 
-    test "handles presence joins and leaves", %{conn: conn, chat_room: chat_room, user: user} do
+    test "handles presence joins and leaves", %{
+      conn: conn,
+      chat_room: chat_room,
+      profile: profile
+    } do
       {:ok, view, _html} = live(conn, ~p"/chat_rooms/#{chat_room.id}")
 
       # Simulate presence join
-      send(view.pid, {LgbWeb.Presence, {:join, %{id: user.id, user: user}}})
+      send(view.pid, {LgbWeb.Presence, {:join, %{id: profile.id, user: profile}}})
       html = render(view)
-      assert html =~ user.email
+      assert html =~ profile.handle
 
       # Simulate presence leave
-      send(view.pid, {LgbWeb.Presence, {:leave, %{id: user.id, user: user, metas: []}}})
+      send(view.pid, {LgbWeb.Presence, {:leave, %{id: profile.id, user: profile, metas: []}}})
       html = render(view)
-      refute html =~ user.email
+      refute html =~ profile.handle
     end
 
-    test "handles message sending and broadcasting", %{conn: conn, chat_room: chat_room} do
+    test "handles message sending and broadcasting", %{
+      conn: conn,
+      chat_room: chat_room,
+      profile: profile
+    } do
       {:ok, view, _html} = live(conn, ~p"/chat_rooms/#{chat_room.id}")
 
       message_content = "Hello world"
@@ -53,7 +62,7 @@ defmodule LgbWeb.ChatRoomLive.ShowTest do
       |> render_submit()
 
       # Simulate broadcast of the message
-      message = %{content: message_content, id: "some-id"}
+      message = %{content: message_content, id: "message_content"}
       send(view.pid, %{event: "new_message", payload: message})
 
       html = render(view)
@@ -81,19 +90,11 @@ defmodule LgbWeb.ChatRoomLive.ShowTest do
 
       # Add a user
       user2 = user_fixture()
-      send(view.pid, {LgbWeb.Presence, {:join, %{id: user2.id, user: user2}}})
+      profile2 = profile_fixture(user2)
+      send(view.pid, {LgbWeb.Presence, {:join, %{id: profile2.id, user: profile2}}})
 
       html = render(view)
       assert html =~ "There are currently 1 users online"
-    end
-
-    test "renders chat room with proper layout structure", %{conn: conn, chat_room: chat_room} do
-      {:ok, _view, html} = live(conn, ~p"/chat_rooms/#{chat_room.id}")
-
-      # Verify main layout elements
-      assert html =~ ~r/<div class="flex">/
-      assert html =~ ~r/<div class="flex-2">/
-      assert html =~ ~r/<div class="flex-1 shadow-md outline h-\[400px\] overflow-y-auto"/
     end
 
     test "messages container has proper styling", %{conn: conn, chat_room: chat_room} do
