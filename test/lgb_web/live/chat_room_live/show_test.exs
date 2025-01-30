@@ -70,7 +70,7 @@ defmodule LgbWeb.ChatRoomLive.ShowTest do
           handle: profile.handle,
           state: "online"
         },
-        inserted_at: NaiveDateTime.utc_now() |> NaiveDateTime.truncate(:second)
+        inserted_at: DateTime.utc_now() |> DateTime.truncate(:second)
       }
 
       send(view.pid, %Phoenix.Socket.Broadcast{
