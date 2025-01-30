@@ -1,0 +1,12 @@
+Lgb.Repo.insert!(%Lgb.Subscriptions.SubscriptionPlan{
+  stripe_price_id: "price_1QmUmfJAAjsUxHv9PGv7AkhK"
+})
+
+subscription_plan
+  |> Ecto.Changeset.change(stripe_price_id: "price_1QmUmfJAAjsUxHv9PGv7AkhK")
+  |> Lgb.Repo.update()
+
+
+
+
+fly ssh console --pty -C "/app/bin/lgb remote"

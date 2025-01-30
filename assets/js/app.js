@@ -22,6 +22,7 @@ import { Socket } from "phoenix";
 import { LiveSocket } from "phoenix_live_view";
 import { StripeAddress } from "./stripe/address";
 import { StripeCheckout } from "./stripe/checkout";
+import { ScrollBottom } from "./scroll_bottom";
 import topbar from "../vendor/topbar";
 
 let Hooks = {};
@@ -78,6 +79,7 @@ Hooks.Map = {
 };
 Hooks.StripeAddress = StripeAddress;
 Hooks.StripeCheckout = StripeCheckout;
+Hooks.ScrollBottom = ScrollBottom;
 
 let csrfToken = document
   .querySelector("meta[name='csrf-token']")

@@ -1,76 +1,144 @@
-<.page_align>
-  <.header>Gallery</.header>
-  <Carousel.carousel current_index={@current_index} uploaded_files={@uploaded_files} />
-  <.simple_form for={@form} id="my-profile" phx-submit="update_profile" phx-change="validate">
-    <section phx-drop-target={@uploads.avatar.ref} class="flex flex-wrap">
-      <article :for={entry <- @uploads.avatar.entries}>
-        <figure>
-          <.live_img_preview entry={entry} width="100" class="outline" />
-          <figcaption>{entry.client_name}</figcaption>
-        </figure>
-
-        <progress value={entry.progress} max="100">{entry.progress}%</progress>
-
-        <button
-          type="button"
-          phx-click="cancel-upload"
-          phx-value-ref={entry.ref}
-          aria-label="cancel"
-        >
-          &times;
-        </button>
-
-        <p :for={err <- upload_errors(@uploads.avatar, entry)} class="alert alert-danger">
-          {error_to_string(err)}
+<.page_align class="bg-gray-50 p-6">
+  <.header class="text-3xl font-bold text-gray-800 mb-8">Gallery</.header>
+  
+<!-- Carousel Section -->
+  <Carousel.carousel current_index={@current_index} uploaded_files={@uploaded_files} class="mb-8" />
+  
+<!-- Profile Form -->
+  <.simple_form
+    for={@form}
+    id="my-profile"
+    phx-submit="update_profile"
+    phx-change="validate"
+    class="bg-white p-8 rounded-lg shadow-lg"
+  >
+    <!-- File Upload Section -->
+    <section phx-drop-target={@uploads.avatar.ref} class="mb-6">
+      <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-500 transition-colors">
+        <.live_file_input upload={@uploads.avatar} class="hidden" />
+        <p class="text-gray-600">
+          Drag & drop your avatar here or <span class="text-blue-500 cursor-pointer">browse</span>
         </p>
-      </article>
-      <p :for={err <- upload_errors(@uploads.avatar)} class="alert alert-danger">
+      </div>
+      
+<!-- Uploaded Files Preview -->
+      <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        <article :for={entry <- @uploads.avatar.entries} class="relative">
+          <figure class="bg-gray-100 p-4 rounded-lg">
+            <.live_img_preview entry={entry} width="100" class="rounded-lg shadow-md" />
+            <figcaption class="text-sm text-gray-600 mt-2 truncate">
+              {entry.client_name}
+            </figcaption>
+          </figure>
+          
+<!-- Progress Bar -->
+          <progress value={entry.progress} max="100" class="w-full h-2 mt-2 rounded">
+            {entry.progress}%
+          </progress>
+          
+<!-- Cancel Button -->
+          <button
+            type="button"
+            phx-click="cancel-upload"
+            phx-value-ref={entry.ref}
+            class="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 transition-colors"
+            aria-label="cancel"
+          >
+            &times;
+          </button>
+          
+<!-- Error Messages -->
+          <p :for={err <- upload_errors(@uploads.avatar, entry)} class="text-sm text-red-500 mt-2">
+            {error_to_string(err)}
+          </p>
+        </article>
+      </div>
+      
+<!-- Global Upload Errors -->
+      <p :for={err <- upload_errors(@uploads.avatar)} class="text-sm text-red-500 mt-2">
         {error_to_string(err)}
       </p>
     </section>
-    <.live_file_input upload={@uploads.avatar} />
-    <.input value={@profile.handle} field={@form[:handle]} name="handle" label="Name" />
-    <.input value={@profile.age} field={@form[:age]} name="age" type="number" label="Age" />
-    <.input
-      value={@profile.height_cm}
-      field={@form[:height_cm]}
-      name="height_cm"
-      type="select"
-      label="Height"
-      options={Lgb.Profiles.generate_height_options()}
-      prompt="Select your height"
-      multiple={false}
-    />
-    <.input
-      value={@profile.weight_lb}
-      field={@form[:weight_lb]}
-      name="weight_lb"
-      type="select"
-      label="Weight"
-      options={Lgb.Profiles.generate_weight_options()}
-      prompt="Select your weight"
-      multiple={false}
-    />
-    <div>City: {@profile.city}</div>
-    <div>State: {@profile.state}</div>
-    <div>Zip: {@profile.zip}</div>
-    <div
-      phx-hook="Map"
-      class="h-96"
-      id="mapid"
-      phx-update="ignore"
-      data-geo={if @profile.geolocation, do: Geo.WKT.encode!(@profile.geolocation), else: ""}
-    >
+    
+<!-- Form Fields -->
+    <div class="space-y-6">
+      <.input
+        value={@profile.handle}
+        field={@form[:handle]}
+        name="handle"
+        label="Name"
+        class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+      <.input
+        value={@profile.age}
+        field={@form[:age]}
+        name="age"
+        type="number"
+        label="Age"
+        class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+      <.input
+        value={@profile.height_cm}
+        field={@form[:height_cm]}
+        name="height_cm"
+        type="select"
+        label="Height"
+        options={Lgb.Profiles.generate_height_options()}
+        prompt="Select your height"
+        multiple={false}
+        class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+      <.input
+        value={@profile.weight_lb}
+        field={@form[:weight_lb]}
+        name="weight_lb"
+        type="select"
+        label="Weight"
+        options={Lgb.Profiles.generate_weight_options()}
+        prompt="Select your weight"
+        multiple={false}
+        class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="bg-gray-100 p-4 rounded-lg">
+          <p class="text-sm text-gray-600">City</p>
+          <p class="text-lg font-semibold">{@profile.city}</p>
+        </div>
+        <div class="bg-gray-100 p-4 rounded-lg">
+          <p class="text-sm text-gray-600">State</p>
+          <p class="text-lg font-semibold">{@profile.state}</p>
+        </div>
+        <div class="bg-gray-100 p-4 rounded-lg">
+          <p class="text-sm text-gray-600">Zip</p>
+          <p class="text-lg font-semibold">{@profile.zip}</p>
+        </div>
+      </div>
+      <div
+        phx-hook="Map"
+        class="h-96 rounded-lg shadow-md"
+        id="mapid"
+        phx-update="ignore"
+        data-geo={if @profile.geolocation, do: Geo.WKT.encode!(@profile.geolocation), else: ""}
+      >
+      </div>
+      <.input
+        field={@form[:biography]}
+        value={@profile.biography}
+        name="biography"
+        type="textarea"
+        label="Bio"
+        class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
     </div>
-    <.input
-      field={@form[:biography]}
-      value={@profile.biography}
-      name="biography"
-      type="textarea"
-      label="Bio"
-    />
-    <:actions>
-      <.button phx-disable-with="Confirming">Save</.button>
+    
+<!-- Save Button -->
+    <:actions class="mt-6">
+      <.button
+        phx-disable-with="Confirming"
+        class="w-full bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-600 transition-colors"
+      >
+        Save
+      </.button>
     </:actions>
   </.simple_form>
 </.page_align>

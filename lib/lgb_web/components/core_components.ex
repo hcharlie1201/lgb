@@ -695,6 +695,7 @@ defmodule LgbWeb.CoreComponents do
   Page Align
   """
   slot :inner_block, required: true
+  attr :no_padding, :boolean, default: false
 
   def page_align(assigns) do
     ~H"""
@@ -820,10 +821,22 @@ defmodule LgbWeb.CoreComponents do
           <span class="text-xs mt-1">Account</span>
         </.link>
       </nav>
-      
-    <!-- Main Content -->
-      <main class="flex-1 p-4 pb-24 md:pb-4 md:pl-24">
-        <div class="max-w-5xl mx-auto">
+      <!-- Main Content -->
+      <main class={[
+        "flex-1",
+        if @no_padding do
+          "p-0"
+        else
+          "p-4 pb-24 md:pb-4 md:px-24"
+        end
+      ]}>
+        <div class={[
+          if @no_padding do
+            "h-full px-4"
+          else
+            "max-w-5xl mx-auto"
+          end
+        ]}>
           {render_slot(@inner_block)}
         </div>
       </main>

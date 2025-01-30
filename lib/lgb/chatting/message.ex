@@ -3,7 +3,7 @@ defmodule Lgb.Chatting.Message do
   import Ecto.Changeset
 
   schema "messages" do
-    field :user_id, :id
+    belongs_to :profile, Lgb.Profiles.Profile
     field :chat_room_id, :id
     field :content, :string
 
@@ -13,7 +13,7 @@ defmodule Lgb.Chatting.Message do
   @doc false
   def changeset(message, attrs) do
     message
-    |> cast(attrs, [:user_id, :chat_room_id, :content])
-    |> validate_required([:user_id, :chat_room_id, :content])
+    |> cast(attrs, [:profile_id, :chat_room_id, :content])
+    |> validate_required([:profile_id, :chat_room_id, :content])
   end
 end

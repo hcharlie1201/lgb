@@ -120,7 +120,9 @@ defmodule Lgb.Chatting do
         where: m.chat_room_id == ^chat_room_id,
         order_by: [asc: m.inserted_at]
 
-    Repo.all(query)
+    query
+    |> Lgb.Repo.all()
+    |> Lgb.Repo.preload(:profile)
   end
 
   @doc """

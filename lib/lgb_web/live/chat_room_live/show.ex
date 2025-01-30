@@ -24,7 +24,8 @@ defmodule LgbWeb.ChatRoomLive.Show do
       |> stream(:presences, presence)
 
     if connected?(socket) do
-      Presence.track_user(socket.assigns.current_user.id, topic, socket.assigns.current_user)
+      profile = Lgb.Accounts.User.current_profile(socket.assigns.current_user)
+      Presence.track_user(profile.id, topic, profile)
       Presence.subscribe(topic)
     end
 
@@ -53,13 +54,15 @@ defmodule LgbWeb.ChatRoomLive.Show do
 
   def handle_event("send_message", %{"message" => %{"content" => content}}, socket) do
     chat_room = socket.assigns.chat_room
+    profile = Lgb.Accounts.User.current_profile(socket.assigns.current_user)
 
     message =
       Chatting.create_message!(%{
         chat_room_id: chat_room.id,
-        user_id: socket.assigns.current_user.id,
+        profile_id: profile.id,
         content: content
       })
+      |> Lgb.Repo.preload(:profile)
 
     LgbWeb.Endpoint.broadcast("chat_room:#{chat_room.id}", "new_message", message)
 
@@ -75,4 +78,26 @@ defmodule LgbWeb.ChatRoomLive.Show do
     socket = socket |> assign(form: to_form(%{"content" => content}, as: "message"))
     {:noreply, socket}
   end
+
+  def parse_time(given_time) do
+    now = DateTime.utc_now()
+    diff_in_seconds = DateTime.diff(now, given_time)
+
+    cond do
+      diff_in_seconds >= 3600 ->
+        hours = div(diff_in_seconds, 3600)
+        "#{hours} #{pluralize(hours, "hour")} ago"
+
+      diff_in_seconds >= 60 ->
+        minutes = div(diff_in_seconds, 60)
+        "#{minutes} #{pluralize(minutes, "minute")} ago"
+
+      true ->
+        "just now"
+    end
+  end
+
+  # Helper function to pluralize the unit (e.g., "hour" vs. "hours")
+  defp pluralize(1, unit), do: unit
+  defp pluralize(count, unit), do: "#{unit}s"
 end

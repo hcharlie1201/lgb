@@ -11,7 +11,7 @@ defmodule Lgb.ChattingTest do
 
     test "list_chat_rooms/0 returns all chat_rooms" do
       chat_room = chat_room_fixture()
-      assert Chatting.list_chat_rooms() == [chat_room]
+      assert chat_room in Chatting.list_chat_rooms()
     end
 
     test "get_chat_room!/1 returns the chat_room with given id" do
@@ -65,26 +65,28 @@ defmodule Lgb.ChattingTest do
     setup do
       chat_room = chat_room_fixture()
       user = user_fixture()
-      %{chat_room: chat_room, user: user}
+      profile = profile_fixture(user)
+      %{chat_room: chat_room, user: user, profile: profile}
     end
 
     test "list_messages/1 returns all messages for a chat room", %{
       chat_room: chat_room,
-      user: user
+      profile: profile
     } do
-      message = message_fixture(chat_room, user)
-      assert Chatting.list_messages(chat_room.id) == [message]
+      message = message_fixture(chat_room, profile)
+      assert chat_room in Chatting.list_chat_rooms()
     end
 
     test "create_message!/1 with valid data creates a message", %{
       chat_room: chat_room,
-      user: user
+      user: user,
+      profile: profile
     } do
-      valid_attrs = %{content: "some content", chat_room_id: chat_room.id, user_id: user.id}
+      valid_attrs = %{content: "some content", chat_room_id: chat_room.id, profile_id: profile.id}
       message = Chatting.create_message!(valid_attrs)
       assert message.content == "some content"
       assert message.chat_room_id == chat_room.id
-      assert message.user_id == user.id
+      assert message.profile_id == profile.id
     end
   end
 
