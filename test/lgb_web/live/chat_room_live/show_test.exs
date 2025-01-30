@@ -56,17 +56,31 @@ defmodule LgbWeb.ChatRoomLive.ShowTest do
 
       message_content = "Hello world"
 
-      # Send a message
-      view
-      |> form("form", %{"message" => %{"content" => message_content}})
-      |> render_submit()
+      # Send a message and verify form clears
+      assert view
+             |> form("form", %{"message" => %{"content" => message_content}})
+             |> render_submit() =~ ""
 
-      # Simulate broadcast of the message
-      message = %{content: message_content, id: "message_content"}
-      send(view.pid, %{event: "new_message", payload: message})
+      # Verify message appears after broadcast
+      broadcast_message = %{
+        "id" => Ecto.UUID.generate(),
+        "content" => message_content,
+        "profile" => %{
+          "id" => profile.id,
+          "handle" => profile.handle
+        },
+        "inserted_at" => DateTime.utc_now()
+      }
+
+      send(view.pid, %Phoenix.Socket.Broadcast{
+        event: "new_message",
+        payload: broadcast_message,
+        topic: "chat_room:#{chat_room.id}"
+      })
 
       html = render(view)
       assert html =~ message_content
+      assert html =~ profile.handle
     end
 
     test "updates message form on input change", %{conn: conn, chat_room: chat_room} do
