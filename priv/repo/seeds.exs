@@ -12,7 +12,8 @@
 
 Lgb.Repo.insert!(%Lgb.Chatting.ChatRoom{
   description: "General chat room for everyone",
-  limit: 100
+  limit: 100,
+  title: "General"
 })
 
 Lgb.Repo.insert!(%Lgb.Accounts.User{
@@ -55,7 +56,7 @@ fake_users = [
     zip: "94105"
   },
   %{
-    email: "mike@example.com", 
+    email: "mike@example.com",
     handle: "Mike Johnson",
     age: 35,
     biography: "Professional photographer. Adventure seeker. Coffee addict.",

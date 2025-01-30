@@ -4,16 +4,20 @@
       <.link patch={~p"/conversations/#{conversation.id}"}>
         <.list_tile
           title={conversation.other_profile.handle}
-          subtitle={conversation.last_message.content}
+          subtitle={conversation.last_message && conversation.last_message.content}
           picture_url={
             Lgb.Profiles.ProfilePicture.get_picture_url(conversation.other_profile.first_picture)
           }
-          read={conversation.last_message.read}
+          read={conversation.last_message && conversation.last_message.read}
         >
           <:trailer>
             <div class="flex items-center justify-between sm:justify-end w-full sm:w-auto gap-2">
               <span class="text-sm sm:text-base text-gray-500">
-                {Calendar.strftime(conversation.last_message.inserted_at, "%I:%M %p")}
+                {if conversation.last_message do
+                  Calendar.strftime(conversation.last_message.inserted_at, "%I:%M %p")
+                else
+                  "No messages yet"
+                end}
               </span>
             </div>
           </:trailer>

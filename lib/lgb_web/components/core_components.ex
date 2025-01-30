@@ -206,7 +206,7 @@ defmodule LgbWeb.CoreComponents do
   def simple_form(assigns) do
     ~H"""
     <.form :let={f} for={@for} as={@as} {@rest}>
-      <div class="mt-10 space-y-8 bg-white border rounded-md p-6 flex flex-col">
+      <div class="mt-10 space-y-8 bg-white border shadow-md rounded-md p-6 flex flex-col">
         {render_slot(@inner_block, f)}
         <div :for={action <- @actions} class="mt-2 flex items-center justify-between gap-6">
           {render_slot(action, f)}
@@ -235,13 +235,14 @@ defmodule LgbWeb.CoreComponents do
     <button
       type={@type}
       class={[
-        "phx-submit-loading:opacity-75 rounded-lg bg-zinc-900 hover:bg-zinc-700 py-2 px-3",
-        "text-sm font-semibold leading-6 text-white active:text-white/80",
+        "phx-submit-loading:opacity-75 bg-gradient-to-r from-purple-500 to-blue-600",
+        "text-white py-2 px-6 rounded-full flex items-center gap-2 shadow-md hover:opacity-90",
         @class
       ]}
       {@rest}
     >
       {render_slot(@inner_block)}
+      <span class="text-lg">›</span>
     </button>
     """
   end
@@ -382,7 +383,7 @@ defmodule LgbWeb.CoreComponents do
         id={@id}
         value={Phoenix.HTML.Form.normalize_value(@type, @value)}
         class={[
-          "mt-2 block w-80 rounded-lg text-zinc-900 focus:ring-0 sm:text-sm sm:leading-6",
+          "mt-2 block w-full rounded-lg text-zinc-900 focus:ring-0 sm:text-sm sm:leading-6",
           "phx-no-feedback:border-zinc-300 phx-no-feedback:focus:border-zinc-400",
           @errors == [] && "border-zinc-300 focus:border-zinc-400",
           @errors != [] && "border-rose-400 focus:border-rose-400"
@@ -402,7 +403,7 @@ defmodule LgbWeb.CoreComponents do
 
   def label(assigns) do
     ~H"""
-    <label for={@for} class="block text-sm font-semibold leading-6 text-zinc-800">
+    <label for={@for} class="block text-sm leading-6">
       {render_slot(@inner_block)}
     </label>
     """
@@ -699,9 +700,21 @@ defmodule LgbWeb.CoreComponents do
 
   def page_align(assigns) do
     ~H"""
-    <div class="min-h-screen flex flex-col md:flex-row">
+    <style>
+      .dual-gradient {
+        background:
+          linear-gradient(135deg, #e3e8f5, transparent 60%), /* Light blue from top-left to bottom-right */
+          linear-gradient(-135deg, #f0ebff, transparent 40%), /* Light purple from top-right to bottom-left */
+          white; /* White in the middle */
+        background-blend-mode: multiply; /* Blend the gradients smoothly */
+      }
+    </style>
+    <div class={["min-h-screen flex flex-col md:flex-row dual-gradient"]}>
       <!-- Sidebar Navigation -->
-      <nav class="fixed md:relative md:h-screen w-full md:w-20 bg-white shadow-md flex flex-row md:flex-col justify-around md:justify-start items-center py-4 bottom-0 md:top-0 md:left-0 z-10">
+      <nav class={[
+        "fixed md:relative md:h-screen w-full md:w-20 flex flex-row md:flex-col justify-around",
+        "md:justify-start items-center py-4 bottom-0 md:top-0 md:left-0 z-10"
+      ]}>
         <.link
           navigate={~p"/profiles/current"}
           class="flex flex-col items-center p-4 text-gray-700 hover:bg-purple-50 hover:text-colorSecondary rounded-lg transition-colors duration-200"
@@ -852,7 +865,7 @@ defmodule LgbWeb.CoreComponents do
 
   def list_tile(assigns) do
     ~H"""
-    <div class="bg-white rounded-lg shadow p-3 sm:p-4">
+    <div class="bg-white rounded-lg shadow p-3 sm:p-4 ">
       <div class="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
         <img
           src={@picture_url}
@@ -885,7 +898,63 @@ defmodule LgbWeb.CoreComponents do
 
   def card(assigns) do
     ~H"""
-    <div class={["border border-gray-200 p-4 rounded-md", @class]}>
+    <div class={["border p-4 rounded-md bg-white", @class]}>
+      {render_slot(@inner_block)}
+    </div>
+    """
+  end
+
+  @doc """
+  Non logged in navbar
+  """
+  slot :inner_block, required: true
+
+  def non_logged_in_nav(assigns) do
+    ~H"""
+    <!-- Hero Section Container -->
+    <div class="relative min-h-screen bg-gradient-to-br from-purple-50 to-blue-50">
+      <!-- Navigation Bar -->
+      <nav class="px-4 py-4">
+        <div class="container mx-auto flex items-center justify-between">
+          <!-- Logo -->
+          <div class="flex items-center space-x-2">
+            <span class="text-xl font-bold">
+              <.link navigate={~p"/"}>
+                <h1 class="font-sans text-3xl bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+                  bi⏾bi
+                </h1>
+              </.link>
+            </span>
+          </div>
+          
+    <!-- Navigation Links -->
+          <div class="bg-white/80 backdrop-blur-sm rounded-full shadow-lg px-6 py-3">
+            <div class="hidden md:flex items-center justify-center space-x-8">
+              <a href="#" class="text-gray-600 hover:text-gray-900 font-medium transition-colors">
+                Products
+              </a>
+              <a href="#" class="text-gray-600 hover:text-gray-900 font-medium transition-colors">
+                Features
+              </a>
+              <a href="#" class="text-gray-600 hover:text-gray-900 font-medium transition-colors">
+                Docs
+              </a>
+              <a href="#" class="text-gray-600 hover:text-gray-900 font-medium transition-colors">
+                Community
+              </a>
+              <a href="#" class="text-gray-600 hover:text-gray-900 font-medium transition-colors">
+                Pricing
+              </a>
+            </div>
+          </div>
+          
+    <!-- Login Button -->
+          <.link navigate={~p"/users/log_in"} class="text-gray-600 hover:text-gray-900 font-medium">
+            Log in
+          </.link>
+        </div>
+      </nav>
+
       {render_slot(@inner_block)}
     </div>
     """
