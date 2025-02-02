@@ -481,7 +481,7 @@ defmodule LgbWeb.CoreComponents do
 
     ~H"""
     <div class="m-4 p-0.5 overflow-y-auto px-4 sm:overflow-visible sm:px-0">
-      <table class="w-[40rem] mt-1 sm:w-full">
+      <table class="w-[40rem] mt-11 sm:w-full">
         <thead class="text-sm text-left leading-6 text-zinc-500">
           <tr>
             <th :for={col <- @col} class="p-0 pb-4 pr-6 font-normal">{col[:label]}</th>
@@ -926,7 +926,7 @@ defmodule LgbWeb.CoreComponents do
               </.link>
             </span>
           </div>
-
+          
     <!-- Navigation Links -->
           <div class="bg-white/80 backdrop-blur-sm rounded-full shadow-lg px-6 py-3">
             <div class="hidden md:flex items-center justify-center space-x-8">
@@ -947,7 +947,7 @@ defmodule LgbWeb.CoreComponents do
               </a>
             </div>
           </div>
-
+          
     <!-- Login Button -->
           <.link navigate={~p"/users/log_in"} class="text-gray-600 hover:text-gray-900 font-medium">
             Log in
