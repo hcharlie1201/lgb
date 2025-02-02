@@ -1,10 +1,12 @@
 <.page_align no_padding={true}>
-  <.header class="text-center">
-    <h1 class="text-3xl font-bold text-green-600">Welcome to Chat Room {@chat_room.id}</h1>
-    <:subtitle class="text-purple-500 mt-2">
-      There are currently {Enum.count(@streams.presences)} users online
-    </:subtitle>
-  </.header>
+  <div class="bg-white rounded-lg my-4">
+    <.header class="text-center pt-4">
+      <h1 class="text-3xl font-bold text-green-600">Welcome to Chat Room {@chat_room.id}</h1>
+      <:subtitle class="text-purple-500 mt-2">
+        {Enum.count(@streams.presences)} users currently online
+      </:subtitle>
+    </.header>
+  </div>
 
   <div class="flex gap-6 mt-8">
     <!-- Chat Messages Section -->
@@ -15,7 +17,7 @@
           <:col :let={{_presence, message}} label="Content">
             <div class="flex justify-between">
               <div>
-                {message.profile.handle}
+                <span class="text-colorSecondary">{message.profile.handle}</span>
                 {if message.profile.state do
                   "(#{message.profile.state})"
                 end}: {message.content}

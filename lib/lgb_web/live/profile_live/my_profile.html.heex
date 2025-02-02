@@ -109,7 +109,7 @@
       </div>
       <div
         phx-hook="Map"
-        class="h-96 rounded-lg shadow-md"
+        class="h-96 rounded-lg shadow-md z-0"
         id="mapid"
         phx-update="ignore"
         data-geo={if @profile.geolocation, do: Geo.WKT.encode!(@profile.geolocation), else: ""}

@@ -375,7 +375,7 @@ defmodule LgbWeb.CoreComponents do
   # All other inputs text, datetime-local, url, password, etc. are handled here...
   def input(assigns) do
     ~H"""
-    <div phx-feedback-for={@name}>
+    <div phx-feedback-for={@name} class="w-full">
       <.label for={@id}>{@label}</.label>
       <input
         type={@type}
@@ -480,7 +480,7 @@ defmodule LgbWeb.CoreComponents do
       end
 
     ~H"""
-    <div class="overflow-y-auto px-4 sm:overflow-visible sm:px-0">
+    <div class="m-4 p-0.5 overflow-y-auto px-4 sm:overflow-visible sm:px-0">
       <table class="w-[40rem] mt-11 sm:w-full">
         <thead class="text-sm text-left leading-6 text-zinc-500">
           <tr>
@@ -502,7 +502,7 @@ defmodule LgbWeb.CoreComponents do
               class={["relative p-0", @row_click && "hover:cursor-pointer"]}
             >
               <div class="block py-4 pr-6">
-                <span class="absolute -inset-y-px right-0 -left-4 group-hover:bg-zinc-50 sm:rounded-l-xl" />
+                <span class="absolute -inset-y-px right-0 -left-4 group-hover:bg-zinc-50" />
                 <span class={["relative", i == 0 && "font-semibold text-zinc-900"]}>
                   {render_slot(col, @row_item.(row))}
                 </span>
@@ -510,7 +510,7 @@ defmodule LgbWeb.CoreComponents do
             </td>
             <td :if={@action != []} class="relative w-14 p-0">
               <div class="relative whitespace-nowrap py-4 text-right text-sm font-medium">
-                <span class="absolute -inset-y-px -right-4 left-0 group-hover:bg-zinc-50 sm:rounded-r-xl" />
+                <span class="absolute -inset-y-px -right-4 left-0 group-hover:bg-zinc-50" />
                 <span
                   :for={action <- @action}
                   class="relative ml-4 font-semibold leading-6 text-zinc-900 hover:text-zinc-700"
@@ -712,8 +712,8 @@ defmodule LgbWeb.CoreComponents do
     <div class={["min-h-screen flex flex-col md:flex-row dual-gradient"]}>
       <!-- Sidebar Navigation -->
       <nav class={[
-        "fixed md:relative md:h-screen w-full md:w-20 flex flex-row md:flex-col justify-around",
-        "md:justify-start items-center py-4 bottom-0 md:top-0 md:left-0 z-10"
+        "fixed md:relative md:h-screen w-full md:w-20 flex flex-row md:flex-col md:bg-transparent bg-white border md:border-0 justify-around",
+        "md:justify-start items-center py-4 bottom-0 md:top-0 md:left-0 z-20 "
       ]}>
         <.link
           navigate={~p"/profiles/current"}
@@ -926,7 +926,7 @@ defmodule LgbWeb.CoreComponents do
               </.link>
             </span>
           </div>
-          
+
     <!-- Navigation Links -->
           <div class="bg-white/80 backdrop-blur-sm rounded-full shadow-lg px-6 py-3">
             <div class="hidden md:flex items-center justify-center space-x-8">
@@ -947,7 +947,7 @@ defmodule LgbWeb.CoreComponents do
               </a>
             </div>
           </div>
-          
+
     <!-- Login Button -->
           <.link navigate={~p"/users/log_in"} class="text-gray-600 hover:text-gray-900 font-medium">
             Log in

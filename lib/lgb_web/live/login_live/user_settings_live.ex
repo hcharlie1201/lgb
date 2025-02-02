@@ -11,7 +11,7 @@ defmodule LgbWeb.LoginLive.UserSettingsLive do
     </.header>
 
     <div class="space-y-12 divide-y p-4 flex flex-col items-center">
-      <div>
+      <div class="min-w-full">
         <.simple_form
           for={@email_form}
           id="email_form"
@@ -33,7 +33,7 @@ defmodule LgbWeb.LoginLive.UserSettingsLive do
           </:actions>
         </.simple_form>
       </div>
-      <div>
+      <div class="min-w-full">
         <.simple_form
           for={@password_form}
           id="password_form"
