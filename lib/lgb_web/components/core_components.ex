@@ -20,6 +20,7 @@ defmodule LgbWeb.CoreComponents do
     endpoint: LgbWeb.Endpoint,
     router: LgbWeb.Router
 
+  alias LgbWeb.Components.Carousel
   alias Phoenix.LiveView.JS
   import LgbWeb.Gettext
 

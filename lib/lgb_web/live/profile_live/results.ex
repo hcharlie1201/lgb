@@ -1,5 +1,6 @@
 defmodule LgbWeb.ProfileLive.Results do
   alias Lgb.Profiles.Profile
+  alias LgbWeb.Components.Carousel
   alias Lgb.Profiles
   use LgbWeb, :live_view
 
@@ -14,7 +15,6 @@ defmodule LgbWeb.ProfileLive.Results do
 
     case Flop.validate_and_run(query, params, for: Profile) do
       {:ok, {profiles, metas}} ->
-        IO.inspect(metas)
         {:noreply, assign(socket, %{profiles: profiles, metas: metas})}
 
       {:error, _} ->

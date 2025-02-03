@@ -1,28 +1,26 @@
 <.page_align>
-  <.header class="text-center">
-    List of profile searches
-  </.header>
-  <div class="flex w-full border justify-center p-6 rounded-lg bg-white">
-    <Flop.Phoenix.table items={@profiles} meta={@metas} path={~p"/profiles/results"}>
-      <:col :let={profile} label="Name">
-        <.link navigate={~p"/profiles/#{profile.id}"}><div class="px-4 py-2 font-bold">{profile.handle}</div></.link>
-      </:col>
-      <:col :let={profile} label="Height" field={:height_cm}>
-        <div class="px-4 py-2 ">{display_height(profile.height_cm)}</div>
-      </:col>
-      <:col :let={profile} label="Weight" field={:weight_lb}>
-        <div class="px-4 py-2 ">{display_weight(profile.weight_lb)}</div>
-      </:col>
-      <:col :let={profile} label="Age" field={:age}><div class="px-4 py-2 ">{profile.age}</div></:col>
-      <:col :let={profile} label="Distance" field={:distance}><div class="px-4 py-2">{profile.distance}</div></:col>
-      <:col :let={profile} label="Picture">
-        <img
-          src={Lgb.Profiles.profile_picture_url(profile) || ~p"/images/logo.svg"}
-          alt="Profile Pic"
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-3">
+    <%= for profile <- @profiles do %>
+      <.card>
+        <.live_component
+          module={Carousel}
+          id={profile.id}
+          uploaded_files={profile.profile_pictures}
+          length={1}
         />
-      </:col>
-    </Flop.Phoenix.table>
+        <div>
+          <.link navigate={~p"/profiles/#{profile.id}"}>
+            <div class="px-4 font-bold">{profile.handle}</div>
+          </.link>
+        </div>
+        <div class="px-4">{display_height(profile.height_cm)}</div>
+        <div class="px-4">{display_weight(profile.weight_lb)}</div>
+        <div class="px-4">{profile.age}</div>
+        <div class="px-4">{profile.distance}</div>
+      </.card>
+    <% end %>
   </div>
+  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
   <.simple_form for={@form} phx-submit="goto">
     <:actions>
       <.input

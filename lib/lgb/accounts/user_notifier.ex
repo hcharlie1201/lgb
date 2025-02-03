@@ -25,7 +25,6 @@ defmodule Lgb.Accounts.UserNotifier do
         {:ok, email}
 
       {:error, reason} ->
-        IO.inspect(reason)
         {:ok, email}
     end
   end
