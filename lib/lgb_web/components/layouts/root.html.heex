@@ -59,7 +59,7 @@
                 />
               </svg>
 
-              {@current_user.email}
+              <span class="navText">{@current_user.email}</span>
             </div>
           </li>
           <li class="mainNavBar">
@@ -84,7 +84,7 @@
                     d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
                   />
                 </svg>
-                Settings
+                <span class="navText">Settings</span>
               </div>
             </.link>
           </li>
@@ -105,7 +105,7 @@
                     d="M5.636 5.636a9 9 0 1 0 12.728 0M12 3v9"
                   />
                 </svg>
-                Log out
+                <span class="navText">Log out</span>
               </div>
             </.link>
           </li>
@@ -117,5 +117,6 @@
         {@inner_content}
       </.non_logged_in_nav>
     <% end %>
+    <script defer phx-track-static type="text/javascript" src={~p"/assets/main.js"} />
   </body>
 </html>

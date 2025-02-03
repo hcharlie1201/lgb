@@ -23,9 +23,13 @@
 }
 
 body {
-  @apply pb-40 font-Inter font-light;
+  @apply md:pb-0 pb-28 font-Inter font-light;
 }
 
 .mainNavBar {
   @apply leading-6 hover:bg-colorSecondary hover:text-white p-2 rounded-md;
+}
+
+.navText,.userNavText {
+  @apply sm:block hidden
 }
