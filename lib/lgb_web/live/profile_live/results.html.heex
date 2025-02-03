@@ -1,10 +1,10 @@
 <.page_align>
   <div class="grid grid-cols-1 lg:grid-cols-3 gap-3">
     <%= for profile <- @profiles do %>
-      <.card>
+      <.card class="!p-0">
         <.live_component
-          module={Carousel}
           id={profile.id}
+          module={Carousel}
           uploaded_files={profile.profile_pictures}
           length={1}
         />

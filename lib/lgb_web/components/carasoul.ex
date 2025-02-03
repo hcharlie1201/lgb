@@ -3,14 +3,17 @@ defmodule LgbWeb.Components.Carousel do
   alias Phoenix.LiveView.JS
 
   def mount(socket) do
-    {:ok, assign(socket, current_index: 0)}
+    {:ok, assign(socket, current_index: 0, class: "")}
   end
 
   def render(assigns) do
     ~H"""
     <div
       id={"carousel-#{@id}"}
-      class="relative w-full max-w-6xl mx-auto overflow-hidden border border-gray-200 shadow-md rounded-md bg-white group"
+      class={[
+        "relative w-full max-w-6xl mx-auto overflow-hidden border border-gray-200 shadow-md rounded-md bg-white group",
+        @class
+      ]}
     >
       <!-- Carousel Container -->
       <div
@@ -33,23 +36,28 @@ defmodule LgbWeb.Components.Carousel do
           </div>
         <% end %>
       </div>
-      
-    <!-- Previous Button -->
-      <button
-        phx-click={JS.push("prev", target: @myself)}
-        class="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/30 hover:bg-white/50 text-gray-800 rounded-full p-3 shadow-md transition-colors duration-200"
-      >
-        ←
-      </button>
-      
+
+      <div class="group">
+        <!-- Previous Button -->
+        <%= if @current_index > 0 and length(@uploaded_files) > 0 do %>
+          <button
+            phx-click={JS.push("prev", target: @myself)}
+            class="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/30 hover:bg-white/50 text-gray-800 rounded-full p-3 shadow-md transition-opacity duration-200 opacity-0 group-hover:opacity-100"
+          >
+            ←
+          </button>
+        <% end %>
+        
     <!-- Next Button -->
-      <button
-        phx-click={JS.push("next", target: @myself)}
-        }
-        class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/30 hover:bg-white/50 text-gray-800 rounded-full p-3 shadow-md transition-opacity duration-200 opacity-0 group-hover:opacity-100"
-      >
-        →
-      </button>
+        <%= if @current_index < length(@uploaded_files) - 1 and length(@uploaded_files) > 0 do %>
+          <button
+            phx-click={JS.push("next", target: @myself)}
+            class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/30 hover:bg-white/50 text-gray-800 rounded-full p-3 shadow-md transition-opacity duration-200 opacity-0 group-hover:opacity-100"
+          >
+            →
+          </button>
+        <% end %>
+      </div>
       
     <!-- Indicators -->
       <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
