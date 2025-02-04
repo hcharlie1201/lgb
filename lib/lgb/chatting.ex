@@ -376,6 +376,21 @@ defmodule Lgb.Chatting do
     Repo.all(query)
   end
 
+  def list_conversations(profile, search_params) do
+    search_pattern = "%#{search_params}%"
+
+    from(c in Conversation,
+      join: p in Profile,
+      on:
+        (p.id == c.sender_profile_id and c.receiver_profile_id == ^profile.id) or
+          (p.id == c.receiver_profile_id and c.sender_profile_id == ^profile.id),
+      where: ilike(p.handle, ^search_pattern),
+      order_by: [asc: c.inserted_at],
+      preload: [sender_profile: p, receiver_profile: p]
+    )
+    |> Repo.all()
+  end
+
   def preload_and_transform_conversations(conversations, current_profile_id) do
     conversations
     |> Repo.preload([:sender_profile, :receiver_profile, :conversation_messages])

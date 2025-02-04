@@ -11,7 +11,7 @@ defmodule LgbWeb.Components.Carousel do
     <div
       id={"carousel-#{@id}"}
       class={[
-        "relative w-full max-w-6xl mx-auto overflow-hidden border border-gray-200 shadow-md rounded-md bg-white group",
+        "relative w-full max-w-6xl mx-auto overflow-hidden shadow-md rounded-md group",
         @class
       ]}
     >
@@ -42,7 +42,7 @@ defmodule LgbWeb.Components.Carousel do
         <%= if @current_index > 0 and length(@uploaded_files) > 0 do %>
           <button
             phx-click={JS.push("prev", target: @myself)}
-            class="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/30 hover:bg-white/50 text-gray-800 rounded-full p-3 shadow-md transition-opacity duration-200 opacity-0 group-hover:opacity-100"
+            class="absolute left-4 top-1/2 transform -translate-y-1/2 bg-white/30 hover:bg-purple-200 text-gray-800 rounded-full p-3 shadow-md transition-opacity duration-200 opacity-0 group-hover:opacity-100"
           >
             ←
           </button>
@@ -52,7 +52,7 @@ defmodule LgbWeb.Components.Carousel do
         <%= if @current_index < length(@uploaded_files) - 1 and length(@uploaded_files) > 0 do %>
           <button
             phx-click={JS.push("next", target: @myself)}
-            class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/30 hover:bg-white/50 text-gray-800 rounded-full p-3 shadow-md transition-opacity duration-200 opacity-0 group-hover:opacity-100"
+            class="absolute right-4 top-1/2 transform -translate-y-1/2 bg-white/30 hover:bg-purple-200 text-gray-800 rounded-full p-3 shadow-md transition-opacity duration-200 opacity-0 group-hover:opacity-100"
           >
             →
           </button>
@@ -62,7 +62,7 @@ defmodule LgbWeb.Components.Carousel do
     <!-- Indicators -->
       <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
         <%= for {_uploaded_file, index} <- Enum.with_index(@uploaded_files) do %>
-          <button class={"w-3 h-3 rounded-full #{if index == @current_index, do: "bg-white", else: "bg-white/50"} transition-colors duration-200"}>
+          <button class={"w-3 h-3 rounded-full #{if index == @current_index, do: "bg-colorSecondary", else: "bg-purple-200"} transition-colors duration-200 opacity-0 group-hover:opacity-100"}>
           </button>
         <% end %>
       </div>

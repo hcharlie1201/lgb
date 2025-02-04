@@ -18,7 +18,9 @@ defmodule LgbWeb.ProfileLive.Search do
 
     if form.errors == [] do
       flop_params = %{
-        filters: Profiles.create_filter(params)
+        filters: Profiles.create_filter(params),
+        order_by: [:distance],
+        order_distance: [:asc]
       }
 
       profile = Lgb.Accounts.User.current_profile(socket.assigns.current_user)
