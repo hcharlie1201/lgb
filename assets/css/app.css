@@ -3,13 +3,13 @@
 @import "tailwindcss/utilities";
 
 @font-face {
-    font-family: 'RobotoFlex';
-    src: url('/fonts/RobotoFlex.ttf') format('truetype');
+    font-family: 'Inter';
+    src: url('/fonts/Inter.ttf') format('truetype');
   }
 
   @font-face {
-    font-family: 'MarkoOne';
-    src: url('/fonts/MarkoOne-Regular.ttf') format('truetype');
+    font-family: 'Merriweather';
+    src: url('/fonts/Merriweather.ttf') format('truetype');
   }
 
 @layer components {
@@ -20,4 +20,16 @@
   .login-button {
     @apply bg-colorSecondary border hover:border hover:transition border-colorSecondary hover:text-colorSecondary hover:bg-transparent text-white rounded-md px-3 py-1;
   }
+}
+
+body {
+  @apply md:pb-0 pb-28 font-Inter font-light;
+}
+
+.mainNavBar {
+  @apply leading-6 hover:bg-colorSecondary hover:text-white p-2 rounded-md;
+}
+
+.navText,.userNavText {
+  @apply sm:block hidden
 }

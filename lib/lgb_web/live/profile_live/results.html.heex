@@ -2,25 +2,27 @@
   <.header class="text-center">
     List of profile searches
   </.header>
-  <Flop.Phoenix.table items={@profiles} meta={@metas} path={~p"/profiles/results"}>
-    <:col :let={profile} label="Name">
-      <.link navigate={~p"/profiles/#{profile.id}"}>{profile.handle}</.link>
-    </:col>
-    <:col :let={profile} label="Height" field={:height_cm}>
-      {display_height(profile.height_cm)}
-    </:col>
-    <:col :let={profile} label="Weight" field={:weight_lb}>
-      {display_weight(profile.weight_lb)}
-    </:col>
-    <:col :let={profile} label="Age" field={:age}>{profile.age}</:col>
-    <:col :let={profile} label="distance" field={:distance}>{profile.distance}</:col>
-    <:col :let={profile} label="Picture">
-      <img
-        src={Lgb.Profiles.profile_picture_url(profile) || ~p"/images/logo.svg"}
-        alt="Profile Pic"
-      />
-    </:col>
-  </Flop.Phoenix.table>
+  <div class="flex w-full border justify-center p-6 rounded-lg bg-white">
+    <Flop.Phoenix.table items={@profiles} meta={@metas} path={~p"/profiles/results"}>
+      <:col :let={profile} label="Name">
+        <.link navigate={~p"/profiles/#{profile.id}"}><div class="px-4 py-2 font-bold">{profile.handle}</div></.link>
+      </:col>
+      <:col :let={profile} label="Height" field={:height_cm}>
+        <div class="px-4 py-2 ">{display_height(profile.height_cm)}</div>
+      </:col>
+      <:col :let={profile} label="Weight" field={:weight_lb}>
+        <div class="px-4 py-2 ">{display_weight(profile.weight_lb)}</div>
+      </:col>
+      <:col :let={profile} label="Age" field={:age}><div class="px-4 py-2 ">{profile.age}</div></:col>
+      <:col :let={profile} label="Distance" field={:distance}><div class="px-4 py-2">{profile.distance}</div></:col>
+      <:col :let={profile} label="Picture">
+        <img
+          src={Lgb.Profiles.profile_picture_url(profile) || ~p"/images/logo.svg"}
+          alt="Profile Pic"
+        />
+      </:col>
+    </Flop.Phoenix.table>
+  </div>
   <.simple_form for={@form} phx-submit="goto">
     <:actions>
       <.input
@@ -31,7 +33,7 @@
         options={for n <- 1..@metas.total_pages, do: {n, n}}
         multiple={false}
       />
-      <.button>Goto</.button>
+      <.button>Go to</.button>
     </:actions>
   </.simple_form>
 </.page_align>

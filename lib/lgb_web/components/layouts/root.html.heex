@@ -41,8 +41,8 @@
             </h1>
           </.link>
         </span>
-        <ul class="flex gap-4 items-center text-md">
-          <li class="leading-6 hover:bg-purple-400 p-2 rounded-md">
+        <ul class="flex gap-4 items-center text-sm">
+          <li class="mainNavBar">
             <div class="flex gap-1">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -59,10 +59,10 @@
                 />
               </svg>
 
-              {@current_user.email}
+              <span class="navText">{@current_user.email}</span>
             </div>
           </li>
-          <li class="leading-6 hover:bg-purple-500 p-2 rounded-md">
+          <li class="mainNavBar">
             <.link href={~p"/users/settings"}>
               <div class="flex gap-1">
                 <svg
@@ -84,11 +84,11 @@
                     d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
                   />
                 </svg>
-                Settings
+                <span class="navText">Settings</span>
               </div>
             </.link>
           </li>
-          <li class="leading-6 hover:bg-purple-500 p-2 rounded-md">
+          <li class="mainNavBar">
             <.link href={~p"/users/log_out"} method="delete">
               <div class="flex gap-1">
                 <svg
@@ -105,7 +105,7 @@
                     d="M5.636 5.636a9 9 0 1 0 12.728 0M12 3v9"
                   />
                 </svg>
-                Log out
+                <span class="navText">Log out</span>
               </div>
             </.link>
           </li>
@@ -117,5 +117,6 @@
         {@inner_content}
       </.non_logged_in_nav>
     <% end %>
+    <script defer phx-track-static type="text/javascript" src={~p"/assets/main.js"} />
   </body>
 </html>

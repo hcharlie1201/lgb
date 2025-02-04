@@ -1,11 +1,13 @@
 <.page_align>
-  <.table
-    id="chat_rooms"
-    rows={@streams.chat_rooms}
-    row_click={fn {_id, chat_room} -> JS.navigate(~p"/chat_rooms/#{chat_room}") end}
-  >
-    <:col :let={{_id, chat_room}} label="Title">{chat_room.title}</:col>
-    <:col :let={{_id, chat_room}} label="Room Limit">{chat_room.limit}</:col>
-    <:col :let={{_id, chat_room}} label="Description">{chat_room.description}</:col>
-  </.table>
+  <div class="bg-white rounded-md shadow-md">
+    <.table
+      id="chat_rooms"
+      rows={@streams.chat_rooms}
+      row_click={fn {_id, chat_room} -> JS.navigate(~p"/chat_rooms/#{chat_room}") end}
+    >
+      <:col :let={{_id, chat_room}} label="Title">{chat_room.title}</:col>
+      <:col :let={{_id, chat_room}} label="Room Limit">{chat_room.limit}</:col>
+      <:col :let={{_id, chat_room}} label="Description">{chat_room.description}</:col>
+    </.table>
+  </div>
 </.page_align>

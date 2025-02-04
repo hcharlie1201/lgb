@@ -13,8 +13,8 @@ module.exports = {
   ],
   theme: {
     fontFamily: {
-      RobotoFlex: ['RobotoFlex'],
-      MarkoOne: ['MarkoOne']
+      Inter: ['Inter','sans-serif'],
+      Merriweather: ['Merriweather']
     },
     extend: {
       colors: {

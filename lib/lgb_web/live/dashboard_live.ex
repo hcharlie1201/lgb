@@ -5,9 +5,12 @@ defmodule LgbWeb.DashboardLive do
     ~H"""
     <.page_align>
       <.header>
-        Hi welcome to BiBi. This site is a meeting place for bisexual men and women who are looking for genuine connections,
-        meaningful relationships, and long-term love. Whether you’re seeking a deep emotional bond or a
-        committed partnership, this platform offers a welcoming space to connect, chat, and build something real – and it’s free!
+        <h1 class="text-6xl my-3">Hi welcome to BiBi. </h1>
+        <p class="text-lg">
+          This site is a meeting place for bisexual men and women who are looking for genuine connections,
+          meaningful relationships, and long-term love. Whether you’re seeking a deep emotional bond or a
+          committed partnership, this platform offers a welcoming space to connect, chat, and build something real – and it’s free!
+        </p>
       </.header>
       <br />
       <.header>
