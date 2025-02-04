@@ -3,33 +3,34 @@
 @import "tailwindcss/utilities";
 
 @font-face {
-    font-family: 'Inter';
-    src: url('/fonts/Inter.ttf') format('truetype');
-  }
+    font-family: "Inter";
+    src: url("/fonts/Inter.ttf") format("truetype");
+}
 
-  @font-face {
-    font-family: 'Merriweather';
-    src: url('/fonts/Merriweather.ttf') format('truetype');
-  }
+@font-face {
+    font-family: "Merriweather";
+    src: url("/fonts/Merriweather.ttf") format("truetype");
+}
 
 @layer components {
-  .join-button {
-    @apply text-xl bg-colorPrimary transition rounded-md px-32 py-3 hover:scale-110;
-  }
-  
-  .login-button {
-    @apply bg-colorSecondary border hover:border hover:transition border-colorSecondary hover:text-colorSecondary hover:bg-transparent text-white rounded-md px-3 py-1;
-  }
+    .join-button {
+        @apply text-xl bg-colorPrimary transition rounded-md px-32 py-3 hover:scale-110;
+    }
+
+    .login-button {
+        @apply bg-colorSecondary border hover:border hover:transition border-colorSecondary hover:text-colorSecondary hover:bg-transparent text-white rounded-md px-3 py-1;
+    }
 }
 
 body {
-  @apply md:pb-0 pb-28 font-Inter font-light;
+    @apply pb-40 font-Inter font-light bg-gradient-to-br from-purple-50 to-blue-50;
 }
 
 .mainNavBar {
-  @apply leading-6 hover:bg-colorSecondary hover:text-white p-2 rounded-md;
+    @apply leading-6 hover:bg-colorSecondary hover:text-white p-2 rounded-md;
 }
 
-.navText,.userNavText {
-  @apply sm:block hidden
+.navText,
+.userNavText {
+    @apply sm:block hidden;
 }

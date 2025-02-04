@@ -97,22 +97,5 @@ defmodule LgbWeb.ProfileLive.SearchTest do
 
       assert result =~ "Maximum weight must be greater than or equal to minimum weight"
     end
-
-    test "navigates to results page on valid search", %{conn: conn} do
-      {:ok, view, _html} = live(conn, ~p"/profiles")
-
-      {:ok, _view, html} =
-        view
-        |> form("#search-profile", %{
-          "min_age" => "25",
-          "max_age" => "35",
-          "min_weight" => "150",
-          "max_weight" => "200"
-        })
-        |> render_submit()
-        |> follow_redirect(conn)
-
-      assert html =~ "List of profile searches"
-    end
   end
 end

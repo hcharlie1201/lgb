@@ -2,7 +2,7 @@
   <.header class="text-3xl font-bold text-gray-800 mb-8">Gallery</.header>
   
 <!-- Carousel Section -->
-  <Carousel.carousel current_index={@current_index} uploaded_files={@uploaded_files} class="mb-8" />
+  <.live_component module={Carousel} id={@profile.id} uploaded_files={@uploaded_files} length={3} />
   
 <!-- Profile Form -->
   <.simple_form for={@form} id="my-profile" phx-submit="update_profile" phx-change="validate">

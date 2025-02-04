@@ -15,7 +15,17 @@ defmodule LgbWeb.ConversationLive.Index do
 
     {:ok,
      socket
-     |> assign(:page_title, "Messages")
+     |> assign(:search_query, "")
      |> stream(:conversations, transformed_conversations)}
+  end
+
+  def handle_event("search", %{"value" => query}, socket) do
+    profile = Lgb.Accounts.User.current_profile(socket.assigns.current_user)
+    conversations = Chatting.list_conversations(profile, query)
+
+    transformed_conversations =
+      Chatting.preload_and_transform_conversations(conversations, profile.id)
+
+    {:noreply, stream(socket, :conversations, transformed_conversations, reset: true)}
   end
 end

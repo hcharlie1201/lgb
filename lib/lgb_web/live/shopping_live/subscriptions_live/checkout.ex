@@ -41,7 +41,6 @@ defmodule LgbWeb.ShoppingLive.SubscriptionsLive.Checkout do
   end
 
   def handle_event("payment_success", params, socket) do
-    IO.inspect(params)
     # update subscription
     body = %{
       "metadata[initial_checkout_completed]" => "true"

@@ -1,5 +1,6 @@
 defmodule LgbWeb.ProfileLive.Results do
   alias Lgb.Profiles.Profile
+  alias LgbWeb.Components.Carousel
   alias Lgb.Profiles
   use LgbWeb, :live_view
 
@@ -14,7 +15,6 @@ defmodule LgbWeb.ProfileLive.Results do
 
     case Flop.validate_and_run(query, params, for: Profile) do
       {:ok, {profiles, metas}} ->
-        IO.inspect(metas)
         {:noreply, assign(socket, %{profiles: profiles, metas: metas})}
 
       {:error, _} ->
@@ -32,7 +32,7 @@ defmodule LgbWeb.ProfileLive.Results do
 
   defp display_weight(lbs) do
     if lbs == nil do
-      "n/a"
+      "⋆.˚"
     else
       "#{lbs} lbs"
     end
@@ -40,12 +40,21 @@ defmodule LgbWeb.ProfileLive.Results do
 
   def display_height(cm) do
     if cm == nil do
-      "n/a"
+      "⋆.˚"
     else
       inches = round(cm / 2.54)
       feet = div(inches, 12)
       remaining_inches = rem(inches, 12)
       "#{feet} ft #{remaining_inches} in"
+    end
+  end
+
+  defp display_distance(distance) do
+    if distance == nil do
+      "⋆.˚"
+    else
+      miles = distance / 1609.34
+      Float.round(miles, 2)
     end
   end
 end

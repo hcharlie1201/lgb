@@ -1,13 +1,11 @@
 <!DOCTYPE html>
 <html lang="en" class="[scrollbar-gutter:stable]">
   <head>
-    <link rel="icon" type="image/x-icon" href="/images/bibi_logo.png" />
+    <link rel="icon" type="image/x-icon" href="/images/bi-dating-icon.svg" />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="csrf-token" content={get_csrf_token()} />
-    <.live_title suffix=" · Phoenix Framework">
-      {assigns[:page_title] || "Lgb"}
-    </.live_title>
+    <.live_title>Bibi Dating</.live_title>
     <link phx-track-static rel="stylesheet" href={~p"/assets/app.css"} />
     <link
       rel="stylesheet"
@@ -33,7 +31,7 @@
   </head>
   <body>
     <%= if @current_user do %>
-      <nav class="flex justify-between py-3 px-10 ">
+      <nav class="flex justify-between bg-white py-3 px-10 ">
         <span class="text-xl font-bold">
           <.link navigate={~p"/"}>
             <h1 class="font-sans text-3xl bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">

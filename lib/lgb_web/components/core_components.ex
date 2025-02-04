@@ -436,10 +436,10 @@ defmodule LgbWeb.CoreComponents do
     ~H"""
     <header class={[@actions != [] && "flex items-center justify-between gap-6", @class]}>
       <div>
-        <h1 class="text-lg font-semibold leading-8 text-zinc-800">
+        <h1 class="text-lg font-medium leading-8">
           {render_slot(@inner_block)}
         </h1>
-        <p :if={@subtitle != []} class="mt-2 text-sm leading-6 text-zinc-600">
+        <p :if={@subtitle != []} class="mt-2 text-sm leading-6">
           {render_slot(@subtitle)}
         </p>
       </div>
@@ -481,7 +481,7 @@ defmodule LgbWeb.CoreComponents do
 
     ~H"""
     <div class="m-4 p-0.5 overflow-y-auto px-4 sm:overflow-visible sm:px-0">
-      <table class="w-[40rem] mt-1 sm:w-full">
+      <table class="w-[40rem] mt-11 sm:w-full">
         <thead class="text-sm text-left leading-6 text-zinc-500">
           <tr>
             <th :for={col <- @col} class="p-0 pb-4 pr-6 font-normal">{col[:label]}</th>
@@ -700,16 +700,7 @@ defmodule LgbWeb.CoreComponents do
 
   def page_align(assigns) do
     ~H"""
-    <style>
-      .dual-gradient {
-        background:
-          linear-gradient(135deg, #e3e8f5, transparent 60%), /* Light blue from top-left to bottom-right */
-          linear-gradient(-135deg, #f0ebff, transparent 40%), /* Light purple from top-right to bottom-left */
-          white; /* White in the middle */
-        background-blend-mode: multiply; /* Blend the gradients smoothly */
-      }
-    </style>
-    <div class={["min-h-screen flex flex-col md:flex-row dual-gradient"]}>
+    <div class={["min-h-screen flex flex-col md:flex-row"]}>
       <!-- Sidebar Navigation -->
       <nav class={[
         "fixed md:relative md:h-screen w-full md:w-20 flex flex-row md:flex-col md:bg-transparent bg-white border md:border-0 justify-around",
@@ -865,15 +856,17 @@ defmodule LgbWeb.CoreComponents do
 
   def list_tile(assigns) do
     ~H"""
-    <div class="bg-white rounded-lg shadow p-3 sm:p-4 ">
+    <div class="p-3 rounded-lg sm:p-4 transition-all duration-200 hover:bg-white hover:shadow-md">
       <div class="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
         <img
           src={@picture_url}
           alt="Avatar"
-          class="w-12 h-12 sm:w-16 sm:h-16 rounded-full object-cover"
+          class="w-12 h-12 sm:w-16 sm:h-16 rounded-full object-cover ring-2 ring-gray-100 hover:ring-purple-200 transition-all"
         />
         <div class="flex-1 min-w-0">
-          <h3 class="text-base sm:text-lg font-semibold text-gray-900 truncate">{@title}</h3>
+          <h3 class="text-base sm:text-lg font-medium text-gray-900 truncate group-hover:text-purple-900">
+            {@title}
+          </h3>
           <p class="text-sm sm:text-base text-gray-500 truncate">
             {@subtitle}
           </p>
@@ -890,15 +883,20 @@ defmodule LgbWeb.CoreComponents do
   end
 
   @doc """
-  card component
+  Card component
   """
 
   attr :class, :string, default: nil, doc: "Custom CSS classes to be added to the card."
+  attr :no_background, :boolean, default: true
   slot :inner_block, required: true
 
   def card(assigns) do
     ~H"""
-    <div class={["border p-4 rounded-md bg-white", @class]}>
+    <div class={[
+      "rounded-lg",
+      @class,
+      if(@no_background, do: "border bg-white p-4 ", else: "")
+    ]}>
       {render_slot(@inner_block)}
     </div>
     """
@@ -912,7 +910,7 @@ defmodule LgbWeb.CoreComponents do
   def non_logged_in_nav(assigns) do
     ~H"""
     <!-- Hero Section Container -->
-    <div class="relative min-h-screen bg-gradient-to-br from-purple-50 to-blue-50">
+    <div class="relative min-h-screen">
       <!-- Navigation Bar -->
       <nav class="px-4 py-4">
         <div class="container mx-auto flex items-center justify-between">
@@ -926,7 +924,7 @@ defmodule LgbWeb.CoreComponents do
               </.link>
             </span>
           </div>
-
+          
     <!-- Navigation Links -->
           <div class="bg-white/80 backdrop-blur-sm rounded-full shadow-lg px-6 py-3">
             <div class="hidden md:flex items-center justify-center space-x-8">
@@ -947,7 +945,7 @@ defmodule LgbWeb.CoreComponents do
               </a>
             </div>
           </div>
-
+          
     <!-- Login Button -->
           <.link navigate={~p"/users/log_in"} class="text-gray-600 hover:text-gray-900 font-medium">
             Log in

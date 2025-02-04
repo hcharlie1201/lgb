@@ -179,9 +179,14 @@ defmodule Lgb.Profiles do
 
   def get_other_profiles_distance(profile) do
     if profile.geolocation == nil do
-      from(p in Profile)
+      from(p in Profile,
+        # Add preload here
+        preload: [:profile_pictures]
+      )
     else
-      from p in Profile,
+      from(p in Profile,
+        # Add preload here
+        preload: [:profile_pictures],
         select_merge: %{
           distance:
             selected_as(
@@ -193,6 +198,7 @@ defmodule Lgb.Profiles do
               :distance
             )
         }
+      )
     end
   end
 
