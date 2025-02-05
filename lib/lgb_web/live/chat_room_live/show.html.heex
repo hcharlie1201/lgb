@@ -1,20 +1,20 @@
 <.page_align no_padding={true}>
   <div class="bg-white rounded-lg my-4">
     <.header class="text-center pt-4">
-      <h1 class="text-3xl font-bold text-green-600">Welcome to Chat Room {@chat_room.id}</h1>
+      <h1 class="text-3xl font-bold text-green-600">Chat Room {@chat_room.id}</h1>
       <:subtitle class="text-purple-500 mt-2">
         {Enum.count(@streams.presences)} users currently online
       </:subtitle>
     </.header>
   </div>
 
-  <div class="flex gap-6 mt-8">
+  <div class="flex flex-col-reverse md:flex-row gap-6 mt-8 h-[80vh]">
     <!-- Chat Messages Section -->
-    <.card class="flex-[75%]">
-      <h2 class="text-xl font-semibold mb-4">Messages</h2>
-      <div class="h-[60vh] overflow-y-auto" id="messages-container" phx-hook="ScrollBottom">
+    <.card class="flex-[75%] overflow-scroll">
+      <h2 class="text-xl font-semibold">Messages</h2>
+      <div id="messages-container" class="h-full" phx-hook="ScrollBottom">
         <.table id="messages" rows={@streams.messages} class="w-full">
-          <:col :let={{_presence, message}} label="Content">
+          <:col :let={{_presence, message}}>
             <div class="flex justify-between">
               <div>
                 <span class="text-colorSecondary">{message.profile.handle}</span>
@@ -32,9 +32,9 @@
     </.card>
     
 <!-- Online Users Section -->
-    <.card class="flex-[25%]">
-      <h2 class="text-xl font-semibold mb-4">Online Users</h2>
-      <div class="h-[800px] overflow-y-auto" id="presence-container" phx-hook="ScrollBottom">
+    <.card class="flex-[25%] h-[10vh] md:h-full overflow-y-auto">
+      <h2 class="text-xl font-semibold">Online Users</h2>
+      <div class="h-full " id="presence-container" phx-hook="ScrollBottom">
         <.table id="users-online" rows={@streams.presences} class="w-full">
           <:col :let={{_presence, %{user: profile}}} label="Name" class="font-medium">
             {profile.handle}

@@ -5,8 +5,18 @@
   <.live_component module={Carousel} id={@profile.id} uploaded_files={@uploaded_files} length={3} />
   
 <!-- Profile Form -->
-  <.simple_form for={@form} id="my-profile" phx-submit="update_profile" phx-change="validate">
+  <.simple_form for={@form} id="my-profile" class="relative" phx-submit="update_profile" phx-change="validate">
     <!-- File Upload Section -->
+    <div onclick="toggleHeight()" class="bg-white py-4 inset-x-0 top-0 absolute flex justify-center items-center hover:bg-gray-100 rounded py-1">
+      <svg width="40" height="15" xmlns="http://www.w3.org/2000/svg">
+        <!-- First Bar -->
+        <rect width="40" height="4" fill="#333333" rx="3" ry="3" />
+        
+        <!-- Second Bar -->
+        <rect y="10" width="40" height="4" fill="#333333" rx="3" ry="3" />
+      </svg>
+    </div>
+
     <section phx-drop-target={@uploads.avatar.ref} class="mb-6">
       <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-500 transition-colors">
         <.live_file_input upload={@uploads.avatar} class="hidden" />

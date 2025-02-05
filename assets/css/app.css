@@ -34,3 +34,6 @@ body {
 .userNavText {
     @apply sm:block hidden;
 }
+.c {
+    @apply overflow-hidden duration-300;
+}

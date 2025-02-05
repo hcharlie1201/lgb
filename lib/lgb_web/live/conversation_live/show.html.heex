@@ -1,5 +1,5 @@
 <.page_align no_padding={true}>
-  <.card class="flex flex-col h-screen">
+  <.card class="flex flex-col h-screen h-full">
     <!-- Chat Header -->
     <.card class="flex justify-between items-center">
       <div class="flex items-center align-middle gap-2">
@@ -23,7 +23,7 @@
     >
       <div :for={{dom_id, message} <- @streams.all_messages} id={dom_id}>
         <div class={"flex " <> if message.profile.id == @current_user.id, do: "justify-end", else: "justify-start"}>
-          <div class={"p-3 mx-1 my-2 rounded-lg max-w-[70%] " <> if message.profile.id == @current_user.id, do: "bg-green-100", else: "bg-purple-100"}>
+          <div class={"text-sm p-3 mx-1 my-1 rounded-3xl max-w-[70%] " <> if message.profile.id == @current_user.id, do: "bg-green-100", else: "bg-purple-100"}>
             {message.content} - {Calendar.strftime(message.inserted_at, "%I:%M %p")}
           </div>
         </div>
