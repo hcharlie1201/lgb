@@ -21,7 +21,10 @@
           <% LgbWeb.UserPresence.within_hours?(@other_profile.user.last_login_at, 24) -> %>
             Last active yesterday
           <% true -> %>
-            Last active {Calendar.strftime(@other_profile.user.last_login_at, "%b %d")}
+            Last active {Calendar.strftime(
+              @other_profile.user.last_login_at || DateTime.utc_now(),
+              "%b %d"
+            )}
         <% end %>
       </span>
     </.card>

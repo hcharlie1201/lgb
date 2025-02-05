@@ -19,11 +19,19 @@ defmodule LgbWeb.UserPresence do
   end
 
   def within_minutes?(datetime, minutes) do
-    DateTime.diff(DateTime.utc_now(), datetime) < minutes * 60
+    if datetime == nil do
+      false
+    else
+      DateTime.diff(DateTime.utc_now(), datetime) < minutes * 60
+    end
   end
 
   def within_hours?(datetime, hours) do
-    DateTime.diff(DateTime.utc_now(), datetime) < hours * 3600
+    if datetime == nil do
+      false
+    else
+      DateTime.diff(DateTime.utc_now(), datetime) < hours * 3600
+    end
   end
 
   def format_hours_ago(datetime) do

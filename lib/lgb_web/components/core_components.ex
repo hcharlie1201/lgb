@@ -1003,7 +1003,10 @@ defmodule LgbWeb.CoreComponents do
             <% LgbWeb.UserPresence.within_hours?(@profile.user.last_login_at, 24) -> %>
               Last active yesterday
             <% true -> %>
-              Last active {Calendar.strftime(@profile.user.last_login_at, "%b %d")}
+              Last active {Calendar.strftime(
+                @profile.user.last_login_at || DateTime.utc_now(),
+                "%b %d"
+              )}
           <% end %>
         </div>
       </div>
