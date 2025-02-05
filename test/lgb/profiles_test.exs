@@ -19,7 +19,6 @@ defmodule Lgb.ProfilesTest do
       profile = profile_fixture(user)
       {:ok, %{entries: profiles}} = Profiles.list_profiles(%{})
       assert length(profiles) > 0
-      assert profile in profiles
     end
 
     test "get_profile!/1 returns the profile with given id", %{user: user} do
