@@ -1,24 +1,134 @@
 <.page_align>
-  <.card class="flex flex-col">
-    <%= for subscription_plan <- @subscription_plans do %>
-      <div>
-        <.header>{subscription_plan.name}</.header>
-        <h1>Benefits Include:</h1>
-        <ul>
-          <li>Able to see users credit score</li>
-          <li>Sent unlimited messages</li>
-          <li>See users that viewed you recently</li>
-        </ul>
-        <h2>${format_money(subscription_plan.amount)}</h2>
-        <h2>
-          Recurring Charging of every {subscription_plan.interval_count} {subscription_plan.interval}
-        </h2>
+  <.card class="space-y-8 p-6">
+    <%!-- Introduction Section --%>
+    <div class="border-b border-gray-200 pb-6">
+      <h2 class="text-2xl font-medium text-gray-900 mb-4 font-Merriweather">✨ Premium Perks ✨</h2>
+      <p class="text-gray-600 leading-relaxed">
+        Want to supercharge your BiBi experience?  Then you've stumbled upon our top-secret, super-duper, extra-special premium features! These are the goodies we offer to the awesome folks who help keep the site running (and my caffeine intake sufficiently high).  Read on to discover why I built this crazy place, and how you can get in on the action!
+      </p>
+    </div>
+
+    <%!-- Site Background Section --%>
+    <div class="space-y-4">
+      <h3 class="premium-title">Why BiBi Exists (and Why You Should Care)</h3>
+      <p class="text-gray-600 leading-relaxed">
+        So, why did I create BiBi?  Well, a few reasons:
+      </p>
+      <ul class="list-disc list-inside text-gray-600 leading-relaxed ml-4 space-y-2">
+        <li>Because I'm a little bit bonkers (in a good way!).</li>
+        <li>
+          To build a community so caring, it'll make your heart melt (maybe bring a tissue).
+        </li>
+        <li>
+          To create a platform so engaging, you'll forget what Netflix is. (Okay, maybe not *quite*.)
+        </li>
+      </ul>
+    </div>
+
+    <%!-- Growth & Support Section --%>
+    <div class="space-y-4 border-t border-gray-200 pt-6">
+      <h3 class="premium-title">
+        Site Growth & Support (aka Keeping the Lights On)
+      </h3>
+      <div class="text-gray-600 leading-relaxed space-y-4">
+        <p>
+          Our profile/personal ads section blew up! Thanks to you guys, it's the hottest ticket in town. After a year online, our community is booming like a disco in the 70s.
+        </p>
+        <p>
+          Basic stuff (galleries, profiles, searching) will *always* be free. But, like, server bills and pizza don't pay themselves. So, we offer premium features for those who want to support the cause (and get some cool perks in return!).
+        </p>
       </div>
-      <%= if !@completed_initial_checkout do %>
-        <.link patch={~p"/shopping/subscriptions/#{subscription_plan.id}/info"}>
-          <.button>Upgrade</.button>
-        </.link>
-      <% end %>
-    <% end %>
+    </div>
+
+    <%!-- Personal Section --%>
+    <div class="space-y-4 border-t border-gray-200 pt-6">
+      <h3 class="premium-title">
+        A Little About Me (Because You're Curious)
+      </h3>
+      <div class="text-gray-600 leading-relaxed space-y-4">
+        <p>
+          I'm Charlie, a 26-year-old gay guy from Cali, now living it up in my parents house after getting laid off.  My passions include:
+        </p>
+        <ul class="list-disc list-inside ml-4 space-y-2">
+          <li>My awesome job (haha)</li>
+          <li>Pumping iron heh</li>
+          <li>Hanging out with friends of course</li>
+          <li>And I guess coding... (*cricket)</li>
+        </ul>
+      </div>
+    </div>
+
+    <%!-- Thank You Section --%>
+    <div class="border-t border-gray-200 pt-6">
+      <p class="text-gray-600 italic">
+        Huge thanks to everyone who's chipped in with money, pics, good vibes, and advice. You rock!  Seriously, you're the best.
+      </p>
+      <p class="text-gray-600 mt-2">
+        Cheers,<br /> Charlie
+      </p>
+    </div>
   </.card>
+
+  <div class="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+    <%= for subscription_plan <- @subscription_plans do %>
+      <.card class="flex flex-col p-6 hover:border-purple-200 transition-all duration-200">
+        <%!-- Header section --%>
+        <div class="mb-6">
+          <h2 class="text-2xl font-medium font-Merriweather text-gray-900">
+            {subscription_plan.name} - The VIP Treatment
+          </h2>
+          <div class="mt-4 flex items-baseline font-Merriweather">
+            <span class="text-4xl font-bold tracking-tight text-gray-900">
+              ${format_money(subscription_plan.amount)}
+            </span>
+            <span class="ml-1 font-medium text-gray-500">
+              for every 3 months (That's less than a fancy coffee!)
+            </span>
+          </div>
+        </div>
+
+        <%!-- Features list --%>
+        <div class="flex-grow">
+          <h3 class="text-sm font-semibold text-gray-900 uppercase tracking-wide mb-4">
+            What You Get (Besides My Undying Gratitude)
+          </h3>
+          <ul class="space-y-4">
+            <li class="flex items-start">
+              <.icon name="hero-check" class="h-5 w-5 text-purple-500 flex-shrink-0 mt-0.5" />
+              <span class="ml-3 text-gray-600">
+                Access to credit scores (because adulting is hard).
+              </span>
+            </li>
+            <li class="flex items-start">
+              <.icon name="hero-check" class="h-5 w-5 text-purple-500 flex-shrink-0 mt-0.5" />
+              <span class="ml-3 text-gray-600">
+                Unlimited messaging (so you can chat 'til your fingers fall off).
+              </span>
+            </li>
+            <li class="flex items-start">
+              <.icon name="hero-check" class="h-5 w-5 text-purple-500 flex-shrink-0 mt-0.5" />
+              <span class="ml-3 text-gray-600">
+                View recent profile visitors (aka see who's been creeping... I mean, admiring).
+              </span>
+            </li>
+          </ul>
+        </div>
+
+        <%!-- Subscription details & Button --%>
+        <div class="mt-6 pt-6 border-t border-gray-200">
+          <p class="text-sm text-gray-500 mb-6">
+            Recurring charge every {subscription_plan.interval_count} {subscription_plan.interval} (It's like a surprise gift to yourself every month!)
+          </p>
+
+          <%= if !@completed_initial_checkout do %>
+            <.link patch={~p"/shopping/subscriptions/#{subscription_plan.id}/info"} class="block">
+              <.button class="w-full bg-purple-600 hover:bg-purple-700">
+                Join the cool kids club!
+              </.button>
+            </.link>
+          <% end %>
+        </div>
+      </.card>
+    <% end %>
+  </div>
 </.page_align>

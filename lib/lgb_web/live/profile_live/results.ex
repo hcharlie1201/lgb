@@ -29,32 +29,4 @@ defmodule LgbWeb.ProfileLive.Results do
 
     {:noreply, push_patch(socket, to: path)}
   end
-
-  defp display_weight(lbs) do
-    if lbs == nil do
-      "⋆.˚"
-    else
-      "#{lbs} lbs"
-    end
-  end
-
-  def display_height(cm) do
-    if cm == nil do
-      "⋆.˚"
-    else
-      inches = round(cm / 2.54)
-      feet = div(inches, 12)
-      remaining_inches = rem(inches, 12)
-      "#{feet} ft #{remaining_inches} in"
-    end
-  end
-
-  defp display_distance(distance) do
-    if distance == nil do
-      "⋆.˚"
-    else
-      miles = distance / 1609.34
-      Float.round(miles, 2)
-    end
-  end
 end

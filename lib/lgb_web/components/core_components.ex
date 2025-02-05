@@ -958,4 +958,37 @@ defmodule LgbWeb.CoreComponents do
     </div>
     """
   end
+
+  @doc """
+  name activity
+  """
+
+  attr :profile_id, :string, required: true
+
+  def name_with_online_activity(assigns) do
+    user = assigns.profile.user
+
+    LgbWeb.Presence.find_user("users", user.id)
+
+    found_user =
+      if LgbWeb.Presence.find_user("users", user.id) do
+        true
+      else
+        false
+      end
+
+    assigns = assign(assigns, :found_user, found_user)
+
+    ~H"""
+    <div class="flex items-center gap-2 p-2 rounded-lg transition-all">
+      <div class="flex items-center gap-2">
+        <div :if={@found_user} class="flex">
+          <div class="h-2 w-2 bg-green-400 rounded-full"></div>
+          <div class="absolute h-2 w-2 bg-green-400 rounded-full animate-ping"></div>
+        </div>
+        <div class="text-base font-medium text-white">{@profile.handle}</div>
+      </div>
+    </div>
+    """
+  end
 end

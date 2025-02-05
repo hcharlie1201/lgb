@@ -376,4 +376,10 @@ defmodule Lgb.Accounts do
       {:error, :user, changeset, _} -> {:error, changeset}
     end
   end
+
+  def update_user_last_login_at(user) do
+    user
+    |> Ecto.Changeset.change(%{last_login_at: DateTime.truncate(DateTime.utc_now(), :second)})
+    |> Repo.update()
+  end
 end

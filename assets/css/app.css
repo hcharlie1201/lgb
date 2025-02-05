@@ -23,7 +23,11 @@
 }
 
 body {
-    @apply pb-40 font-Inter font-light bg-gradient-to-br from-purple-50 to-blue-50;
+    @apply pb-40 font-Inter font-light relative w-full min-h-full text-sm lg:pb-0;
+    background-image: url("/images/background_image_bibi.webp");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
 }
 
 .mainNavBar {
@@ -34,6 +38,19 @@ body {
 .userNavText {
     @apply sm:block hidden;
 }
+
 .c {
     @apply overflow-hidden duration-300;
+}
+
+.pricing-card {
+    transition: all 0.2s ease-in-out;
+}
+
+.pricing-card:hover {
+    transform: translateY(-2px);
+}
+
+.premium-title {
+    @apply text-2xl font-medium text-gray-900 mb-4 font-Merriweather;
 }
