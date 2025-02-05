@@ -848,7 +848,7 @@ defmodule LgbWeb.CoreComponents do
     """
   end
 
-  attr :title, :string, required: true
+  slot :title
   attr :subtitle, :string
   attr :picture_url, :string, required: true
   attr :read, :boolean, default: false
@@ -963,7 +963,8 @@ defmodule LgbWeb.CoreComponents do
   name activity
   """
 
-  attr :profile_id, :string, required: true
+  attr :show, :boolean, default: false
+  attr :primary, :boolean, default: true
 
   def name_with_online_activity(assigns) do
     user = assigns.profile.user
@@ -986,9 +987,74 @@ defmodule LgbWeb.CoreComponents do
           <div class="h-2 w-2 bg-green-400 rounded-full"></div>
           <div class="absolute h-2 w-2 bg-green-400 rounded-full animate-ping"></div>
         </div>
-        <div class="text-base font-medium text-white">{@profile.handle}</div>
+        <div class={[
+          "text-lg font-medium",
+          if(@primary, do: "text-white", else: "text-black")
+        ]}>
+          {@profile.handle}
+        </div>
+        <div
+          :if={!@found_user and @profile.user.last_login_at != nil and @show}
+          class="text-xs text-gray-400 font-light"
+        >
+          <%= cond do %>
+            <% LgbWeb.UserPresence.within_minutes?(@profile.user.last_login_at, 60) -> %>
+              {LgbWeb.UserPresence.format_hours_ago(@profile.user.last_login_at)}
+            <% LgbWeb.UserPresence.within_hours?(@profile.user.last_login_at, 24) -> %>
+              Last active yesterday
+            <% true -> %>
+              Last active {Calendar.strftime(@profile.user.last_login_at, "%b %d")}
+          <% end %>
+        </div>
       </div>
     </div>
+    """
+  end
+
+  def profile_preview(assigns) do
+    ~H"""
+    <.card
+      no_background={false}
+      class="m-1 border-b-2 border-transparent hover:border-blue-300 transition-all duration-200"
+    >
+      <div class="relative">
+        <.live_component
+          id={@profile.id}
+          module={LgbWeb.Components.Carousel}
+          uploaded_files={@profile.profile_pictures}
+          length={1}
+        />
+        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/50 to-transparent p-4 rounded-b-lg">
+          <.link
+            navigate={~p"/profiles/#{@profile.id}"}
+            class="text-white font-semibold text-lg hover:text-gray-100 transition-colors"
+          >
+            <.name_with_online_activity profile={@profile} />
+          </.link>
+        </div>
+      </div>
+
+      <div class="p-4 space-y-2">
+        <div class="grid grid-cols-2 gap-3 text-sm">
+          <div class="flex items-center gap-2 text-gray-600">
+            <.icon name="hero-rectangle-stack" class="w-4 h-4" />
+            <span>{Lgb.Profiles.display_height(@profile.height_cm)}</span>
+          </div>
+          <div class="flex items-center gap-2 text-gray-600">
+            <.icon name="hero-scale-solid" class="w-4 h-4" />
+            <span>{Lgb.Profiles.display_weight(@profile.weight_lb)}</span>
+          </div>
+          <div class="flex items-center gap-2 text-gray-600">
+            <.icon name="hero-cake-solid" class="w-4 h-4" />
+            <span>{@profile.age} years</span>
+          </div>
+          <div class="flex items-center gap-2 text-gray-600">
+            <.icon name="hero-map-pin-solid" class="w-4 h-4" />
+            <span>{Lgb.Profiles.display_distance(@profile.distance)} miles away</span>
+          </div>
+        </div>
+      </div>
+    </.card>
     """
   end
 end

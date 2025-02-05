@@ -25,7 +25,7 @@ defmodule LgbWeb.ConversationLive.Show do
         true -> nil
       end
 
-    other_profile = Repo.preload(other_profile, :first_picture)
+    other_profile = Repo.preload(other_profile, [:first_picture, :user])
 
     all_messages =
       Chatting.list_conversation_messages_by_page(conversation.id, socket.assigns.page, @per_page)

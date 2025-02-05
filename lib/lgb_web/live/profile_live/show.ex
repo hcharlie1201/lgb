@@ -11,6 +11,7 @@ defmodule LgbWeb.ProfileLive.Show do
   @impl true
   def handle_params(%{"id" => id}, _, socket) do
     profile = Profiles.get_profile!(id)
+    profile = Lgb.Repo.preload(profile, :user)
 
     {:noreply,
      socket

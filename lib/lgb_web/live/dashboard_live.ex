@@ -22,48 +22,7 @@ defmodule LgbWeb.DashboardLive do
         🌎 Global Users
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-3">
           <%= for profile <- @global_profiles do %>
-            <.card
-              no_background={false}
-              class="m-1 border-b-2 border-transparent hover:border-blue-300 transition-all duration-200"
-            >
-              <div class="relative">
-                <.live_component
-                  id={profile.id}
-                  module={Carousel}
-                  uploaded_files={profile.profile_pictures}
-                  length={1}
-                />
-                <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/50 to-transparent p-4 rounded-b-lg">
-                  <.link
-                    navigate={~p"/profiles/#{profile.id}"}
-                    class="text-white font-semibold text-lg hover:text-gray-100 transition-colors"
-                  >
-                    <.name_with_online_activity profile={profile} />
-                  </.link>
-                </div>
-              </div>
-
-              <div class="p-4 space-y-2">
-                <div class="grid grid-cols-2 gap-3 text-sm">
-                  <div class="flex items-center gap-2 text-gray-600">
-                    <.icon name="hero-rectangle-stack" class="w-4 h-4" />
-                    <span>{Profiles.display_height(profile.height_cm)}</span>
-                  </div>
-                  <div class="flex items-center gap-2 text-gray-600">
-                    <.icon name="hero-scale-solid" class="w-4 h-4" />
-                    <span>{Profiles.display_weight(profile.weight_lb)}</span>
-                  </div>
-                  <div class="flex items-center gap-2 text-gray-600">
-                    <.icon name="hero-cake-solid" class="w-4 h-4" />
-                    <span>{profile.age} years</span>
-                  </div>
-                  <div class="flex items-center gap-2 text-gray-600">
-                    <.icon name="hero-map-pin-solid" class="w-4 h-4" />
-                    <span>{Profiles.display_distance(profile.distance)} miles away</span>
-                  </div>
-                </div>
-              </div>
-            </.card>
+            <.profile_preview profile={profile} />
           <% end %>
         </div>
       </.header>

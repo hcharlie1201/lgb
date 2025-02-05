@@ -9,10 +9,21 @@
           class="w-12 h-12 sm:w-16 sm:h-16 rounded-full object-cover"
         />
         <span class="font-semibold text-lg">
-          <.link navigate={~p"/profiles/#{@other_profile.id}"}>{@other_profile.handle}</.link>
+          <.link navigate={~p"/profiles/#{@other_profile.id}"}>
+            <.name_with_online_activity profile={@other_profile} primary={false} />
+          </.link>
         </span>
       </div>
-      <span class="text-sm text-green-500">Online</span>
+      <span class="text-xs text-gray-400 font-light">
+        <%= cond do %>
+          <% LgbWeb.UserPresence.within_minutes?(@other_profile.user.last_login_at, 60) -> %>
+            {LgbWeb.UserPresence.format_hours_ago(@other_profile.user.last_login_at)}
+          <% LgbWeb.UserPresence.within_hours?(@other_profile.user.last_login_at, 24) -> %>
+            Last active yesterday
+          <% true -> %>
+            Last active {Calendar.strftime(@other_profile.user.last_login_at, "%b %d")}
+        <% end %>
+      </span>
     </.card>
     <div
       id="conversation-messages"
