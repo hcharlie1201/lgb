@@ -1,6 +1,7 @@
 defmodule LgbWeb.ConversationLive.Show do
   alias Lgb.Chatting.ConversationMessage
   alias Lgb.Repo
+  alias LgbWeb.Presence
   use LgbWeb, :live_view
   @per_page 20
 
@@ -117,5 +118,13 @@ defmodule LgbWeb.ConversationLive.Show do
 
   def handle_info(%{event: "new_message", payload: message}, socket) do
     {:noreply, stream_insert(socket, :all_messages, message)}
+  end
+
+  def handle_info({Presence, {:join, _presence}}, socket) do
+    {:noreply, socket}
+  end
+
+  def handle_info({Presence, {:leave, _presence}}, socket) do
+    {:noreply, socket}
   end
 end

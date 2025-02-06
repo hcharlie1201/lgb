@@ -214,7 +214,7 @@ defmodule Lgb.Chatting do
     query =
       from cm in ConversationMessage,
         where: cm.conversation_id == ^conversation_id,
-        order_by: [desc: cm.inserted_at],
+        order_by: [asc: cm.inserted_at],
         limit: ^per_page,
         offset: ^offset,
         preload: [:profile, :conversation]
