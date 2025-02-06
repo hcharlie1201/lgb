@@ -181,12 +181,12 @@ defmodule Lgb.Profiles do
     if profile.geolocation == nil do
       from(p in Profile,
         # Add preload here
-        preload: [:profile_pictures]
+        preload: [:profile_pictures, :user]
       )
     else
       from(p in Profile,
         # Add preload here
-        preload: [:profile_pictures],
+        preload: [:profile_pictures, :user],
         select_merge: %{
           distance:
             selected_as(
@@ -234,5 +234,55 @@ defmodule Lgb.Profiles do
   def sanitize(params) do
     params
     |> Enum.reject(fn {_, value} -> value in [nil, ""] end)
+  end
+
+  def find_global_users(limit) do
+    query =
+      from p in Profile,
+        # # Ensure they have a picture
+        # where: not is_nil(p.first_picture),
+        # # Only active profiles
+        # where: p.active == true,
+        # Random ordering
+        order_by: fragment("RANDOM()"),
+        # Adjust number as needed
+        limit: ^limit,
+        preload: [:profile_pictures, :user]
+
+    query |> Repo.all()
+  end
+
+  def display_weight(lbs) do
+    if lbs == nil do
+      "⋆.˚"
+    else
+      "#{lbs} lbs"
+    end
+  end
+
+  def display_height(cm) do
+    if cm == nil do
+      "⋆.˚"
+    else
+      inches = round(cm / 2.54)
+      feet = div(inches, 12)
+      remaining_inches = rem(inches, 12)
+      "#{feet} ft #{remaining_inches} in"
+    end
+  end
+
+  def display_distance(distance) do
+    if distance == nil do
+      "⋆.˚"
+    else
+      miles = distance / 1609.34
+      Float.round(miles, 2)
+    end
+  end
+
+  def current_user(profile) do
+    profile
+    |> Ecto.assoc(:user)
+    |> Lgb.Repo.one()
   end
 end

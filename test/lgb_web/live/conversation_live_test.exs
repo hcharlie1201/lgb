@@ -12,7 +12,9 @@ defmodule LgbWeb.ConversationLiveTest do
     other_user = user_fixture()
 
     profile = profile_fixture(user)
+    profile = profile |> Lgb.Repo.preload(:user)
     other_profile = profile_fixture(other_user)
+    other_profile = other_profile |> Lgb.Repo.preload(:user)
 
     conversation = conversation_fixture(profile, other_profile)
     conversation_message_fixture(conversation, profile, %{content: "wsup"})

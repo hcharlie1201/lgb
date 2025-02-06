@@ -44,4 +44,8 @@ defmodule LgbWeb.Presence do
   def track_user(name, topic, params), do: track(self(), topic, name, params)
 
   def subscribe(topic), do: Phoenix.PubSub.subscribe(Lgb.PubSub, "proxy:#{topic}")
+
+  def find_user(topic, user_id) do
+    list(topic) |> Enum.find(fn {_id, presence} -> presence[:id] == user_id end)
+  end
 end

@@ -174,18 +174,6 @@ defmodule LgbWeb.UserAuth do
     end
   end
 
-  def on_mount(:redirect_if_user_purchased_subscription, _params, session, socket) do
-    socket = mount_current_user(socket, session)
-    current_user = socket.assigns.current_user
-    stripe_customer = Lgb.Accounts.get_stripe_customer(current_user)
-
-    if stripe_customer && Lgb.Billing.get_stripe_subscription(stripe_customer) do
-      {:halt, Phoenix.LiveView.redirect(socket, to: signed_in_path(socket))}
-    else
-      {:cont, socket}
-    end
-  end
-
   defp mount_current_user(socket, session) do
     Phoenix.Component.assign_new(socket, :current_user, fn ->
       if user_token = session["user_token"] do

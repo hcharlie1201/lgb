@@ -65,7 +65,7 @@ defmodule LgbWeb.Router do
     pipe_through [:browser, :require_authenticated_user]
 
     live_session :ensure_authenticated,
-      on_mount: [{LgbWeb.UserAuth, :ensure_authenticated}] do
+      on_mount: [{LgbWeb.UserAuth, :ensure_authenticated}, {LgbWeb.UserPresence, :track}] do
       live "/dashboard", DashboardLive
       live "/users/settings", LoginLive.UserSettingsLive, :edit
       live "/users/settings/confirm_email/:token", LoginLive.UserSettingsLive, :confirm_email
