@@ -254,27 +254,27 @@ defmodule Lgb.Profiles do
   end
 
   def find_new_and_nearby_users(limit, profile) do
-    query =
-      from p in Profile,
-        where: p.id != ^profile.id,
-        where: not is_nil(p.geolocation),
-        select_merge: %{
-          distance:
-            selected_as(
-              fragment(
-                "ST_Distance(?, ?)",
-                p.geolocation,
-                ^profile.geolocation
-              ),
-              :distance
-            )
-        },
-        order_by: [asc: selected_as(:distance)],
-        limit: ^limit,
-        preload: [:profile_pictures, :user]
-
     # Then when calling the query, you might want to wrap it:
-    if profile.geolocation do
+    if profile && profile.geolocation do
+      query =
+        from p in Profile,
+          where: p.id != ^profile.id,
+          where: not is_nil(p.geolocation),
+          select_merge: %{
+            distance:
+              selected_as(
+                fragment(
+                  "ST_Distance(?, ?)",
+                  p.geolocation,
+                  ^profile.geolocation
+                ),
+                :distance
+              )
+          },
+          order_by: [asc: selected_as(:distance)],
+          limit: ^limit,
+          preload: [:profile_pictures, :user]
+
       Repo.all(query)
     else
       []

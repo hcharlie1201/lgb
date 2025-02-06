@@ -1,27 +1,83 @@
 <script src="https://js.stripe.com/v3/">
 </script>
-<.form
-  for={%{}}
-  phx-hook="StripeCheckout"
-  id="stripe-checkout-form"
-  data-clientsecret={@client_secret}
-  data-stripekey={@stripe_key}
->
-  <div id="payment-element">
-    <!-- Elements will create form elements here -->
-  </div>
-  <div id="error-message">
-    <!-- Display error message to your customers here -->
-  </div>
-  <.button>
-    <svg class="mr-2" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-      <path d="M4 4a2 2 0 00-2 2v1h16V6a2 2 0 00-2-2H4z" />
-      <path
-        fill-rule="evenodd"
-        d="M18 9H2v5a2 2 0 002 2h12a2 2 0 002-2V9zM4 13a1 1 0 011-1h1a1 1 0 110 2H5a1 1 0 01-1-1zm5-1a1 1 0 100 2h1a1 1 0 100-2H9z"
-        clip-rule="evenodd"
-      />
-    </svg>
-    Pay
-  </.button>
-</.form>
+<.page_align>
+  <.card class="flex flex-col p-6 hover:border-purple-200 transition-all duration-200">
+    <%!-- Header section --%>
+    <div class="mb-6">
+      <h2 class="text-2xl font-medium font-Merriweather text-gray-900">
+        {@subscription_plan.name} - The VIP Treatment
+      </h2>
+      <div class="mt-4 flex items-baseline font-Merriweather">
+        <span class="text-4xl font-bold tracking-tight text-gray-900">
+          ${format_money(500)}
+        </span>
+        <span class="ml-1 font-medium text-gray-500">
+          per month. (Must purchase 3 month at a time and recurring)
+        </span>
+      </div>
+    </div>
+
+    <%!-- Features list --%>
+    <div class="flex-grow">
+      <h3 class="text-sm font-semibold text-gray-900 uppercase tracking-wide mb-4">
+        What You Get (Besides My Undying Gratitude)
+      </h3>
+      <ul class="space-y-4">
+        <li class="flex items-start">
+          <.icon name="hero-check" class="h-5 w-5 text-purple-500 flex-shrink-0 mt-0.5" />
+          <span class="ml-3 text-gray-600">
+            Access to credit scores (because adulting is hard).
+          </span>
+        </li>
+        <li class="flex items-start">
+          <.icon name="hero-check" class="h-5 w-5 text-purple-500 flex-shrink-0 mt-0.5" />
+          <span class="ml-3 text-gray-600">
+            Unlimited messaging (so you can chat 'til your fingers fall off).
+          </span>
+        </li>
+        <li class="flex items-start">
+          <.icon name="hero-check" class="h-5 w-5 text-purple-500 flex-shrink-0 mt-0.5" />
+          <span class="ml-3 text-gray-600">
+            View recent profile visitors (aka see who's been creeping... I mean, admiring).
+          </span>
+        </li>
+      </ul>
+    </div>
+
+    <%!-- Subscription details & Button --%>
+    <div class="mt-6 pt-6 border-t border-gray-200">
+      <p class="text-sm text-gray-500 mb-6">
+        Recurring charge every {@subscription_plan.interval_count} {@subscription_plan.interval} (It's like a surprise gift to yourself every month!)
+      </p>
+    </div>
+  </.card>
+  <.form
+    for={%{}}
+    phx-hook="StripeCheckout"
+    id="stripe-checkout-form"
+    data-clientsecret={@client_secret}
+    data-stripekey={@stripe_key}
+  >
+    <div id="payment-element">
+      <!-- Elements will create form elements here -->
+    </div>
+    <div id="error-message">
+      <!-- Display error message to your customers here -->
+    </div>
+    <.button class="mt-4">
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 20 20"
+        fill="currentColor"
+        class="size-5"
+      >
+        <path
+          fill-rule="evenodd"
+          d="M2.5 4A1.5 1.5 0 0 0 1 5.5V6h18v-.5A1.5 1.5 0 0 0 17.5 4h-15ZM19 8.5H1v6A1.5 1.5 0 0 0 2.5 16h15a1.5 1.5 0 0 0 1.5-1.5v-6ZM3 13.25a.75.75 0 0 1 .75-.75h1.5a.75.75 0 0 1 0 1.5h-1.5a.75.75 0 0 1-.75-.75Zm4.75-.75a.75.75 0 0 0 0 1.5h3.5a.75.75 0 0 0 0-1.5h-3.5Z"
+          clip-rule="evenodd"
+        />
+      </svg>
+      Pay
+    </.button>
+  </.form>
+</.page_align>

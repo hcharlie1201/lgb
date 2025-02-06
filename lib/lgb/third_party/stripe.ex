@@ -83,4 +83,13 @@ defmodule Lgb.ThirdParty.Stripe do
       {:error, reason} -> {:error, reason.message}
     end
   end
+
+  def create_stripe_session(body) do
+    encoded_body = URI.encode_query(body)
+
+    case Lgb.ThirdParty.Stripe.BillingPortal.post("", encoded_body) do
+      {:ok, http_response} -> {:ok, Poison.decode!(http_response.body)}
+      {:error, reason} -> {:error, reason.message}
+    end
+  end
 end

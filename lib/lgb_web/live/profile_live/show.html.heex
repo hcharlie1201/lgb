@@ -2,32 +2,24 @@
   <.header>
     <.name_with_online_activity profile={@profile} show={true} primary={false} />
   </.header>
+  <!-- Carousel Section -->
+  <.live_component
+    module={LgbWeb.Components.Carousel}
+    id={@profile.id}
+    uploaded_files={@uploaded_files}
+    length={3}
+  />
+
   <.list>
-    <: <:item title="Distance">{@profile.distance}</:>
-    // TODO: Fill in the distance calculation
-    <:item title="Uploaded Pictures">
-      <%= for uploaded_file <- @uploaded_files do %>
-        <img
-          src={
-            Lgb.Profiles.ProfilePictureUploader.url(
-              {uploaded_file.image, uploaded_file},
-              :original,
-              signed: true
-            )
-          }
-          alt="Uploaded file"
-        />
-      <% end %>
-    </:item>
+    <:item title="Distance">{Lgb.Profiles.display_distance(@profile.distance)}</:item>
     <:item title="Handle">{@profile.handle}</:item>
     <:item title="Age">{@profile.age}</:item>
-    <:item title="Height">{@profile.height_cm} cm</:item>
-    <:item title="Weight">{@profile.weight_lb} lbs</:item>
+    <:item title="Height">{Lgb.Profiles.display_height(@profile.height_cm)}</:item>
+    <:item title="Weight">{Lgb.Profiles.display_weight(@profile.weight_lb)}</:item>
     <:item title="City">{@profile.city}</:item>
     <:item title="State">{@profile.state}</:item>
     <:item title="Zip">{@profile.zip}</:item>
     <:item title="Biography">{@profile.biography}</:item>
   </.list>
   <.button phx-click="message" class="mt-16" phx-value-id={@profile.id}>Message</.button>
-  <.back navigate={~p"/profiles"}>Back to searches</.back>
 </.page_align>
