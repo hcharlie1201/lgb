@@ -2,7 +2,6 @@ defmodule LgbWeb.DashboardLive do
   use LgbWeb, :live_view
 
   alias Lgb.Profiles
-  alias LgbWeb.Components.Carousel
 
   def render(assigns) do
     ~H"""
@@ -22,15 +21,25 @@ defmodule LgbWeb.DashboardLive do
         🌎 Global Users
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-3">
           <%= for profile <- @global_profiles do %>
-            <.profile_preview profile={profile} />
+            <.profile_preview profile={profile} prefix_id="global_users" />
           <% end %>
         </div>
       </.header>
       <.header>
-        New users
+        🍃 New & Nearby users
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-3">
+          <%= for profile <- @new_and_nearby do %>
+            <.profile_preview profile={profile} prefix_id="new_and_nearby" />
+          <% end %>
+        </div>
       </.header>
       <.header>
         Members that viewed you
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-3">
+          <%= for profile_view <- @viewers do %>
+            <.profile_preview profile={profile_view.viewer} prefix_id="viewer" />
+          <% end %>
+        </div>
       </.header>
       <.header>
         Members that heart you
@@ -42,9 +51,17 @@ defmodule LgbWeb.DashboardLive do
   def mount(_params, _session, socket) do
     stripe_customer = Lgb.Accounts.get_stripe_customer(socket.assigns.current_user)
     socket = assign(socket, stripe_customer: stripe_customer)
+    profile = Lgb.Accounts.User.current_profile(socket.assigns.current_user)
 
     global_profiles = Profiles.find_global_users(10)
+    new_and_nearby = Profiles.find_new_and_nearby_users(10, profile)
+    viewed_your_profile = Lgb.ProfileViews.find_profile_views(profile)
 
-    {:ok, assign(socket, global_profiles: global_profiles)}
+    {:ok,
+     assign(socket,
+       global_profiles: global_profiles,
+       new_and_nearby: new_and_nearby,
+       viewers: viewed_your_profile
+     )}
   end
 end

@@ -5,7 +5,8 @@ defmodule LgbWeb.DashboardLiveTest do
   setup :register_and_log_in_user
 
   describe "Dashboard" do
-    test "renders navigation links when logged in", %{conn: conn} do
+    test "renders navigation links when logged in", %{conn: conn, user: user} do
+      Lgb.ProfilesFixtures.profile_fixture(user)
       {:ok, view, _html} = live(conn, ~p"/dashboard")
 
       assert has_element?(view, "a[href='/profiles/current']", "Profile")
@@ -16,7 +17,8 @@ defmodule LgbWeb.DashboardLiveTest do
       assert has_element?(view, "a[href='/account']", "Account")
     end
 
-    test "does not show My Account link without stripe customer", %{conn: conn} do
+    test "does not show My Account link without stripe customer", %{conn: conn, user: user} do
+      Lgb.ProfilesFixtures.profile_fixture(user)
       {:ok, view, _html} = live(conn, ~p"/dashboard")
 
       refute has_element?(view, "a[href='/account']", "My Account")
@@ -24,6 +26,8 @@ defmodule LgbWeb.DashboardLiveTest do
 
     test "shows My Account link with stripe customer", %{conn: conn, user: user} do
       # Create a stripe customer for the user
+      Lgb.ProfilesFixtures.profile_fixture(user)
+
       {:ok, _stripe_customer} =
         Lgb.Billing.create_stripe_customer(user, %{
           customer_id: "cus_test123",
