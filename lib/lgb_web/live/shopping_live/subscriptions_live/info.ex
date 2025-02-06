@@ -32,12 +32,8 @@ defmodule LgbWeb.ShoppingLive.SubscriptionsLive.Info do
     end
   end
 
-  def handle_params(_params, _url, socket) do
-    {:noreply, socket}
-  end
-
-  def handle_event("submit", _params, socket) do
-    case Lgb.Billing.create_stripe_customer(socket.assigns.current_user, socket.assigns.form) do
+  def handle_event("info_success", params, socket) do
+    case Lgb.Billing.create_stripe_customer(socket.assigns.current_user, params) do
       {:ok, _stripe_customer} ->
         {:noreply,
          push_navigate(socket,
@@ -49,11 +45,5 @@ defmodule LgbWeb.ShoppingLive.SubscriptionsLive.Info do
          socket
          |> put_flash(:error, reason)}
     end
-  end
-
-  def handle_event("update_address", params, socket) do
-    new_form = Map.merge(socket.assigns.form, params)
-    socket = assign(socket, form: new_form)
-    {:noreply, socket}
   end
 end

@@ -10,14 +10,13 @@
   <br />
   <.form
     for={%{}}
-    phx-submit="submit"
     phx-hook="StripeAddress"
-    id="address_element"
+    id="stripe-address-form"
     data-stripekey={@stripe_key}
     data-googlekey={@google_key}
   >
     <div id="address-element" />
-    <.button class="mt-4">
+    <.button class="mt-4" phx-disable-with="Loading...">
       <svg
         xmlns="http://www.w3.org/2000/svg"
         viewBox="0 0 20 20"
@@ -32,5 +31,8 @@
       </svg>
       Submit
     </.button>
+    <div id="error-message-address">
+      <!-- Display error message to your customers here -->
+    </div>
   </.form>
 </.page_align>

@@ -45,6 +45,7 @@ export const StripeAddress = {
       }
     };
     const elements = stripe.elements(options);
+    const form = document.getElementById("stripe-address-form");
 
     const addressElement = elements.create("address", {
       mode: "billing",
@@ -54,12 +55,19 @@ export const StripeAddress = {
       },
     });
     addressElement.mount("#address-element");
-    addressElement.on("change", (event) => {
-      if (event.complete) {
-        const address = event.value.address;
-        const name = event.value.name;
-        this.pushEvent("update_address", { address: address, name: name });
+
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      try {
+        const result = await addressElement.getValue();
+        if (result.complete) {
+          this.pushEvent("info_success", result.value);
+        }
+      } catch (error) {
+        this.pushEvent("address_error", { message: error.message });
       }
     });
-  },
+  }
 };

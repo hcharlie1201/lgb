@@ -5,7 +5,7 @@
       <:item title="Name">{@account_info["name"] || ""}</:item>
       <:item title="Address">{normalize_address(@account_info["address"]) || ""}</:item>
       <:item title="Email">{@account_info["email"] || ""}</:item>
-      <:item title="Plan">{"Free"}</:item>
+      <:item title="Account Status">{@status || "No Active Subscription Plan"}</:item>
     </.list>
     <br />
     <div class="flex justify-content  align-center mt-2">

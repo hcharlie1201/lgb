@@ -57,33 +57,25 @@ defmodule Lgb.Billing do
       params = %{
         "name" => param_body["name"],
         "email" => user.email,
-        "address[line1]" => param_body["address"]["line1"],
-        "address[line2]" => param_body["address"]["line2"],
-        "address[city]" => param_body["address"]["city"],
-        "address[state]" => param_body["address"]["state"],
-        "address[postal_code]" => param_body["address"]["postal_code"],
-        "address[country]" => param_body["address"]["country"]
+        "address[line1]" => param_body["line1"],
+        "address[line2]" => param_body["line2"],
+        "address[city]" => param_body["city"],
+        "address[state]" => param_body["state"],
+        "address[postal_code]" => param_body["postal_code"],
+        "address[country]" => param_body["country"]
       }
 
-      case validate_params(params, user) do
-        {:ok, params} ->
-          # Continue with your logic using params
-          case Lgb.ThirdParty.Stripe.create_stripe_customer(params) do
-            {:ok, customer_metadata} ->
-              %StripeCustomer{}
-              |> StripeCustomer.changeset(%{
-                "customer_id" => customer_metadata["id"],
-                "user_id" => user.id
-              })
-              |> Repo.insert()
+      case Lgb.ThirdParty.Stripe.create_stripe_customer(params) do
+        {:ok, customer_metadata} ->
+          %StripeCustomer{}
+          |> StripeCustomer.changeset(%{
+            "customer_id" => customer_metadata["id"],
+            "user_id" => user.id
+          })
+          |> Repo.insert()
 
-            {:error, reason} ->
-              {:error, reason}
-          end
-
-        {:error, message} ->
-          # Handle the error
-          {:error, message}
+        {:error, reason} ->
+          {:error, reason}
       end
     end
   end
@@ -286,38 +278,6 @@ defmodule Lgb.Billing do
       {:error, message} ->
         Logger.error(message)
         false
-    end
-  end
-
-  defp validate_params(param_body, user) do
-    required_fields = [
-      {param_body["name"], "Name is required"},
-      {user.email, "Email is required"},
-      {param_body["address"]["line1"], "Street address is required"},
-      {param_body["address"]["city"], "City is required"},
-      {param_body["address"]["state"], "State is required"},
-      {param_body["address"]["postal_code"], "Postal code is required"},
-      {param_body["address"]["country"], "Country is required"}
-    ]
-
-    case Enum.find(required_fields, fn {value, _msg} ->
-           is_nil(value) || value == ""
-         end) do
-      nil ->
-        {:ok,
-         %{
-           "name" => param_body["name"],
-           "email" => user.email,
-           "address[line1]" => param_body["address"]["line1"],
-           "address[line2]" => param_body["address"]["line2"],
-           "address[city]" => param_body["address"]["city"],
-           "address[state]" => param_body["address"]["state"],
-           "address[postal_code]" => param_body["address"]["postal_code"],
-           "address[country]" => param_body["address"]["country"]
-         }}
-
-      {_value, error_msg} ->
-        {:error, error_msg}
     end
   end
 end

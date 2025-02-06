@@ -14,13 +14,19 @@ defmodule LgbWeb.AccountLive.View do
       }
 
       {:ok, portal_metadata} = Lgb.ThirdParty.Stripe.create_stripe_session(params)
+      {:ok, subscription_object} = get_stripe_subscription_status(stripe_customer)
+      IO.puts("wtf")
 
       socket =
-        assign(socket, account_info: stripe_customer_metadata, portal_url: portal_metadata["url"])
+        assign(socket,
+          account_info: stripe_customer_metadata,
+          portal_url: portal_metadata["url"],
+          status: subscription_object["status"]
+        )
 
       {:ok, socket}
     else
-      {:ok, assign(socket, account_info: %{}, portal_url: nil)}
+      {:ok, assign(socket, account_info: %{}, portal_url: nil, status: nil)}
     end
   end
 
@@ -30,6 +36,18 @@ defmodule LgbWeb.AccountLive.View do
 
   def handle_event("manage_account", %{"url" => portal_url}, socket) do
     {:noreply, redirect(socket, external: portal_url)}
+  end
+
+  defp get_stripe_subscription_status(stripe_customer) do
+    stripe_subscription =
+      Lgb.Billing.current_stripe_subscription(stripe_customer)
+
+    with {:ok, subscription_object} <-
+           Lgb.ThirdParty.Stripe.fetch_stripe_subscription(stripe_subscription) do
+      {:ok, subscription_object}
+    else
+      {:error, message} -> {:error, message}
+    end
   end
 
   defp normalize_address(address) do
