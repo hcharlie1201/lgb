@@ -4,6 +4,7 @@ defmodule Lgb.Profiles do
   """
 
   import Ecto.Query, warn: false
+  alias Lgb.ProfileViews
   alias Lgb.Repo
 
   alias Lgb.Profiles.Profile
@@ -250,6 +251,33 @@ defmodule Lgb.Profiles do
         preload: [:profile_pictures, :user]
 
     query |> Repo.all()
+  end
+
+  def find_new_and_nearby_users(limit, profile) do
+    query =
+      from p in Profile,
+        where: p.id != ^profile.id,
+        select_merge: %{
+          distance:
+            selected_as(
+              fragment(
+                "ST_Distance(?, ?)",
+                p.geolocation,
+                ^profile.geolocation
+              ),
+              :distance
+            )
+        },
+        order_by: [asc: selected_as(:distance)],
+        limit: ^limit,
+        preload: [:profile_pictures, :user]
+
+    # Then when calling the query, you might want to wrap it:
+    if profile.geolocation do
+      Repo.all(query)
+    else
+      []
+    end
   end
 
   def display_weight(lbs) do

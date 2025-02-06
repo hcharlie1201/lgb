@@ -902,7 +902,6 @@ defmodule LgbWeb.CoreComponents do
     """
   end
 
-
   @doc """
   Non logged in navbar
   """
@@ -925,7 +924,7 @@ defmodule LgbWeb.CoreComponents do
               </.link>
             </span>
           </div>
-
+          
     <!-- Navigation Links -->
           <div class="bg-white/80 backdrop-blur-sm rounded-full shadow-lg px-6 py-3">
             <div class="hidden md:flex items-center justify-center space-x-8">
@@ -946,7 +945,7 @@ defmodule LgbWeb.CoreComponents do
               </a>
             </div>
           </div>
-
+          
     <!-- Login Button -->
           <.link navigate={~p"/users/log_in"} class="text-gray-600 hover:text-gray-900 font-medium">
             Log in
@@ -1014,6 +1013,8 @@ defmodule LgbWeb.CoreComponents do
     """
   end
 
+  attr :prefix_id, :string, default: ""
+
   def profile_preview(assigns) do
     ~H"""
     <.card
@@ -1022,7 +1023,7 @@ defmodule LgbWeb.CoreComponents do
     >
       <div class="relative">
         <.live_component
-          id={@profile.id}
+          id={@prefix_id <> "#{@profile.id}"}
           module={LgbWeb.Components.Carousel}
           uploaded_files={@profile.profile_pictures}
           length={1}
