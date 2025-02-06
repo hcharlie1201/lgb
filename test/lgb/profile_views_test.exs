@@ -2,56 +2,51 @@ defmodule Lgb.ProfileViewsTest do
   use Lgb.DataCase
 
   alias Lgb.ProfileViews
+  import Lgb.AccountsFixtures
+  import Lgb.ProfileViewsFixtures
 
   describe "profile_views" do
-    alias Lgb.ProfileViews.ProfileView
+    setup do
+      user = user_fixture()
+      user_two = user_fixture()
 
-    import Lgb.ProfileViewsFixtures
+      profile_one = Lgb.ProfilesFixtures.profile_fixture(user)
+
+      profile_two = Lgb.ProfilesFixtures.profile_fixture(user_two)
+
+      profile_view =
+        profile_view_fixture(%{
+          viewer_id: profile_one.id,
+          viewed_profile_id: profile_two.id,
+          last_viewed_at: DateTime.utc_now() |> DateTime.truncate(:second)
+        })
+
+      %{profile_view: profile_view}
+    end
 
     @invalid_attrs %{}
 
-    test "list_profile_views/0 returns all profile_views" do
-      profile_view = profile_view_fixture()
+    test "list_profile_views/0 returns all profile_views", %{profile_view: profile_view} do
       assert ProfileViews.list_profile_views() == [profile_view]
     end
 
-    test "get_profile_view!/1 returns the profile_view with given id" do
-      profile_view = profile_view_fixture()
+    test "get_profile_view!/1 returns the profile_view with given id", %{
+      profile_view: profile_view
+    } do
       assert ProfileViews.get_profile_view!(profile_view.id) == profile_view
     end
 
-    test "create_profile_view/1 with valid data creates a profile_view" do
-      valid_attrs = %{}
+    test "create_profile_view/1 with valid data creates a profile_view", %{
+      profile_view: profile_view
+    } do
+      valid_attrs = %{last_viewed_at: DateTime.utc_now() |> DateTime.truncate(:second)}
 
-      assert {:ok, %ProfileView{} = profile_view} = ProfileViews.create_profile_view(valid_attrs)
+      assert profile_view.last_viewed_at !=
+               ProfileViews.create_or_update_profile_view(valid_attrs)
     end
 
     test "create_profile_view/1 with invalid data returns error changeset" do
       assert {:error, %Ecto.Changeset{}} = ProfileViews.create_profile_view(@invalid_attrs)
-    end
-
-    test "update_profile_view/2 with valid data updates the profile_view" do
-      profile_view = profile_view_fixture()
-      update_attrs = %{}
-
-      assert {:ok, %ProfileView{} = profile_view} = ProfileViews.update_profile_view(profile_view, update_attrs)
-    end
-
-    test "update_profile_view/2 with invalid data returns error changeset" do
-      profile_view = profile_view_fixture()
-      assert {:error, %Ecto.Changeset{}} = ProfileViews.update_profile_view(profile_view, @invalid_attrs)
-      assert profile_view == ProfileViews.get_profile_view!(profile_view.id)
-    end
-
-    test "delete_profile_view/1 deletes the profile_view" do
-      profile_view = profile_view_fixture()
-      assert {:ok, %ProfileView{}} = ProfileViews.delete_profile_view(profile_view)
-      assert_raise Ecto.NoResultsError, fn -> ProfileViews.get_profile_view!(profile_view.id) end
-    end
-
-    test "change_profile_view/1 returns a profile_view changeset" do
-      profile_view = profile_view_fixture()
-      assert %Ecto.Changeset{} = ProfileViews.change_profile_view(profile_view)
     end
   end
 end

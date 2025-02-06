@@ -257,6 +257,7 @@ defmodule Lgb.Profiles do
     query =
       from p in Profile,
         where: p.id != ^profile.id,
+        where: not is_nil(p.geolocation),
         select_merge: %{
           distance:
             selected_as(
