@@ -25,7 +25,8 @@ defmodule LgbWeb.ShoppingLive.SubscriptionsLive.Checkout do
           |> assign(
             client_secret: payment_intent["client_secret"],
             stripe_key: System.fetch_env!("STRIPE_API_PUBLISHABLE_KEY_TEST"),
-            stripe_subscription: stripe_subscription
+            stripe_subscription: stripe_subscription,
+            subscription_plan: subscription_plan
           )
 
         {:ok, socket}
@@ -88,5 +89,14 @@ defmodule LgbWeb.ShoppingLive.SubscriptionsLive.Checkout do
       {:ok, stripe_subscription} -> {:ok, stripe_subscription}
       {:error, error_message} -> {:error, error_message}
     end
+  end
+
+  defp format_money(nil), do: "0.00"
+
+  defp format_money(amount_cents) do
+    amount_cents
+    |> Decimal.new()
+    |> Decimal.div(100)
+    |> Decimal.to_string()
   end
 end

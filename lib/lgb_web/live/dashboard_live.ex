@@ -41,9 +41,6 @@ defmodule LgbWeb.DashboardLive do
           <% end %>
         </div>
       </.header>
-      <.header>
-        Members that heart you
-      </.header>
     </.page_align>
     """
   end

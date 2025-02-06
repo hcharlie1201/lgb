@@ -1,6 +1,17 @@
 <.page_align>
-  <h1>Billing Info</h1>
-  <div>Address: {normalize_address(@account_info["address"])}</div>
-  <div>Email: {@account_info["email"]}</div>
-  <div>Name : {@account_info["name"]}</div>
+  <.card>
+    <.header>Billing</.header>
+    <.list>
+      <:item title="Name">{@account_info["name"] || ""}</:item>
+      <:item title="Address">{normalize_address(@account_info["address"]) || ""}</:item>
+      <:item title="Email">{@account_info["email"] || ""}</:item>
+      <:item title="Account Status">{@status || "No Active Subscription Plan"}</:item>
+    </.list>
+    <br />
+    <div class="flex justify-content  align-center mt-2">
+      <.button :if={@portal_url} phx-click="manage_account" phx-value-url={@portal_url}>
+        Manage Account (Payment, Invoice, Subscription Management)
+      </.button>
+    </div>
+  </.card>
 </.page_align>

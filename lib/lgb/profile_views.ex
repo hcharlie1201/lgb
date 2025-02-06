@@ -114,13 +114,17 @@ defmodule Lgb.ProfileViews do
   end
 
   def find_profile_views(profile, limit \\ 10) do
-    query =
-      from p in ProfileView,
-        where: p.viewed_profile_id == ^profile.id,
-        order_by: [desc: p.inserted_at],
-        limit: ^limit,
-        preload: [viewer: [:profile_pictures, :user]]
+    if profile do
+      query =
+        from p in ProfileView,
+          where: p.viewed_profile_id == ^profile.id,
+          order_by: [desc: p.inserted_at],
+          limit: ^limit,
+          preload: [viewer: [:profile_pictures, :user]]
 
-    Repo.all(query)
+      Repo.all(query)
+    else
+      []
+    end
   end
 end

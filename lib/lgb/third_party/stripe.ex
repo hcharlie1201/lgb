@@ -45,12 +45,18 @@ defmodule Lgb.ThirdParty.Stripe do
   end
 
   def fetch_stripe_subscription(stripe_subscription) do
-    case Lgb.ThirdParty.Stripe.Subscriptions.get("/#{stripe_subscription.subscription_id}") do
-      {:ok, http_response} ->
-        {:ok, Poison.decode!(http_response.body)}
+    IO.inspect(stripe_subscription)
 
-      {:error, whatever} ->
-        {:error, whatever.message}
+    if is_nil(stripe_subscription) or is_nil(stripe_subscription.subscription_id) do
+      {:ok, %{}}
+    else
+      case Lgb.ThirdParty.Stripe.Subscriptions.get("/#{stripe_subscription.subscription_id}") do
+        {:ok, http_response} ->
+          {:ok, Poison.decode!(http_response.body)}
+
+        {:error, whatever} ->
+          {:error, whatever.message}
+      end
     end
   end
 
@@ -79,6 +85,29 @@ defmodule Lgb.ThirdParty.Stripe do
     encoded_body = URI.encode_query(body)
 
     case Lgb.ThirdParty.Stripe.Subscriptions.post("", encoded_body) do
+      {:ok, http_response} -> {:ok, Poison.decode!(http_response.body)}
+      {:error, reason} -> {:error, reason.message}
+    end
+  end
+
+  def create_stripe_session(body) do
+    encoded_body = URI.encode_query(body)
+
+    case Lgb.ThirdParty.Stripe.BillingPortal.post("", encoded_body) do
+      {:ok, http_response} -> {:ok, Poison.decode!(http_response.body)}
+      {:error, reason} -> {:error, reason.message}
+    end
+  end
+
+  def get_stripe_charge(id) do
+    case Lgb.ThirdParty.Stripe.Charge.get("/#{id}") do
+      {:ok, http_response} -> {:ok, Poison.decode!(http_response.body)}
+      {:error, reason} -> {:error, reason.message}
+    end
+  end
+
+  def fetch_payment_intent(id) do
+    case Lgb.ThirdParty.Stripe.PaymentIntents.get("/#{id}") do
       {:ok, http_response} -> {:ok, Poison.decode!(http_response.body)}
       {:error, reason} -> {:error, reason.message}
     end

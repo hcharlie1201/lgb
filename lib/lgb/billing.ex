@@ -57,12 +57,12 @@ defmodule Lgb.Billing do
       params = %{
         "name" => param_body["name"],
         "email" => user.email,
-        "address[line1]" => param_body["address"]["line1"],
-        "address[line2]" => param_body["address"]["line2"],
-        "address[city]" => param_body["address"]["city"],
-        "address[state]" => param_body["address"]["state"],
-        "address[postal_code]" => param_body["address"]["postal_code"],
-        "address[country]" => param_body["address"]["country"]
+        "address[line1]" => param_body["line1"],
+        "address[line2]" => param_body["line2"],
+        "address[city]" => param_body["city"],
+        "address[state]" => param_body["state"],
+        "address[postal_code]" => param_body["postal_code"],
+        "address[country]" => param_body["country"]
       }
 
       case Lgb.ThirdParty.Stripe.create_stripe_customer(params) do
@@ -208,6 +208,18 @@ defmodule Lgb.Billing do
         {:error, reason} ->
           {:error, reason}
       end
+    end
+  end
+
+  def create_billing_portal(customer) do
+    params = %{"customer" => customer.customer_id}
+
+    case Lgb.ThirdParty.Stripe.create_stripe_session(params) do
+      {:ok, response} ->
+        {:ok, response["url"]}
+
+      {:error, reason} ->
+        {:error, reason}
     end
   end
 
