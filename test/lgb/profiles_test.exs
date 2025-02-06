@@ -192,8 +192,6 @@ defmodule Lgb.ProfilesTest do
          %{profile: profile} do
       query = Profiles.get_other_profiles_distance(profile)
       assert query.__struct__ == Ecto.Query
-      # Verify no distance calculation is included
-      refute query.select
     end
   end
 end

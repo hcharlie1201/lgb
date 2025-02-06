@@ -4,7 +4,6 @@ defmodule Lgb.Profiles do
   """
 
   import Ecto.Query, warn: false
-  alias Lgb.ProfileViews
   alias Lgb.Repo
 
   alias Lgb.Profiles.Profile
@@ -179,28 +178,21 @@ defmodule Lgb.Profiles do
   end
 
   def get_other_profiles_distance(profile) do
-    if profile.geolocation == nil do
-      from(p in Profile,
-        # Add preload here
-        preload: [:profile_pictures, :user]
-      )
-    else
-      from(p in Profile,
-        # Add preload here
-        preload: [:profile_pictures, :user],
-        select_merge: %{
-          distance:
-            selected_as(
-              fragment(
-                "ST_Distance(?, ?)",
-                p.geolocation,
-                ^profile.geolocation
-              ),
-              :distance
-            )
-        }
-      )
-    end
+    from(p in Profile,
+      # Add preload here
+      preload: [:profile_pictures, :user],
+      select_merge: %{
+        distance:
+          selected_as(
+            fragment(
+              "ST_Distance(?, ?)",
+              p.geolocation,
+              ^profile.geolocation
+            ),
+            :distance
+          )
+      }
+    )
   end
 
   def create_filter(params) do
@@ -255,7 +247,7 @@ defmodule Lgb.Profiles do
 
   def find_new_and_nearby_users(limit, profile) do
     # Then when calling the query, you might want to wrap it:
-    if profile && profile.geolocation do
+    if profile do
       query =
         from p in Profile,
           where: p.id != ^profile.id,
