@@ -206,7 +206,7 @@ defmodule LgbWeb.CoreComponents do
   def simple_form(assigns) do
     ~H"""
     <.form :let={f} for={@for} as={@as} {@rest}>
-      <div class="c mt-10 space-y-8 bg-white shadow-md rounded-md p-6 flex flex-col">
+      <div class="collapsible mt-10 space-y-8 bg-white shadow-md rounded-md p-6 flex flex-col">
         {render_slot(@inner_block, f)}
         <div :for={action <- @actions} class="mt-2 flex items-center justify-between gap-6">
           {render_slot(action, f)}
@@ -912,8 +912,8 @@ defmodule LgbWeb.CoreComponents do
     <!-- Hero Section Container -->
     <div class="relative min-h-screen">
       <!-- Navigation Bar -->
-      <nav class="px-4 py-4">
-        <div class="container mx-auto flex items-center justify-between">
+      <nav class="z-10 sticky top-0 flex px-4 py-4 backdrop-blur-md">
+        <div class="container mx-auto flex items-center justify-between flex-col gap-4 md:gap-0 md:flex-row">
           <!-- Logo -->
           <div class="flex items-center space-x-2">
             <span class="text-xl font-bold">
@@ -924,40 +924,46 @@ defmodule LgbWeb.CoreComponents do
               </.link>
             </span>
           </div>
-          
-    <!-- Navigation Links -->
-          <div class="bg-white/80 backdrop-blur-sm rounded-full shadow-lg px-6 py-3">
-            <div class="hidden md:flex items-center justify-center space-x-8">
+
+          <!-- Navigation Links -->
+          <div class="menu cursor-pointer" onclick="expandNavigation()">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 9h16.5m-16.5 6.75h16.5" />
+            </svg>
+          </div>
+          <div class="navs fixed top-0 left-0 overflow-x-hidden w-0 bg-white shadow-lg h-screen sm:px-6 sm:py-3 sm:static sm:h-max sm:w-full sm:w-min sm:gap-0 sm:rounded-full">
+            <div class="flex flex-col sm:flex-row sm:p-0">
+              <button class="m-4 bg-colorPrimary px-4 py-1 w-max rounded-3xl shadow-lg sm:hidden" onclick="closeNavigation()">esc</button>
               <a
                 href="/products"
-                class="text-gray-600 hover:text-gray-900 font-medium transition-colors"
+                class="loggedOutNavbarText"
               >
                 Products
               </a>
               <a
                 href="/features"
-                class="text-gray-600 hover:text-gray-900 font-medium transition-colors"
+                class="loggedOutNavbarText"
               >
                 Features
               </a>
-              <a href="/blogs" class="text-gray-600 hover:text-gray-900 font-medium transition-colors">
+              <a href="/blogs" class="loggedOutNavbarText">
                 Blogs
               </a>
               <a
                 href="/community"
-                class="text-gray-600 hover:text-gray-900 font-medium transition-colors"
+                class="loggedOutNavbarText"
               >
                 Community
               </a>
               <a
                 href="/pricing"
-                class="text-gray-600 hover:text-gray-900 font-medium transition-colors"
+                class="loggedOutNavbarText"
               >
                 Pricing
               </a>
             </div>
           </div>
-          
+
     <!-- Login Button
           <.link
             class="hidden"
