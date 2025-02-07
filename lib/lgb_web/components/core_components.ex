@@ -45,6 +45,12 @@ defmodule LgbWeb.CoreComponents do
   attr :on_cancel, JS, default: %JS{}
   slot :inner_block, required: true
 
+  def scoop(assigns) do
+    ~H"""
+    <p>"Hey sup bro"</p>
+    """
+  end
+
   def modal(assigns) do
     ~H"""
     <div
