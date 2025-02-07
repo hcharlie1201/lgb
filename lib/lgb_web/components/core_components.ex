@@ -946,10 +946,16 @@ defmodule LgbWeb.CoreComponents do
             </div>
           </div>
           
-    <!-- Login Button -->
-          <.link navigate={~p"/users/log_in"} class="text-gray-600 hover:text-gray-900 font-medium">
+    <!-- Login Button
+          <.link
+            class="hidden"
+            navigate={~p"/users/log_in"}
+            class="text-gray-600 hover:text-gray-900 font-medium"
+          >
             Log in
           </.link>
+    -->
+          <div />
         </div>
       </nav>
 

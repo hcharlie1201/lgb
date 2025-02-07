@@ -21,6 +21,7 @@ defmodule LgbWeb.Router do
     pipe_through [:browser, :redirect_if_user_is_authenticated]
 
     get "/", PageController, :home
+    post "/waitlist", WaitlistController, :create
   end
 
   # Other scopes may use custom stacks.
