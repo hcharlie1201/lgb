@@ -206,7 +206,7 @@ defmodule LgbWeb.CoreComponents do
   def simple_form(assigns) do
     ~H"""
     <.form :let={f} for={@for} as={@as} {@rest}>
-      <div class="c mt-10 space-y-8 bg-white shadow-md rounded-md p-6 flex flex-col">
+      <div class="collapsible mt-10 space-y-8 bg-white shadow-md rounded-md p-6 flex flex-col">
         {render_slot(@inner_block, f)}
         <div :for={action <- @actions} class="mt-2 flex items-center justify-between gap-6">
           {render_slot(action, f)}
@@ -924,7 +924,7 @@ defmodule LgbWeb.CoreComponents do
               </.link>
             </span>
           </div>
-          
+
     <!-- Navigation Links -->
           <div class="bg-white/80 backdrop-blur-sm rounded-full shadow-lg px-6 py-3">
             <div class="hidden md:flex items-center justify-center space-x-8">
@@ -945,7 +945,7 @@ defmodule LgbWeb.CoreComponents do
               </a>
             </div>
           </div>
-          
+
     <!-- Login Button -->
           <.link navigate={~p"/users/log_in"} class="text-gray-600 hover:text-gray-900 font-medium">
             Log in

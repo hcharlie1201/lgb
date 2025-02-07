@@ -39,7 +39,7 @@ body {
     @apply sm:block hidden;
 }
 
-.c {
+.collapsible {
     @apply overflow-hidden duration-300;
 }
 

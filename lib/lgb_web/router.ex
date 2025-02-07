@@ -21,6 +21,8 @@ defmodule LgbWeb.Router do
     pipe_through [:browser, :redirect_if_user_is_authenticated]
 
     get "/", PageController, :home
+    get "/something", SomethingController, :index
+    get "/somethingElse", SomethingController, :index2
   end
 
   # Other scopes may use custom stacks.
@@ -67,6 +69,7 @@ defmodule LgbWeb.Router do
     live_session :ensure_authenticated,
       on_mount: [{LgbWeb.UserAuth, :ensure_authenticated}, {LgbWeb.UserPresence, :track}] do
       live "/dashboard", DashboardLive
+      live "/my_page", MypageLive
       live "/users/settings", LoginLive.UserSettingsLive, :edit
       live "/users/settings/confirm_email/:token", LoginLive.UserSettingsLive, :confirm_email
 
