@@ -9,7 +9,10 @@ defmodule Lgb.Profiles.ProfilePictureUploader do
   @production_bucket "lgb-user-uploads-staging"
 
   def bucket(_) do
-    if Mix.env() == :prod, do: @production_bucket, else: @staging_bucket
+    case Application.get_env(:lgb, :environment) do
+      :prod -> @production_bucket
+      _ -> @staging_bucket
+    end
   end
 
   def validate({file, _}) do

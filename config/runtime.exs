@@ -30,6 +30,8 @@ config :ex_aws,
   secret_access_key: {:system, "AWS_SECRET_ACCESS_KEY"},
   region: {:system, "AWS_REGION"}
 
+config :lgb, :environment, System.get_env("MIX_ENV", "dev") |> String.to_atom()
+
 if config_env() == :prod do
   database_url =
     System.get_env("DATABASE_URL") ||

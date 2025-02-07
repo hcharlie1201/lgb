@@ -21,6 +21,11 @@ defmodule LgbWeb.Router do
     pipe_through [:browser, :redirect_if_user_is_authenticated]
 
     get "/", PageController, :home
+    get "/products", PageController, :products
+    get "/features", PageController, :features
+    get "/blogs", PageController, :blogs
+    get "/community", PageController, :community
+    get "/pricing", PageController, :pricing
   end
 
   # Other scopes may use custom stacks.

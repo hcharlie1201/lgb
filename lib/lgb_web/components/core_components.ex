@@ -928,28 +928,46 @@ defmodule LgbWeb.CoreComponents do
     <!-- Navigation Links -->
           <div class="bg-white/80 backdrop-blur-sm rounded-full shadow-lg px-6 py-3">
             <div class="hidden md:flex items-center justify-center space-x-8">
-              <a href="#" class="text-gray-600 hover:text-gray-900 font-medium transition-colors">
+              <a
+                href="/products"
+                class="text-gray-600 hover:text-gray-900 font-medium transition-colors"
+              >
                 Products
               </a>
-              <a href="#" class="text-gray-600 hover:text-gray-900 font-medium transition-colors">
+              <a
+                href="/features"
+                class="text-gray-600 hover:text-gray-900 font-medium transition-colors"
+              >
                 Features
               </a>
-              <a href="#" class="text-gray-600 hover:text-gray-900 font-medium transition-colors">
-                Docs
+              <a href="/blogs" class="text-gray-600 hover:text-gray-900 font-medium transition-colors">
+                Blogs
               </a>
-              <a href="#" class="text-gray-600 hover:text-gray-900 font-medium transition-colors">
+              <a
+                href="/community"
+                class="text-gray-600 hover:text-gray-900 font-medium transition-colors"
+              >
                 Community
               </a>
-              <a href="#" class="text-gray-600 hover:text-gray-900 font-medium transition-colors">
+              <a
+                href="/pricing"
+                class="text-gray-600 hover:text-gray-900 font-medium transition-colors"
+              >
                 Pricing
               </a>
             </div>
           </div>
           
-    <!-- Login Button -->
-          <.link navigate={~p"/users/log_in"} class="text-gray-600 hover:text-gray-900 font-medium">
+    <!-- Login Button
+          <.link
+            class="hidden"
+            navigate={~p"/users/log_in"}
+            class="text-gray-600 hover:text-gray-900 font-medium"
+          >
             Log in
           </.link>
+    -->
+          <div />
         </div>
       </nav>
 
