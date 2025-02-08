@@ -30,16 +30,20 @@ body {
     background-attachment: fixed;
 }
 
+.loggedOutNavbarText {
+    @apply text-gray-600 font-medium transition-colors py-4 sm:py-0 hover:text-gray-900 text-xl sm:m-0 sm:text-sm px-4 hover:bg-colorPrimary sm:hover:bg-transparent;
+}
+
 .mainNavBar {
     @apply leading-6 hover:bg-colorSecondary hover:text-white p-2 rounded-md;
 }
-
+.menu {@apply sm:hidden}
 .navText,
 .userNavText {
     @apply sm:block hidden;
 }
 
-.c {
+.collapsible {
     @apply overflow-hidden duration-300;
 }
 
