@@ -5,14 +5,27 @@
   <.live_component module={Carousel} id={@profile.id} uploaded_files={@uploaded_files} length={3} />
   
 <!-- Profile Form -->
-  <.simple_form for={@form} id="my-profile" class="relative" phx-submit="update_profile" phx-change="validate">
+  <.simple_form
+    for={@form}
+    id="my-profile"
+    class="relative"
+    phx-submit="update_profile"
+    phx-change="validate"
+  >
     <!-- File Upload Section -->
+<<<<<<< HEAD
     <div onclick="toggleHeight()" class="bg-white py-4 inset-x-0 top-0 absolute flex justify-center items-center hover:bg-gray-100 rounded-t-sm py-1">
+=======
+    <div
+      onclick="toggleHeight()"
+      class="bg-white py-4 inset-x-0 top-0 absolute flex justify-center items-center hover:bg-gray-100 rounded py-1"
+    >
+>>>>>>> e2b8045 ([CHA-53] Add gender and formatter for tailwindcss)
       <svg width="40" height="15" xmlns="http://www.w3.org/2000/svg">
         <!-- First Bar -->
         <rect width="40" height="4" fill="#333333" rx="3" ry="3" />
         
-        <!-- Second Bar -->
+<!-- Second Bar -->
         <rect y="10" width="40" height="4" fill="#333333" rx="3" ry="3" />
       </svg>
     </div>
@@ -103,6 +116,32 @@
         multiple={false}
         class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
+      <div>
+        <.input
+          field={@form[:gender]}
+          name="gender"
+          type="radio"
+          value="male"
+          label="Male"
+          checked={@form[:gender].value == :male || @form.params["gender"] == :male}
+        />
+        <.input
+          field={@form[:gender]}
+          name="gender"
+          type="radio"
+          value="female"
+          label="Female"
+          checked={@form[:gender].value == :female || @form.params["gender"] == :female}
+        />
+        <.input
+          field={@form[:gender]}
+          name="gender"
+          type="radio"
+          value="non_binary"
+          label="Non Binary"
+          checked={@form[:gender].value == :non_binary || @form.params["gender"] == :non_binary}
+        />
+      </div>
       <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div class="bg-gray-100 p-4 rounded-lg">
           <p class="text-sm text-gray-600">City</p>

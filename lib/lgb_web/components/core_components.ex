@@ -118,11 +118,7 @@ defmodule LgbWeb.CoreComponents do
       id={@id}
       phx-click={JS.push("lv:clear-flash", value: %{key: @kind}) |> hide("##{@id}")}
       role="alert"
-      class={[
-        "fixed top-2 right-2 mr-2 w-80 sm:w-96 z-50 rounded-lg p-3 ring-1",
-        @kind == :info && "bg-emerald-50 text-emerald-800 ring-emerald-500 fill-cyan-900",
-        @kind == :error && "bg-rose-50 text-rose-900 shadow-md ring-rose-500 fill-rose-900"
-      ]}
+      class={["fixed top-2 right-2 z-50 mr-2 w-80 rounded-lg p-3 ring-1 sm:w-96", @kind == :info && "bg-emerald-50 fill-cyan-900 text-emerald-800 ring-emerald-500", @kind == :error && "bg-rose-50 fill-rose-900 text-rose-900 shadow-md ring-rose-500"]}
       {@rest}
     >
       <p :if={@title} class="flex items-center gap-1.5 text-sm font-semibold leading-6">
@@ -206,7 +202,7 @@ defmodule LgbWeb.CoreComponents do
   def simple_form(assigns) do
     ~H"""
     <.form :let={f} for={@for} as={@as} {@rest}>
-      <div class="collapsible mt-10 space-y-8 bg-white shadow-md rounded-md p-6 flex flex-col">
+      <div class="collapsible mt-10 flex flex-col space-y-8 rounded-md bg-white p-6 shadow-md">
         {render_slot(@inner_block, f)}
         <div :for={action <- @actions} class="mt-2 flex items-center justify-between gap-6">
           {render_slot(action, f)}
@@ -234,11 +230,7 @@ defmodule LgbWeb.CoreComponents do
     ~H"""
     <button
       type={@type}
-      class={[
-        "phx-submit-loading:opacity-75 bg-gradient-to-r from-purple-500 to-blue-600",
-        "text-white py-2 px-6 rounded-full flex items-center gap-2 shadow-md hover:opacity-90",
-        @class
-      ]}
+      class={["bg-gradient-to-r from-purple-500 to-blue-600 phx-submit-loading:opacity-75", "flex items-center gap-2 rounded-full px-6 py-2 text-white shadow-md hover:opacity-90", @class]}
       {@rest}
     >
       {render_slot(@inner_block)}
@@ -281,7 +273,7 @@ defmodule LgbWeb.CoreComponents do
   attr :type, :string,
     default: "text",
     values: ~w(checkbox color date datetime-local email file month number password
-               range search select tel text textarea time url week)
+               range search select tel text textarea time url week radio)
 
   attr :field, Phoenix.HTML.FormField,
     doc: "a form field struct retrieved from the form, for example: @form[:email]"
@@ -305,6 +297,26 @@ defmodule LgbWeb.CoreComponents do
     |> assign_new(:name, fn -> if assigns.multiple, do: field.name <> "[]", else: field.name end)
     |> assign_new(:value, fn -> field.value end)
     |> input()
+  end
+
+  def input(%{type: "radio"} = assigns) do
+    ~H"""
+    <div phx-feedback-for={@name} class="flex items-center gap-2">
+      <input
+        type="radio"
+        id={@id}
+        name={@name}
+        value={@value}
+        checked={@checked}
+        class="h-4 w-4 cursor-pointer border-gray-300 text-purple-600 transition-all duration-200 ease-in-out checked:shadow-[0_0_0_2px_rgba(147,51,234,0.3)] hover:ring-2 hover:ring-purple-300 hover:ring-opacity-50 hover:checked:ring-purple-400/75 focus:ring-2 focus:ring-purple-500 focus:ring-opacity-50 focus:checked:ring-purple-500/75"
+        {@rest}
+      />
+      <.label for={@id} class="cursor-pointer select-none text-sm font-medium text-gray-700">
+        {@label}
+      </.label>
+      <.error :for={msg <- @errors}>{msg}</.error>
+    </div>
+    """
   end
 
   def input(%{type: "checkbox"} = assigns) do
@@ -359,12 +371,7 @@ defmodule LgbWeb.CoreComponents do
       <textarea
         id={@id}
         name={@name}
-        class={[
-          "mt-2 block w-full rounded-lg text-zinc-900 focus:ring-0 sm:text-sm sm:leading-6",
-          "min-h-[6rem] phx-no-feedback:border-zinc-300 phx-no-feedback:focus:border-zinc-400",
-          @errors == [] && "border-zinc-300 focus:border-zinc-400",
-          @errors != [] && "border-rose-400 focus:border-rose-400"
-        ]}
+        class={["mt-2 block w-full rounded-lg text-zinc-900 focus:ring-0 sm:text-sm sm:leading-6", "min-h-[6rem] phx-no-feedback:border-zinc-300 phx-no-feedback:focus:border-zinc-400", @errors == [] && "border-zinc-300 focus:border-zinc-400", @errors != [] && "border-rose-400 focus:border-rose-400"]}
         {@rest}
       ><%= Phoenix.HTML.Form.normalize_value("textarea", @value) %></textarea>
       <.error :for={msg <- @errors}>{msg}</.error>
@@ -382,12 +389,7 @@ defmodule LgbWeb.CoreComponents do
         name={@name}
         id={@id}
         value={Phoenix.HTML.Form.normalize_value(@type, @value)}
-        class={[
-          "mt-2 block w-full rounded-lg text-zinc-900 focus:ring-0 sm:text-sm sm:leading-6",
-          "phx-no-feedback:border-zinc-300 phx-no-feedback:focus:border-zinc-400",
-          @errors == [] && "border-zinc-300 focus:border-zinc-400",
-          @errors != [] && "border-rose-400 focus:border-rose-400"
-        ]}
+        class={["mt-2 block w-full rounded-lg text-zinc-900 focus:ring-0 sm:text-sm sm:leading-6", "phx-no-feedback:border-zinc-300 phx-no-feedback:focus:border-zinc-400", @errors == [] && "border-zinc-300 focus:border-zinc-400", @errors != [] && "border-rose-400 focus:border-rose-400"]}
         {@rest}
       />
       <.error :for={msg <- @errors}>{msg}</.error>
@@ -482,9 +484,10 @@ defmodule LgbWeb.CoreComponents do
     ~H"""
     <div class="overflow-y-auto sm:overflow-visible">
       <table class="w-full">
-        <thead class="text-sm text-left leading-6 text-zinc-500">
+        <thead class="text-left text-sm leading-6 text-zinc-500">
           <tr>
-            <th :for={col <- @col} class="pl-2 pb-2 pt-2 pr-4 font-normal">{col[:label]}</th>
+            <th :for={col <- @col} class="pt-2 pr-4 pb-2 pl-2 font-normal">{col[:label]}</th>
+
             <th :if={@action != []} class="relative p-0 pb-4">
               <span class="sr-only">{gettext("Actions")}</span>
             </th>
@@ -700,15 +703,12 @@ defmodule LgbWeb.CoreComponents do
 
   def page_align(assigns) do
     ~H"""
-    <div class={["min-h-screen flex flex-col md:flex-row"]}>
+    <div class={["flex min-h-screen flex-col md:flex-row"]}>
       <!-- Sidebar Navigation -->
-      <nav class={[
-        "fixed md:relative md:h-screen w-full md:w-20 flex flex-row md:flex-col md:bg-transparent bg-white border md:border-0 justify-around",
-        "md:justify-start items-center py-4 bottom-0 md:top-0 md:left-0 z-10"
-      ]}>
+      <nav class={["fixed flex w-full flex-row justify-around border bg-white md:relative md:h-screen md:w-20 md:flex-col md:border-0 md:bg-transparent", "bottom-0 z-10 items-center py-4 md:top-0 md:left-0 md:justify-start"]}>
         <.link
           navigate={~p"/profiles/current"}
-          class="flex flex-col items-center p-4 text-gray-700 hover:bg-purple-50 hover:text-colorSecondary rounded-lg transition-colors duration-200"
+          class="flex flex-col items-center rounded-lg p-4 text-gray-700 transition-colors duration-200 hover:text-colorSecondary hover:bg-purple-50"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -716,7 +716,7 @@ defmodule LgbWeb.CoreComponents do
             viewBox="0 0 24 24"
             stroke-width="1.5"
             stroke="currentColor"
-            class="w-6 h-6"
+            class="h-6 w-6"
           >
             <path
               stroke-linecap="round"
@@ -724,17 +724,17 @@ defmodule LgbWeb.CoreComponents do
               d="M17.982 18.725A7.488 7.488 0 0 0 12 15.75a7.488 7.488 0 0 0-5.982 2.975m11.963 0a9 9 0 1 0-11.963 0m11.963 0A8.966 8.966 0 0 1 12 21a8.966 8.966 0 0 1-5.982-2.275M15 9.75a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"
             />
           </svg>
-          <span class="userNavText text-xs mt-1">Profile</span>
+          <span class="userNavText mt-1 text-xs">Profile</span>
         </.link>
         <.link
-          class="flex flex-col items-center p-4 text-gray-700 hover:bg-purple-50 hover:text-colorSecondary rounded-lg transition-colors duration-200"
+          class="flex flex-col items-center rounded-lg p-4 text-gray-700 transition-colors duration-200 hover:text-colorSecondary hover:bg-purple-50"
           navigate={~p"/profiles"}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
             viewBox="0 0 20 20"
             fill="currentColor"
-            class="w-5 h-5"
+            class="h-5 w-5"
           >
             <path
               fill-rule="evenodd"
@@ -742,10 +742,10 @@ defmodule LgbWeb.CoreComponents do
               clip-rule="evenodd"
             />
           </svg>
-          <span class="userNavText text-xs mt-1">Search</span>
+          <span class="userNavText mt-1 text-xs">Search</span>
         </.link>
         <.link
-          class="flex flex-col items-center p-4 text-gray-700 hover:bg-purple-50 hover:text-colorSecondary rounded-lg transition-colors duration-200"
+          class="flex flex-col items-center rounded-lg p-4 text-gray-700 transition-colors duration-200 hover:text-colorSecondary hover:bg-purple-50"
           navigate={~p"/conversations"}
         >
           <svg
@@ -754,7 +754,7 @@ defmodule LgbWeb.CoreComponents do
             viewBox="0 0 24 24"
             stroke-width="1.5"
             stroke="currentColor"
-            class="w-6 h-6"
+            class="h-6 w-6"
           >
             <path
               stroke-linecap="round"
@@ -762,10 +762,10 @@ defmodule LgbWeb.CoreComponents do
               d="M8.625 12a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm0 0H8.25m4.125 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 6 0Zm0 0h-.375M21 12c0 4.556-4.03 8.25-9 8.25a9.764 9.764 0 0 1-2.555-.337A5.972 5.972 0 0 1 5.41 20.97a5.969 5.969 0 0 1-.474-.065 4.48 4.48 0 0 0 .978-2.025c.09-.457-.133-.901-.467-1.226C3.93 16.178 3 14.189 3 12c0-4.556 4.03-8.25 9-8.25s9 3.694 9 8.25Z"
             />
           </svg>
-          <span class="userNavText text-xs mt-1">Inbox</span>
+          <span class="userNavText mt-1 text-xs">Inbox</span>
         </.link>
         <.link
-          class="flex flex-col items-center p-4 text-gray-700 hover:bg-purple-50 hover:text-colorSecondary rounded-lg transition-colors duration-200"
+          class="flex flex-col items-center rounded-lg p-4 text-gray-700 transition-colors duration-200 hover:text-colorSecondary hover:bg-purple-50"
           navigate={~p"/chat_rooms"}
         >
           <svg
@@ -774,7 +774,7 @@ defmodule LgbWeb.CoreComponents do
             viewBox="0 0 24 24"
             stroke-width="1.5"
             stroke="currentColor"
-            class="w-6 h-6"
+            class="h-6 w-6"
           >
             <path
               stroke-linecap="round"
@@ -782,10 +782,10 @@ defmodule LgbWeb.CoreComponents do
               d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 0 1-.825-.242m9.345-8.334a2.126 2.126 0 0 0-.476-.095 48.64 48.64 0 0 0-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0 0 11.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155"
             />
           </svg>
-          <span class="userNavText text-xs mt-1">Chatroom</span>
+          <span class="userNavText mt-1 text-xs">Chatroom</span>
         </.link>
         <.link
-          class="flex flex-col items-center p-4 text-gray-700 hover:bg-purple-50 hover:text-colorSecondary rounded-lg transition-colors duration-200"
+          class="flex flex-col items-center rounded-lg p-4 text-gray-700 transition-colors duration-200 hover:text-colorSecondary hover:bg-purple-50"
           navigate={~p"/shopping/subscriptions"}
         >
           <svg
@@ -794,7 +794,7 @@ defmodule LgbWeb.CoreComponents do
             viewBox="0 0 24 24"
             stroke-width="1.5"
             stroke="currentColor"
-            class="w-6 h-6"
+            class="h-6 w-6"
           >
             <path
               stroke-linecap="round"
@@ -802,10 +802,10 @@ defmodule LgbWeb.CoreComponents do
               d="M16.5 18.75h-9m9 0a3 3 0 0 1 3 3h-15a3 3 0 0 1 3-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 0 1-.982-3.172M9.497 14.25a7.454 7.454 0 0 0 .981-3.172M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 0 0 7.73 9.728M5.25 4.236V4.5c0 2.108.966 3.99 2.48 5.228M5.25 4.236V2.721C7.456 2.41 9.71 2.25 12 2.25c2.291 0 4.545.16 6.75.47v1.516M7.73 9.728a6.726 6.726 0 0 0 2.748 1.35m8.272-6.842V4.5c0 2.108-.966 3.99-2.48 5.228m2.48-5.492a46.32 46.32 0 0 1 2.916.52 6.003 6.003 0 0 1-5.395 4.972m0 0a6.726 6.726 0 0 1-2.749 1.35m0 0a6.772 6.772 0 0 1-3.044 0"
             />
           </svg>
-          <span class="userNavText text-xs mt-1">Premium</span>
+          <span class="userNavText mt-1 text-xs">Premium</span>
         </.link>
         <.link
-          class="flex flex-col items-center p-4 text-gray-700 hover:bg-purple-50 hover:text-colorSecondary rounded-lg transition-colors duration-200"
+          class="flex flex-col items-center rounded-lg p-4 text-gray-700 transition-colors duration-200 hover:text-colorSecondary hover:bg-purple-50"
           href={~p"/account"}
         >
           <svg
@@ -814,7 +814,7 @@ defmodule LgbWeb.CoreComponents do
             viewBox="0 0 24 24"
             stroke-width="1.5"
             stroke="currentColor"
-            class="w-6 h-6"
+            class="h-6 w-6"
           >
             <path
               stroke-linecap="round"
@@ -822,25 +822,16 @@ defmodule LgbWeb.CoreComponents do
               d="M21 12a2.25 2.25 0 0 0-2.25-2.25H15a3 3 0 1 1-6 0H5.25A2.25 2.25 0 0 0 3 12m18 0v6a2.25 2.25 0 0 1-2.25 2.25H5.25A2.25 2.25 0 0 1 3 18v-6m18 0V9M3 12V9m18 0a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 9m18 0V6a2.25 2.25 0 0 0-2.25-2.25H5.25A2.25 2.25 0 0 0 3 6v3"
             />
           </svg>
-          <span class="userNavText text-xs mt-1">Account</span>
+          <span class="userNavText mt-1 text-xs">Account</span>
         </.link>
       </nav>
       <!-- Main Content -->
-      <main class={[
-        "flex-1",
-        if @no_padding do
-          "p-0"
-        else
-          "p-4 pb-24 md:pb-4 md:px-24"
-        end
-      ]}>
-        <div class={[
-          if @no_padding do
-            "h-full px-4"
-          else
-            "max-w-5xl mx-auto"
-          end
-        ]}>
+      <main class={["flex-1", if(@no_padding,
+    do: "p-0",
+    else: "p-4 pb-24 md:px-24 md:pb-4")]}>
+        <div class={[if(@no_padding,
+    do: "h-full px-4",
+    else: "mx-auto max-w-5xl")]}>
           {render_slot(@inner_block)}
         </div>
       </main>
@@ -856,24 +847,24 @@ defmodule LgbWeb.CoreComponents do
 
   def list_tile(assigns) do
     ~H"""
-    <div class="p-3 rounded-lg sm:p-4 transition-all duration-200 hover:bg-white hover:shadow-md">
-      <div class="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4">
+    <div class="rounded-lg p-3 transition-all duration-200 hover:bg-white hover:shadow-md sm:p-4">
+      <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:gap-4">
         <img
           src={@picture_url}
           alt="Avatar"
-          class="w-12 h-12 sm:w-16 sm:h-16 rounded-full object-cover ring-2 ring-gray-100 hover:ring-purple-200 transition-all"
+          class="h-12 w-12 rounded-full object-cover ring-2 ring-gray-100 transition-all hover:ring-purple-200 sm:h-16 sm:w-16"
         />
-        <div class="flex-1 min-w-0">
-          <h3 class="text-base sm:text-lg font-medium text-gray-900 truncate group-hover:text-purple-900">
+        <div class="min-w-0 flex-1">
+          <h3 class="truncate text-base font-medium text-gray-900 group-hover:text-purple-900 sm:text-lg">
             {@title}
           </h3>
-          <p class="text-sm sm:text-base text-gray-500 truncate">
+          <p class="truncate text-sm text-gray-500 sm:text-base">
             {@subtitle}
           </p>
         </div>
-        <div class="flex items-center justify-between sm:justify-end w-full sm:w-auto gap-2">
+        <div class="flex w-full items-center justify-between gap-2 sm:w-auto sm:justify-end">
           <%= if !@read do %>
-            <div class="w-2 h-2 bg-colorSecondary rounded-full"></div>
+            <div class="bg-colorSecondary h-2 w-2 rounded-full"></div>
           <% end %>
           {render_slot(@trailer)}
         </div>
@@ -892,11 +883,7 @@ defmodule LgbWeb.CoreComponents do
 
   def card(assigns) do
     ~H"""
-    <div class={[
-      "rounded-lg",
-      @class,
-      if(@no_background, do: "border bg-white p-4 ", else: "")
-    ]}>
+    <div class={["rounded-lg", @class, if(@no_background, do: "border bg-white p-4 ", else: "")]}>
       {render_slot(@inner_block)}
     </div>
     """
@@ -912,58 +899,58 @@ defmodule LgbWeb.CoreComponents do
     <!-- Hero Section Container -->
     <div class="relative min-h-screen">
       <!-- Navigation Bar -->
-      <nav class="z-10 sticky top-0 flex px-4 py-4 backdrop-blur-md">
-        <div class="container mx-auto flex items-center justify-between flex-col gap-4 md:gap-0 md:flex-row">
+      <nav class="sticky top-0 z-10 flex px-4 py-4 backdrop-blur-md">
+        <div class="container mx-auto flex flex-col items-center justify-between gap-4 md:flex-row md:gap-0">
           <!-- Logo -->
           <div class="flex items-center space-x-2">
             <span class="text-xl font-bold">
               <.link navigate={~p"/"}>
-                <h1 class="font-sans text-3xl bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+                <h1 class="font-sans bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-3xl text-transparent">
                   bi⏾bi
                 </h1>
               </.link>
             </span>
           </div>
-
-          <!-- Navigation Links -->
+          
+    <!-- Navigation Links -->
           <div class="menu cursor-pointer" onclick="expandNavigation()">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="size-6">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="size-6"
+            >
               <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 9h16.5m-16.5 6.75h16.5" />
             </svg>
           </div>
-          <div class="navs fixed top-0 left-0 overflow-x-hidden w-0 bg-white shadow-lg h-screen sm:px-6 sm:py-3 sm:static sm:h-max sm:w-full sm:w-min sm:gap-0 sm:rounded-full">
+          <div class="navs fixed top-0 left-0 h-screen w-0 overflow-x-hidden bg-white shadow-lg sm:static sm:h-max sm:w-full sm:w-min sm:gap-0 sm:rounded-full sm:px-6 sm:py-3">
             <div class="flex flex-col sm:flex-row sm:p-0">
-              <button class="m-4 bg-colorPrimary px-4 py-1 w-max rounded-3xl shadow-lg sm:hidden" onclick="closeNavigation()">esc</button>
-              <a
-                href="/products"
-                class="loggedOutNavbarText"
+              <button
+                class="bg-colorPrimary m-4 w-max rounded-3xl px-4 py-1 shadow-lg sm:hidden"
+                onclick="closeNavigation()"
               >
+                esc
+              </button>
+              <a href="/products" class="loggedOutNavbarText">
                 Products
               </a>
-              <a
-                href="/features"
-                class="loggedOutNavbarText"
-              >
+              <a href="/features" class="loggedOutNavbarText">
                 Features
               </a>
               <a href="/blogs" class="loggedOutNavbarText">
                 Blogs
               </a>
-              <a
-                href="/community"
-                class="loggedOutNavbarText"
-              >
+              <a href="/community" class="loggedOutNavbarText">
                 Community
               </a>
-              <a
-                href="/pricing"
-                class="loggedOutNavbarText"
-              >
+              <a href="/pricing" class="loggedOutNavbarText">
                 Pricing
               </a>
             </div>
           </div>
-
+          
     <!-- Login Button
           <.link
             class="hidden"
@@ -1004,21 +991,18 @@ defmodule LgbWeb.CoreComponents do
     assigns = assign(assigns, :found_user, found_user)
 
     ~H"""
-    <div class="flex items-center gap-2 p-2 rounded-lg transition-all">
+    <div class="flex items-center gap-2 rounded-lg p-2 transition-all">
       <div class="flex items-center gap-2">
         <div :if={@found_user} class="flex">
-          <div class="h-2 w-2 bg-green-400 rounded-full"></div>
-          <div class="absolute h-2 w-2 bg-green-400 rounded-full animate-ping"></div>
+          <div class="h-2 w-2 rounded-full bg-green-400"></div>
+          <div class="absolute h-2 w-2 animate-ping rounded-full bg-green-400"></div>
         </div>
-        <div class={[
-          "text-lg font-medium",
-          if(@primary, do: "text-white", else: "text-black")
-        ]}>
+        <div class={["text-lg font-medium", if(@primary, do: "text-white", else: "text-black")]}>
           {@profile.handle}
         </div>
         <div
           :if={!@found_user and @profile.user.last_login_at != nil and @show}
-          class="text-xs text-gray-400 font-light"
+          class="text-xs font-light text-gray-400"
         >
           <%= cond do %>
             <% LgbWeb.UserPresence.within_minutes?(@profile.user.last_login_at, 60) -> %>
@@ -1043,7 +1027,7 @@ defmodule LgbWeb.CoreComponents do
     ~H"""
     <.card
       no_background={false}
-      class="m-1 border-b-2 border-transparent hover:border-blue-300 transition-all duration-200"
+      class="m-1 border-b-2 border-transparent transition-all duration-200 hover:border-blue-300"
     >
       <div class="relative">
         <.live_component
@@ -1052,32 +1036,32 @@ defmodule LgbWeb.CoreComponents do
           uploaded_files={@profile.profile_pictures}
           length={1}
         />
-        <div class="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/50 to-transparent p-4 rounded-b-lg">
+        <div class="from-black/50 absolute right-0 bottom-0 left-0 rounded-b-lg bg-gradient-to-t to-transparent p-4">
           <.link
             navigate={~p"/profiles/#{@profile.id}"}
-            class="text-white font-semibold text-lg hover:text-gray-100 transition-colors"
+            class="text-lg font-semibold text-white transition-colors hover:text-gray-100"
           >
             <.name_with_online_activity profile={@profile} />
           </.link>
         </div>
       </div>
 
-      <div class="p-4 space-y-2">
+      <div class="space-y-2 p-4">
         <div class="grid grid-cols-2 gap-3 text-sm">
           <div class="flex items-center gap-2 text-gray-600">
-            <.icon name="hero-rectangle-stack" class="w-4 h-4" />
+            <.icon name="hero-rectangle-stack" class="h-4 w-4" />
             <span>{Lgb.Profiles.display_height(@profile.height_cm)}</span>
           </div>
           <div class="flex items-center gap-2 text-gray-600">
-            <.icon name="hero-scale-solid" class="w-4 h-4" />
+            <.icon name="hero-scale-solid" class="h-4 w-4" />
             <span>{Lgb.Profiles.display_weight(@profile.weight_lb)}</span>
           </div>
           <div class="flex items-center gap-2 text-gray-600">
-            <.icon name="hero-cake-solid" class="w-4 h-4" />
+            <.icon name="hero-cake-solid" class="h-4 w-4" />
             <span>{@profile.age} years</span>
           </div>
           <div class="flex items-center gap-2 text-gray-600">
-            <.icon name="hero-map-pin-solid" class="w-4 h-4" />
+            <.icon name="hero-map-pin-solid" class="h-4 w-4" />
             <span>{Lgb.Profiles.display_distance(@profile.distance)} miles away</span>
           </div>
         </div>
