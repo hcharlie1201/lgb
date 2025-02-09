@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" class="[scrollbar-gutter:stable]">
+<html lang="en" class="">
   <head>
     <link rel="icon" type="image/x-icon" href="/images/bi-dating-icon.svg" />
     <meta charset="utf-8" />
@@ -48,13 +48,12 @@
   </head>
   <body>
     <%= if @current_user do %>
-      <nav class="flex justify-between bg-white py-3 px-10 ">
+      <nav class="top-0 sticky z-20 flex justify-between bg-white py-3 px-10 ">
         <span class="text-xl font-bold">
           <.link navigate={~p"/"}>
             <h1 class="font-sans text-3xl bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
               bi⏾bi
             </h1>
-            test
           </.link>
         </span>
         <ul class="flex gap-4 items-center text-sm">

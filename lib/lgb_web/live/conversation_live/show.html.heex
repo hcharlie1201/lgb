@@ -39,6 +39,7 @@
         <div class={"flex " <> if message.profile.id == @current_user.id, do: "justify-end", else: "justify-start"}>
           <div class={"text-sm p-3 mx-1 my-1 rounded-3xl max-w-[70%] " <> if message.profile.id == @current_user.id, do: "bg-green-100", else: "bg-purple-100"}>
             {message.content} - {Calendar.strftime(message.inserted_at, "%I:%M %p")}
+            <p> TESTING current user: {@current_user.id} message.id - <%= message.profile.id %></p>
           </div>
         </div>
       </div>
