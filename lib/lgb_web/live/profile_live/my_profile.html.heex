@@ -1,5 +1,5 @@
 <.page_align>
-  <.header class="text-3xl font-bold text-gray-800 mb-8">Gallery</.header>
+  <.header class="mb-8 text-3xl font-bold text-gray-800">Gallery</.header>
   
 <!-- Carousel Section -->
   <.live_component module={Carousel} id={@profile.id} uploaded_files={@uploaded_files} length={3} />
@@ -13,14 +13,10 @@
     phx-change="validate"
   >
     <!-- File Upload Section -->
-<<<<<<< HEAD
-    <div onclick="toggleHeight()" class="bg-white py-4 inset-x-0 top-0 absolute flex justify-center items-center hover:bg-gray-100 rounded-t-sm py-1">
-=======
     <div
       onclick="toggleHeight()"
-      class="bg-white py-4 inset-x-0 top-0 absolute flex justify-center items-center hover:bg-gray-100 rounded py-1"
+      class="absolute inset-x-0 top-0 flex items-center justify-center rounded-t-sm bg-white py-1 py-4 hover:bg-gray-100"
     >
->>>>>>> e2b8045 ([CHA-53] Add gender and formatter for tailwindcss)
       <svg width="40" height="15" xmlns="http://www.w3.org/2000/svg">
         <!-- First Bar -->
         <rect width="40" height="4" fill="#333333" rx="3" ry="3" />
@@ -31,25 +27,25 @@
     </div>
 
     <section phx-drop-target={@uploads.avatar.ref} class="mb-6">
-      <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-500 transition-colors">
-        <.live_file_input upload={@uploads.avatar}/>
+      <div class="rounded-lg border-2 border-dashed border-gray-300 p-6 text-center transition-colors hover:border-blue-500">
+        <.live_file_input upload={@uploads.avatar} />
         <p class="text-gray-600">
           or drag & drop your avatar
         </p>
       </div>
       
 <!-- Uploaded Files Preview -->
-      <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+      <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
         <article :for={entry <- @uploads.avatar.entries} class="relative">
-          <figure class="bg-gray-100 p-4 rounded-lg">
+          <figure class="rounded-lg bg-gray-100 p-4">
             <.live_img_preview entry={entry} width="100" class="rounded-lg shadow-md" />
-            <figcaption class="text-sm text-gray-600 mt-2 truncate">
+            <figcaption class="mt-2 truncate text-sm text-gray-600">
               {entry.client_name}
             </figcaption>
           </figure>
           
 <!-- Progress Bar -->
-          <progress value={entry.progress} max="100" class="w-full h-2 mt-2 rounded">
+          <progress value={entry.progress} max="100" class="mt-2 h-2 w-full rounded">
             {entry.progress}%
           </progress>
           
@@ -58,21 +54,21 @@
             type="button"
             phx-click="cancel-upload"
             phx-value-ref={entry.ref}
-            class="absolute top-2 right-2 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center hover:bg-red-600 transition-colors"
+            class="absolute top-2 right-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-white transition-colors hover:bg-red-600"
             aria-label="cancel"
           >
             &times;
           </button>
           
 <!-- Error Messages -->
-          <p :for={err <- upload_errors(@uploads.avatar, entry)} class="text-sm text-red-500 mt-2">
+          <p :for={err <- upload_errors(@uploads.avatar, entry)} class="mt-2 text-sm text-red-500">
             {error_to_string(err)}
           </p>
         </article>
       </div>
       
 <!-- Global Upload Errors -->
-      <p :for={err <- upload_errors(@uploads.avatar)} class="text-sm text-red-500 mt-2">
+      <p :for={err <- upload_errors(@uploads.avatar)} class="mt-2 text-sm text-red-500">
         {error_to_string(err)}
       </p>
     </section>
@@ -84,7 +80,7 @@
         field={@form[:handle]}
         name="handle"
         label="Name"
-        class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        class="w-full rounded-lg border border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
       <.input
         value={@profile.age}
@@ -92,7 +88,7 @@
         name="age"
         type="number"
         label="Age"
-        class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        class="w-full rounded-lg border border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
       <.input
         value={@profile.height_cm}
@@ -103,7 +99,7 @@
         options={Lgb.Profiles.generate_height_options()}
         prompt="Select your height"
         multiple={false}
-        class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        class="w-full rounded-lg border border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
       <.input
         value={@profile.weight_lb}
@@ -114,7 +110,7 @@
         options={Lgb.Profiles.generate_weight_options()}
         prompt="Select your weight"
         multiple={false}
-        class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        class="w-full rounded-lg border border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
       <div>
         <.input
@@ -142,23 +138,23 @@
           checked={@form[:gender].value == :non_binary || @form.params["gender"] == :non_binary}
         />
       </div>
-      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div class="bg-gray-100 p-4 rounded-lg">
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
+        <div class="rounded-lg bg-gray-100 p-4">
           <p class="text-sm text-gray-600">City</p>
           <p class="text-lg font-semibold">{@profile.city}</p>
         </div>
-        <div class="bg-gray-100 p-4 rounded-lg">
+        <div class="rounded-lg bg-gray-100 p-4">
           <p class="text-sm text-gray-600">State</p>
           <p class="text-lg font-semibold">{@profile.state}</p>
         </div>
-        <div class="bg-gray-100 p-4 rounded-lg">
+        <div class="rounded-lg bg-gray-100 p-4">
           <p class="text-sm text-gray-600">Zip</p>
           <p class="text-lg font-semibold">{@profile.zip}</p>
         </div>
       </div>
       <div
         phx-hook="Map"
-        class="h-96 rounded-lg shadow-md z-0"
+        class="z-0 h-96 rounded-lg shadow-md"
         id="mapid"
         phx-update="ignore"
         data-geo={if @profile.geolocation, do: Geo.WKT.encode!(@profile.geolocation), else: ""}
@@ -170,7 +166,7 @@
         name="biography"
         type="textarea"
         label="Bio"
-        class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+        class="w-full rounded-lg border border-gray-300 p-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
     </div>
     
@@ -178,7 +174,7 @@
     <:actions>
       <.button
         phx-disable-with="Confirming"
-        class="w-full bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-600 transition-colors"
+        class="w-full rounded-lg bg-blue-500 p-3 text-white transition-colors hover:bg-blue-600"
       >
         Save
       </.button>
