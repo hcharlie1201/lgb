@@ -209,14 +209,19 @@ defmodule Lgb.Chatting do
   alias Lgb.Chatting.ConversationMessage
 
   def list_conversation_messages_by_page(conversation_id, page, per_page) do
-    offset = (page - 1) * per_page
+    total_messages =
+      from(cm in ConversationMessage, where: cm.conversation_id == ^conversation_id)
+      |> Repo.aggregate(:count, :id)
+
+    start_offset = max(total_messages - page * per_page, 0)
 
     query =
       from cm in ConversationMessage,
         where: cm.conversation_id == ^conversation_id,
+        # Always sort in ascending order
         order_by: [asc: cm.inserted_at],
         limit: ^per_page,
-        offset: ^offset,
+        offset: ^start_offset,
         preload: [:profile, :conversation]
 
     Repo.all(query)

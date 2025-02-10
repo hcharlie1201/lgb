@@ -1,20 +1,20 @@
 <.page_align no_padding={true}>
-  <.card class="flex flex-col h-screen h-full mb-4">
+  <.card class="mb-4 flex h-full h-screen flex-col">
     <!-- Chat Header -->
-    <.card class="flex justify-between items-center">
-      <div class="flex items-center align-middle gap-2">
+    <.card class="flex items-center justify-between">
+      <div class="flex items-center gap-2 align-middle">
         <img
           src={Lgb.Profiles.ProfilePicture.get_picture_url(@other_profile.first_picture)}
           alt="Avatar"
-          class="w-12 h-12 sm:w-16 sm:h-16 rounded-full object-cover"
+          class="h-12 w-12 rounded-full object-cover sm:h-16 sm:w-16"
         />
-        <span class="font-semibold text-lg">
+        <span class="text-lg font-semibold">
           <.link navigate={~p"/profiles/#{@other_profile.id}"}>
             <.name_with_online_activity profile={@other_profile} primary={false} />
           </.link>
         </span>
       </div>
-      <span class="text-xs text-gray-400 font-light">
+      <span class="text-xs font-light text-gray-400">
         <%= cond do %>
           <% LgbWeb.UserPresence.within_minutes?(@other_profile.user.last_login_at, 60) -> %>
             {LgbWeb.UserPresence.format_hours_ago(@other_profile.user.last_login_at)}
@@ -32,28 +32,27 @@
       id="conversation-messages"
       phx-update="stream"
       phx-viewport-top="load_more"
-      class="flex-1 h-[800px] overflow-y-auto"
+      class="h-[800px] flex-1 overflow-y-auto"
       phx-hook="ScrollBottom"
     >
       <div :for={{dom_id, message} <- @streams.all_messages} id={dom_id}>
-        <div class={"flex " <> if message.profile.id == @current_user.id, do: "justify-end", else: "justify-start"}>
-          <div class={"text-sm p-3 mx-1 my-1 rounded-3xl max-w-[70%] " <> if message.profile.id == @current_user.id, do: "bg-green-100", else: "bg-purple-100"}>
-            {message.content} - {Calendar.strftime(message.inserted_at, "%I:%M %p")}
-            <p> TESTING current user: {@current_user.id} message.id - <%= message.profile.id %></p>
+        <div class={"flex " <> if message.profile.id == @current_profile.id, do: "justify-end", else: "justify-start"}>
+          <div class={"max-w-[70%] mx-1 my-1 rounded-3xl p-3 text-sm " <> if message.profile.id == @current_profile.id, do: "bg-green-100", else: "bg-purple-100"}>
+            {message.content} - {Calendar.strftime(message.inserted_at, "%b %d, %I:%M %p")}
           </div>
         </div>
       </div>
     </div>
     <.simple_form for={@form} phx-change="validate" phx-submit="send">
-      <div class="flex w-full space-x-2 p-4 bg-white rounded-b-lg shadow-sm">
+      <div class="flex w-full space-x-2 rounded-b-lg bg-white p-4 shadow-sm">
         <.input
           id="one-one-message"
-          class="p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+          class="rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           field={@form[:content]}
           name="content"
           placeholder="Type a message..."
         />
-        <.button class="px-4 py-2 bg-colorPrimary text-white rounded-lg hover:bg-colorPrimary focus:outline-none focus:ring-2 focus:ring-blue-500">
+        <.button class="bg-colorPrimary rounded-lg px-4 py-2 text-white hover:bg-colorPrimary focus:outline-none focus:ring-2 focus:ring-blue-500">
           Send
         </.button>
       </div>
