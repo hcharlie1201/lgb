@@ -10,9 +10,7 @@ defmodule Lgb.ProfileViewsFixtures do
   def profile_view_fixture(attrs \\ %{}) do
     {:ok, profile_view} =
       attrs
-      |> Enum.into(%{
-
-      })
+      |> Enum.into(%{})
       |> Lgb.ProfileViews.create_profile_view()
 
     profile_view

@@ -9,7 +9,7 @@ defmodule Lgb.ProfilesFixtures do
   """
   def profile_fixture(user, attrs \\ %{}) do
     # Ensure user is a proper Ecto struct
-    user = 
+    user =
       case user do
         %Lgb.Accounts.User{} -> user
         _ -> struct(Lgb.Accounts.User, user)

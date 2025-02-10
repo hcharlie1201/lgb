@@ -19,7 +19,7 @@ defmodule LgbWeb.DashboardLive do
       <br />
       <.header>
         🌎 Global Users
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-3">
+        <div class="grid grid-cols-1 gap-3 lg:grid-cols-3">
           <%= for profile <- @global_profiles do %>
             <.profile_preview profile={profile} prefix_id="global_users" />
           <% end %>
@@ -27,7 +27,7 @@ defmodule LgbWeb.DashboardLive do
       </.header>
       <.header>
         🍃 New & Nearby users
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-3">
+        <div class="grid grid-cols-1 gap-3 lg:grid-cols-3">
           <%= for profile <- @new_and_nearby do %>
             <.profile_preview profile={profile} prefix_id="new_and_nearby" />
           <% end %>
@@ -35,7 +35,7 @@ defmodule LgbWeb.DashboardLive do
       </.header>
       <.header>
         Members that viewed you
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-3">
+        <div class="grid grid-cols-1 gap-3 lg:grid-cols-3">
           <%= for profile_view <- @viewers do %>
             <.profile_preview profile={profile_view.viewer} prefix_id="viewer" />
           <% end %>
