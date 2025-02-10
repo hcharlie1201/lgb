@@ -10,15 +10,7 @@ defmodule LgbWeb.ProfileLive.MyProfile do
   def mount(_params, _session, socket) do
     user = socket.assigns.current_user
 
-    profile =
-      case User.current_profile(user) do
-        nil ->
-          {:ok, new_profile} = Profiles.create_profile(user)
-          new_profile
-
-        existing_profile ->
-          existing_profile
-      end
+    profile = User.current_profile(user)
 
     socket =
       socket

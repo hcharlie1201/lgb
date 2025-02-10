@@ -61,6 +61,22 @@ defmodule Lgb.AccountsTest do
                Accounts.get_user_by_email_and_password(user.email, valid_user_password())
     end
 
+    test "creates a profile when the user is confirmed" do
+      %{id: id} = user = user_fixture()
+
+      {:ok, _} =
+        Accounts.confirm_user(
+          extract_user_token(fn url ->
+            Accounts.deliver_user_confirmation_instructions(user, url)
+          end)
+        )
+
+      assert {:ok, %User{id: ^id}} =
+               Accounts.get_user_by_email_and_password(user.email, valid_user_password())
+
+      assert profile = Lgb.Accounts.User.current_profile(user)
+    end
+
     test "returns error if user is confirmed" do
       user = user_fixture()
 
