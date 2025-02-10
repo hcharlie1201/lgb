@@ -118,6 +118,38 @@ defmodule LgbWeb.ConversationLive.Show do
     socket
   end
 
+  @doc """
+  Handles incoming messages in a chat conversation. This handler has two main scenarios:
+
+  1. When receiving a message from the other person (recipient's view):
+    - Marks the message as read in the database
+    - Broadcasts the read status back to the sender
+    - Shows the message in recipient's chat window
+
+  2. When receiving our own sent message:
+    - Simply displays the message in our chat window
+
+  Args:
+   - event: "new_message" Phoenix.Socket event
+   - payload: The message struct containing content, profile_id, etc
+   - socket: The LiveView socket with assigns like current_profile and other_profile
+
+  Examples:
+
+     # Recipient receiving a message:
+     handle_info(
+       %{event: "new_message", payload: %{profile_id: 2, content: "Hello"}},
+       %{assigns: %{other_profile: %{id: 2}}}
+     )
+     # -> Message marked as read, broadcast read status, show message
+
+     # Sender receiving their own message:
+     handle_info(
+       %{event: "new_message", payload: %{profile_id: 1, content: "Hi"}},
+       %{assigns: %{current_profile: %{id: 1}}}
+     )
+     # -> Just show message
+  """
   def handle_info(%{event: "new_message", payload: message}, socket) do
     if message.profile_id == socket.assigns.other_profile.id do
       # Mark as read since recipient is viewing it
