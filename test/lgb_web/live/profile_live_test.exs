@@ -46,8 +46,8 @@ defmodule LgbWeb.ProfileLiveTest do
   describe "Search" do
     test "shows search form", %{conn: conn} do
       {:ok, _index_live, html} = live(conn, ~p"/profiles")
-      assert html =~ "Min Height"
-      assert html =~ "Max Height"
+      assert html =~ "min height"
+      assert html =~ "max height"
     end
   end
 

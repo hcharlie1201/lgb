@@ -2,7 +2,7 @@
   <.simple_form for={@form} id="search-profile" phx-submit="search" phx-change="validate">
     <.input
       type="select"
-      label="Min Height"
+      label="min height"
       field={@form[:min_height_cm]}
       options={Lgb.Profiles.generate_height_options()}
       prompt=""
@@ -12,21 +12,54 @@
     <.input
       type="select"
       name="max_height_cm"
-      label="Max Height"
+      label="max height"
       field={@form[:max_height_cm]}
       options={Lgb.Profiles.generate_height_options()}
       prompt=""
       multiple={false}
     />
-    <.input type="number" name="min_age" label="Min Age" field={@form[:min_age]} />
-    <.input type="number" name="max_age" label="Max Age" field={@form[:max_age]} />
-    <.input type="number" label="Min Weight (lbs)" name="min_weight" field={@form[:min_weight]} />
+    <.input type="number" name="min_age" label="min age" field={@form[:min_age]} placeholder={25} />
+    <.input type="number" name="max_age" label="max age" field={@form[:max_age]} placeholder={50} />
     <.input
       type="number"
-      label="Maximum Weight (lbs)"
+      label="min weight"
+      name="min_weight"
+      field={@form[:min_weight]}
+      placeholder="150 lbs"
+    />
+    <.input
+      type="number"
+      label="maximum weight"
       name="max_weight"
       field={@form[:max_weight]}
+      placeholder="250 lbs"
     />
+    <div>
+      <.input
+        field={@form[:gender]}
+        name="gender"
+        type="radio"
+        value="male"
+        label="Male"
+        checked={@form.params["gender"] == "male"}
+      />
+      <.input
+        field={@form[:gender]}
+        name="gender"
+        type="radio"
+        value="female"
+        label="Female"
+        checked={@form.params["gender"] == "female"}
+      />
+      <.input
+        field={@form[:gender]}
+        name="gender"
+        type="radio"
+        value="non_binary"
+        label="Non Binary"
+        checked={@form.params["gender"] == "non_binary"}
+      />
+    </div>
     <:actions>
       <.button :if={@form.errors == []}>Search</.button>
       <.button :if={@form.errors != []} disabled class="cursor-not-allowed">

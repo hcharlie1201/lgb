@@ -218,6 +218,9 @@ defmodule Lgb.Profiles do
         "max_weight" ->
           [%{field: :weight_lb, op: :<=, value: String.to_integer(value)} | acc]
 
+        "gender" ->
+          [%{field: :gender, op: :==, value: value} | acc]
+
         _ ->
           acc
       end

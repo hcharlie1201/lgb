@@ -4,7 +4,7 @@ defmodule Lgb.Profiles.Profile do
 
   @derive {
     Flop.Schema,
-    filterable: [:handle, :state, :city, :height_cm, :weight_lb, :age],
+    filterable: [:handle, :state, :city, :height_cm, :weight_lb, :age, :gender],
     sortable: [:age, :height_cm, :weight_lb, :distance],
     default_limit: 6,
     adapter_opts: [
@@ -14,8 +14,8 @@ defmodule Lgb.Profiles.Profile do
 
   schema "profiles" do
     has_many :profile_pictures, Lgb.Profiles.ProfilePicture
-    has_many :messages, Lgb.Chatting.Message
     has_one :first_picture, Lgb.Profiles.ProfilePicture, foreign_key: :profile_id
+    has_many :messages, Lgb.Chatting.Message
     belongs_to :user, Lgb.Accounts.User
     field :handle, :string
     field :state, :string
@@ -27,6 +27,7 @@ defmodule Lgb.Profiles.Profile do
     field :biography, :string
     field :geolocation, Geo.PostGIS.Geometry
     field :distance, :float, virtual: true
+    field :gender, Ecto.Enum, values: [:male, :female, :non_binary]
 
     timestamps(type: :utc_datetime)
   end
@@ -44,7 +45,8 @@ defmodule Lgb.Profiles.Profile do
       :zip,
       :biography,
       :user_id,
-      :geolocation
+      :geolocation,
+      :gender
     ])
     |> validate_required([
       :user_id

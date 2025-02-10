@@ -34,6 +34,7 @@ defmodule Lgb.MixProject do
     [
       {:bcrypt_elixir, "~> 3.0"},
       {:phoenix, "~> 1.7.12"},
+      {:tailwind_formatter, "~> 0.4.2", only: [:dev, :test], runtime: false},
       {:ex_aws, "~> 2.1.2"},
       {:ex_aws_s3, "~> 2.0"},
       {:hackney, "~> 1.9"},
