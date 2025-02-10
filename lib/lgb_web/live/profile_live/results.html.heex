@@ -1,5 +1,5 @@
 <.page_align>
-  <div class="grid grid-cols-1 lg:grid-cols-3 gap-3">
+  <div class="grid grid-cols-1 gap-3 lg:grid-cols-3">
     <%= for profile <- @profiles do %>
       <.profile_preview profile={profile} />
     <% end %>

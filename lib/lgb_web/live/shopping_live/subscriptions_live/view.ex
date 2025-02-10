@@ -36,6 +36,7 @@ defmodule LgbWeb.ShoppingLive.SubscriptionsLive.View do
   end
 
   defp format_money(nil), do: "0.00"
+
   defp format_money(amount_cents) do
     amount_cents
     |> Decimal.new()

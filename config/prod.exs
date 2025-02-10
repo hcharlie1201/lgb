@@ -17,7 +17,8 @@ config :swoosh, local: false
 config :logger, level: :info
 
 config :sentry,
-  dsn: "https://3d743dffd1af7145a78ee45ba1e22674@o4508725176631296.ingest.us.sentry.io/4508725177024512",
+  dsn:
+    "https://3d743dffd1af7145a78ee45ba1e22674@o4508725176631296.ingest.us.sentry.io/4508725177024512",
   environment_name: Mix.env(),
   enable_source_code_context: true,
   root_source_code_paths: [File.cwd!()]

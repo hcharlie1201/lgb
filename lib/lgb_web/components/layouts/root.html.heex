@@ -48,16 +48,16 @@
   </head>
   <body>
     <%= if @current_user do %>
-      <nav class="top-0 sticky z-20 flex justify-between bg-white py-3 px-10 ">
+      <nav class="sticky top-0 z-20 flex justify-between bg-white px-10 py-3 ">
         <span class="text-xl font-bold">
           <.link navigate={~p"/"}>
-            <h1 class="font-sans text-3xl bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent">
+            <h1 class="font-sans bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-3xl text-transparent">
               bi⏾bi
             </h1>
             test
           </.link>
         </span>
-        <ul class="flex gap-4 items-center text-sm">
+        <ul class="flex items-center gap-4 text-sm">
           <li class="mainNavBar">
             <div class="flex gap-1">
               <svg

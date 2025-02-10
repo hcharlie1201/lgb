@@ -1,13 +1,13 @@
 <script src="https://js.stripe.com/v3/">
 </script>
 <.page_align>
-  <.card class="flex flex-col p-6 hover:border-purple-200 transition-all duration-200">
+  <.card class="flex flex-col p-6 transition-all duration-200 hover:border-purple-200">
     <%!-- Header section --%>
     <div class="mb-6">
-      <h2 class="text-2xl font-medium font-Merriweather text-gray-900">
+      <h2 class="font-Merriweather text-2xl font-medium text-gray-900">
         {@subscription_plan.name} - The VIP Treatment
       </h2>
-      <div class="mt-4 flex items-baseline font-Merriweather">
+      <div class="font-Merriweather mt-4 flex items-baseline">
         <span class="text-4xl font-bold tracking-tight text-gray-900">
           ${format_money(500)}
         </span>
@@ -19,24 +19,24 @@
 
     <%!-- Features list --%>
     <div class="flex-grow">
-      <h3 class="text-sm font-semibold text-gray-900 uppercase tracking-wide mb-4">
+      <h3 class="mb-4 text-sm font-semibold uppercase tracking-wide text-gray-900">
         What You Get (Besides My Undying Gratitude)
       </h3>
       <ul class="space-y-4">
         <li class="flex items-start">
-          <.icon name="hero-check" class="h-5 w-5 text-purple-500 flex-shrink-0 mt-0.5" />
+          <.icon name="hero-check" class="mt-0.5 h-5 w-5 flex-shrink-0 text-purple-500" />
           <span class="ml-3 text-gray-600">
             Access to credit scores (because adulting is hard).
           </span>
         </li>
         <li class="flex items-start">
-          <.icon name="hero-check" class="h-5 w-5 text-purple-500 flex-shrink-0 mt-0.5" />
+          <.icon name="hero-check" class="mt-0.5 h-5 w-5 flex-shrink-0 text-purple-500" />
           <span class="ml-3 text-gray-600">
             Unlimited messaging (so you can chat 'til your fingers fall off).
           </span>
         </li>
         <li class="flex items-start">
-          <.icon name="hero-check" class="h-5 w-5 text-purple-500 flex-shrink-0 mt-0.5" />
+          <.icon name="hero-check" class="mt-0.5 h-5 w-5 flex-shrink-0 text-purple-500" />
           <span class="ml-3 text-gray-600">
             View recent profile visitors (aka see who's been creeping... I mean, admiring).
           </span>
@@ -45,8 +45,8 @@
     </div>
 
     <%!-- Subscription details & Button --%>
-    <div class="mt-6 pt-6 border-t border-gray-200">
-      <p class="text-sm text-gray-500 mb-6">
+    <div class="mt-6 border-t border-gray-200 pt-6">
+      <p class="mb-6 text-sm text-gray-500">
         Recurring charge every {@subscription_plan.interval_count} {@subscription_plan.interval} (It's like a surprise gift to yourself every month!)
       </p>
     </div>

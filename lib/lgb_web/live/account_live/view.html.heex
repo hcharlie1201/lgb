@@ -8,7 +8,7 @@
       <:item title="Account Status">{@status || "No Active Subscription Plan"}</:item>
     </.list>
     <br />
-    <div class="flex justify-content  align-center mt-2">
+    <div class="justify-content align-center mt-2 flex">
       <.button :if={@portal_url} phx-click="manage_account" phx-value-url={@portal_url}>
         Manage Account (Payment, Invoice, Subscription Management)
       </.button>

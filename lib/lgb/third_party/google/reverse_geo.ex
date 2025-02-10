@@ -15,8 +15,12 @@ defmodule Lgb.ThirdParty.Google.ReverseGeo do
     response = HTTPoison.get!(url)
 
     case Poison.decode!(response.body) do
-      %{"results" => []} -> []
-      %{"status" => "INVALID_REQUEST"} -> []
+      %{"results" => []} ->
+        []
+
+      %{"status" => "INVALID_REQUEST"} ->
+        []
+
       %{"results" => [address | _]} ->
         %{"address_components" => address_components} = address
 

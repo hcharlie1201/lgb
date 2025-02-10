@@ -8,7 +8,7 @@ defmodule LgbWeb.ChatRoomLive.FormComponent do
     ~H"""
     <div>
       <.header>
-        <%= @title %>
+        {@title}
         <:subtitle>Use this form to manage chat_room records in your database.</:subtitle>
       </.header>
 
