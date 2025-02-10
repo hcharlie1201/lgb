@@ -53,6 +53,7 @@ defmodule LgbWeb.ConversationLive.Show do
            "profile_id" => current_profile.id
          })
      )
+     |> assign(current_profile: current_profile)
      |> assign(conversation: conversation)
      |> assign(other_profile: other_profile)
      |> stream(:all_messages, all_messages)}
