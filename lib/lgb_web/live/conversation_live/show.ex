@@ -27,6 +27,7 @@ defmodule LgbWeb.ConversationLive.Show do
       end
 
     other_profile = Repo.preload(other_profile, [:first_picture, :user])
+    Lgb.Chatting.read_all_messages(other_profile)
 
     all_messages =
       Chatting.list_conversation_messages_by_page(conversation.id, socket.assigns.page, @per_page)
@@ -117,8 +118,68 @@ defmodule LgbWeb.ConversationLive.Show do
     socket
   end
 
+  @doc """
+  Handles incoming messages in a chat conversation. This handler has two main scenarios:
+
+  1. When receiving a message from the other person (recipient's view):
+    - Marks the message as read in the database
+    - Broadcasts the read status back to the sender
+    - Shows the message in recipient's chat window
+
+  2. When receiving our own sent message:
+    - Simply displays the message in our chat window
+
+  Args:
+   - event: "new_message" Phoenix.Socket event
+   - payload: The message struct containing content, profile_id, etc
+   - socket: The LiveView socket with assigns like current_profile and other_profile
+
+  Examples:
+
+     # Recipient receiving a message:
+     handle_info(
+       %{event: "new_message", payload: %{profile_id: 2, content: "Hello"}},
+       %{assigns: %{other_profile: %{id: 2}}}
+     )
+     # -> Message marked as read, broadcast read status, show message
+
+     # Sender receiving their own message:
+     handle_info(
+       %{event: "new_message", payload: %{profile_id: 1, content: "Hi"}},
+       %{assigns: %{current_profile: %{id: 1}}}
+     )
+     # -> Just show message
+  """
   def handle_info(%{event: "new_message", payload: message}, socket) do
-    {:noreply, stream_insert(socket, :all_messages, message)}
+    if message.profile_id == socket.assigns.other_profile.id do
+      # Mark as read since recipient is viewing it
+      case message
+           |> Ecto.Changeset.change(%{read: true})
+           |> Repo.update() do
+        {:ok, updated_message} ->
+          # Broadcast the read status back to sender
+          LgbWeb.Endpoint.broadcast(
+            "conversation:#{message.conversation_id}",
+            "messages_read",
+            updated_message
+          )
+
+          # Insert the read message into recipient's stream
+          {:noreply, stream_insert(socket, :all_messages, updated_message)}
+      end
+    else
+      # Our own message, just insert it
+      {:noreply, stream_insert(socket, :all_messages, message)}
+    end
+  end
+
+  def handle_info(%{event: "messages_read", payload: message}, socket) do
+    # Update sender's UI to show message was read
+    if message.profile_id == socket.assigns.current_profile.id do
+      {:noreply, stream_insert(socket, :all_messages, message)}
+    else
+      {:noreply, socket}
+    end
   end
 
   def handle_info({Presence, {:join, _presence}}, socket) do

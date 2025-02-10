@@ -255,6 +255,28 @@ defmodule Lgb.Chatting do
     Repo.all(query)
   end
 
+  def read_all_messages(profile) do
+    unread_messages =
+      Lgb.Repo.all(
+        from m in Lgb.Chatting.ConversationMessage,
+          where: m.profile_id == ^profile.id,
+          where: m.read == false,
+          order_by: [desc: m.inserted_at],
+          select: m
+      )
+
+    # Mark messages as read in a transaction
+    Lgb.Repo.transaction(fn ->
+      Enum.each(unread_messages, fn message ->
+        message
+        |> Ecto.Changeset.change(%{read: true})
+        |> Lgb.Repo.update!()
+      end)
+
+      unread_messages
+    end)
+  end
+
   def list_conversation_messages_and_metadata(conversation_id, current_profile_id) do
     conversations = get_conversation(conversation_id)
 

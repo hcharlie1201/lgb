@@ -91,7 +91,6 @@ defmodule LgbWeb.ProfileLive.Search do
       |> validate_age_order(params)
       |> validate_weight_order(params)
 
-    IO.inspect(params)
     # Return the form with errors
     to_form(params, errors: errors, action: :validate)
   end

@@ -15,7 +15,6 @@ defmodule LgbWeb.AccountLive.View do
 
       {:ok, portal_metadata} = Lgb.ThirdParty.Stripe.create_stripe_session(params)
       {:ok, subscription_object} = get_stripe_subscription_status(stripe_customer)
-      IO.puts("wtf")
 
       socket =
         assign(socket,

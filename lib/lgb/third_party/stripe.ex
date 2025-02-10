@@ -45,8 +45,6 @@ defmodule Lgb.ThirdParty.Stripe do
   end
 
   def fetch_stripe_subscription(stripe_subscription) do
-    IO.inspect(stripe_subscription)
-
     if is_nil(stripe_subscription) or is_nil(stripe_subscription.subscription_id) do
       {:ok, %{}}
     else
