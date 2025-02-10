@@ -1,12 +1,12 @@
 <.page_align no_padding={true}>
-  <.card class="mb-4 flex h-full h-screen flex-col">
+  <.card class="flex sm:h-[calc(100vh-126px)] md:h-[calc(100vh-64px)] h-[calc(100vh-106px)] flex-col">
     <!-- Chat Header -->
     <.card class="flex items-center justify-between">
       <div class="flex items-center gap-2 align-middle">
         <img
           src={Lgb.Profiles.ProfilePicture.get_picture_url(@other_profile.first_picture)}
           alt="Avatar"
-          class="h-12 w-12 rounded-full object-cover sm:h-16 sm:w-16"
+          class="h-12 w-12 rounded-full object-cover"
         />
         <span class="text-lg font-semibold">
           <.link navigate={~p"/profiles/#{@other_profile.id}"}>
@@ -39,20 +39,22 @@
         <div class={"flex " <> if message.profile.id == @current_profile.id, do: "justify-end", else: "justify-start"}>
           <div class={"max-w-[70%] mx-1 my-1 rounded-3xl p-3 text-sm " <> if message.profile.id == @current_profile.id, do: "bg-green-100", else: "bg-purple-100"}>
             <div class="flex items-end gap-1">
-              <span>{message.content}</span>
-              <span class="text-xs text-gray-500">
-                {Calendar.strftime(message.inserted_at, "%b %d, %I:%M %p")}
-                <span :if={message.profile.id == @current_profile.id} class="ml-1">
-                  <span :if={message.read} class="text-blue-800">✓✓</span>
-                  <span :if={!message.read} class="text-gray-400">✓✓</span>
+              <div class={"flex flex-col " <> if message.profile.id == @current_profile.id, do: "items-end", else: "items-start"}>
+                <span>{message.content}</span>
+                <span class="text-xs font-bold text-gray-500">
+                  {Calendar.strftime(message.inserted_at, "%b %d - %I:%M %p")}
+                  <span :if={message.profile.id == @current_profile.id} class="ml-1">
+                    <span :if={message.read} class="text-blue-800">✓✓</span>
+                    <span :if={!message.read} class="text-gray-400">✓✓</span>
+                  </span>
                 </span>
-              </span>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
-    <.simple_form for={@form} phx-change="validate" phx-submit="send">
+    <.chat_simple_form for={@form} phx-change="validate" phx-submit="send">
       <div class="flex w-full space-x-2 rounded-b-lg bg-white p-4 shadow-sm">
         <.input
           id="one-one-message"
@@ -65,6 +67,6 @@
           Send
         </.button>
       </div>
-    </.simple_form>
+    </.chat_simple_form>
   </.card>
 </.page_align>

@@ -1,70 +1,70 @@
 <.page_align>
-  <.simple_form for={@form} id="search-profile" phx-submit="search" phx-change="validate">
-    <.input
-      type="select"
-      label="min height"
-      field={@form[:min_height_cm]}
-      options={Lgb.Profiles.generate_height_options()}
-      prompt=""
-      name="min_height_cm"
-      multiple={false}
-    />
-    <.input
-      type="select"
-      name="max_height_cm"
-      label="max height"
-      field={@form[:max_height_cm]}
-      options={Lgb.Profiles.generate_height_options()}
-      prompt=""
-      multiple={false}
-    />
-    <.input type="number" name="min_age" label="min age" field={@form[:min_age]} placeholder={25} />
-    <.input type="number" name="max_age" label="max age" field={@form[:max_age]} placeholder={50} />
-    <.input
-      type="number"
-      label="min weight"
-      name="min_weight"
-      field={@form[:min_weight]}
-      placeholder="150 lbs"
-    />
-    <.input
-      type="number"
-      label="maximum weight"
-      name="max_weight"
-      field={@form[:max_weight]}
-      placeholder="250 lbs"
-    />
-    <div>
+  <.profile_simple_form for={@form} id="search-profile" phx-submit="search" phx-change="validate">
       <.input
-        field={@form[:gender]}
-        name="gender"
-        type="radio"
-        value="male"
-        label="Male"
-        checked={@form.params["gender"] == "male"}
+        type="select"
+        label="min height"
+        field={@form[:min_height_cm]}
+        options={Lgb.Profiles.generate_height_options()}
+        prompt=""
+        name="min_height_cm"
+        multiple={false}
       />
       <.input
-        field={@form[:gender]}
-        name="gender"
-        type="radio"
-        value="female"
-        label="Female"
-        checked={@form.params["gender"] == "female"}
+        type="select"
+        name="max_height_cm"
+        label="max height"
+        field={@form[:max_height_cm]}
+        options={Lgb.Profiles.generate_height_options()}
+        prompt=""
+        multiple={false}
+      />
+      <.input type="number" name="min_age" label="min age" field={@form[:min_age]} placeholder={25} />
+      <.input type="number" name="max_age" label="max age" field={@form[:max_age]} placeholder={50} />
+      <.input
+        type="number"
+        label="min weight"
+        name="min_weight"
+        field={@form[:min_weight]}
+        placeholder="150 lbs"
       />
       <.input
-        field={@form[:gender]}
-        name="gender"
-        type="radio"
-        value="non_binary"
-        label="Non Binary"
-        checked={@form.params["gender"] == "non_binary"}
+        type="number"
+        label="maximum weight"
+        name="max_weight"
+        field={@form[:max_weight]}
+        placeholder="250 lbs"
       />
-    </div>
+      <div>
+        <.input
+          field={@form[:gender]}
+          name="gender"
+          type="radio"
+          value="male"
+          label="Male"
+          checked={@form.params["gender"] == "male"}
+        />
+        <.input
+          field={@form[:gender]}
+          name="gender"
+          type="radio"
+          value="female"
+          label="Female"
+          checked={@form.params["gender"] == "female"}
+        />
+        <.input
+          field={@form[:gender]}
+          name="gender"
+          type="radio"
+          value="non_binary"
+          label="Non Binary"
+          checked={@form.params["gender"] == "non_binary"}
+        />
+      </div>
     <:actions>
       <.button :if={@form.errors == []}>Search</.button>
       <.button :if={@form.errors != []} disabled class="cursor-not-allowed">
         Search
       </.button>
     </:actions>
-  </.simple_form>
+  </.profile_simple_form>
 </.page_align>

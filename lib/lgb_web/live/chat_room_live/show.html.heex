@@ -1,20 +1,20 @@
-<.page_align no_padding={true}>
-  <div class="my-4 rounded-lg bg-white">
-    <.header class="pt-4 text-center">
-      <h1 class="text-3xl font-bold text-green-600">Welcome to Chat Room {@chat_room.id}</h1>
+<.general_chatroom_page_align no_padding={true}>
+  <div class=" rounded-lg border bg-white">
+    <.header class="text-center">
+      <h1 class="text-3xl font-bold text-green-600 hidden md:block">Welcome to Chat Room {@chat_room.id}</h1>
       <:subtitle>
         {Enum.count(@streams.presences)} users currently online
       </:subtitle>
     </.header>
   </div>
 
-  <div class="h-[80vh] mt-8 flex flex-col-reverse gap-6 md:flex-row">
-    <.card class="flex-[75%] overflow-scroll">
+  <div class="flex flex-col-reverse md:flex-row h-[calc(100vh-226px)] sm:h-[calc(100vh-246px)] md:h-[calc(100vh-220px)]">
+    <.card class="flex-[75%] overflow-y-scroll">
       <div
         id="chat-messages-container"
         phx-update="stream"
         phx-hook="ScrollBottom"
-        class="h-[50vh] flex-1 overflow-y-auto md:h-[60vh] lg:h-[800px]"
+        class="flex-1 overflow-y-auto"
       >
         <div :for={{dom_id, message} <- @streams.messages} id={dom_id} class="px-3 py-2">
           <div class="flex justify-between">
@@ -32,12 +32,12 @@
       </div>
     </.card>
     
-<!-- Online Users Section -->
-    <.card class="flex-[25%]">
-      <h2 class="mb-4 text-xl font-semibold">Online Users</h2>
-      <div class="h-[800px] overflow-y-auto" id="presence-container" phx-hook="ScrollBottom">
+    <!-- Online Users Section -->
+    <.card class="flex-[10%] sm:flex-[25%]">
+      <h2 class="sm:text-xl font-semibold">Online Users</h2>
+      <div class="overflow-y-auto" id="presence-container" phx-hook="ScrollBottom">
         <.table id="users-online" rows={@streams.presences}>
-          <:col :let={{_presence, %{user: profile}}} label="Name">
+          <:col :let={{_presence, %{user: profile}}} label="">
             {profile.handle}
             {if profile.state do
               "(#{profile.state})"
@@ -49,7 +49,7 @@
   </div>
   
 <!-- Chat Input Form -->
-  <.simple_form for={@form} phx-submit="send_message" phx-change="update_message" class="mt-8">
+  <.general_chat_simple_form for={@form} phx-submit="send_message" phx-change="update_message">
     <.input
       field={@form[:content]}
       label="Chat"
@@ -60,5 +60,5 @@
         Send Message
       </.button>
     </:actions>
-  </.simple_form>
-</.page_align>
+  </.general_chat_simple_form>
+</.general_chatroom_page_align>
