@@ -23,7 +23,7 @@
 }
 
 body {
-    @apply pb-40 font-Inter font-light relative w-full min-h-full text-sm lg:pb-0;
+    @apply font-Inter font-light relative w-full min-h-full text-sm;
     background-image: url("/images/background_image_bibi.webp");
     background-size: cover;
     background-repeat: no-repeat;
@@ -46,7 +46,9 @@ body {
 .collapsible {
     @apply overflow-hidden duration-300;
 }
-
+.loggedinNavLinks {
+    @apply flex p-2 flex-col items-center rounded-lg text-gray-700 transition-colors duration-200 hover:text-colorSecondary hover:bg-purple-50;
+}
 .pricing-card {
     transition: all 0.2s ease-in-out;
 }

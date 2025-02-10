@@ -202,7 +202,7 @@ defmodule LgbWeb.CoreComponents do
   def simple_form(assigns) do
     ~H"""
     <.form :let={f} for={@for} as={@as} {@rest}>
-      <div class="collapsible mt-10 flex flex-col space-y-8 rounded-md bg-white p-6 shadow-md">
+      <div class="collapsible mt-10 flex flex-col space-y-8 rounded-md p-2 bg-white shadow-md">
         {render_slot(@inner_block, f)}
         <div :for={action <- @actions} class="mt-2 flex items-center justify-between gap-6">
           {render_slot(action, f)}
@@ -212,6 +212,74 @@ defmodule LgbWeb.CoreComponents do
     """
   end
 
+  attr :for, :any, required: true, doc: "the datastructure for the form"
+  attr :as, :any, default: nil, doc: "the server side parameter to collect all input under"
+
+  attr :rest, :global,
+    include: ~w(autocomplete name rel action enctype method novalidate target multipart),
+    doc: "the arbitrary HTML attributes to apply to the form tag"
+
+  slot :inner_block, required: true
+  slot :actions, doc: "the slot for form actions, such as a submit button"
+
+  def general_chat_simple_form(assigns) do
+    ~H"""
+    <.form :let={f} for={@for} as={@as} {@rest}>
+      <div class="p-2 flex space-y-8 rounded-md bg-white shadow-md items-center gap-2">
+        {render_slot(@inner_block, f)}
+        <div :for={action <- @actions} class="mt-2 flex items-center justify-between gap-6">
+          {render_slot(action, f)}
+        </div>
+      </div>
+    </.form>
+    """
+  end
+
+  attr :for, :any, required: true, doc: "the datastructure for the form"
+  attr :as, :any, default: nil, doc: "the server side parameter to collect all input under"
+
+  attr :rest, :global,
+    include: ~w(autocomplete name rel action enctype method novalidate target multipart),
+    doc: "the arbitrary HTML attributes to apply to the form tag"
+
+  slot :inner_block, required: true
+  slot :actions, doc: "the slot for form actions, such as a submit button"
+
+  def profile_simple_form(assigns) do
+    ~H"""
+    <.form :let={f} for={@for} as={@as} {@rest}>
+      <div class="collapsible p-2 gap-4 flex flex-col rounded-md bg-white shadow-md">
+        {render_slot(@inner_block, f)}
+        <div :for={action <- @actions} class="flex items-center justify-between gap-6">
+          {render_slot(action, f)}
+        </div>
+      </div>
+    </.form>
+    """
+  end
+
+  attr :for, :any, required: true, doc: "the datastructure for the form"
+  attr :as, :any, default: nil, doc: "the server side parameter to collect all input under"
+
+  attr :rest, :global,
+    include: ~w(autocomplete name rel action enctype method novalidate target multipart),
+    doc: "the arbitrary HTML attributes to apply to the form tag"
+
+  slot :inner_block, required: true
+  slot :actions, doc: "the slot for form actions, such as a submit button"
+
+  def chat_simple_form(assigns) do
+    ~H"""
+    <.form :let={f} for={@for} as={@as} {@rest}>
+      <div class="collapsible flex flex-col rounded-md bg-white shadow-md">
+        {render_slot(@inner_block, f)}
+        <div :for={action <- @actions} class="mt-2 flex items-center justify-between gap-6">
+          {render_slot(action, f)}
+        </div>
+      </div>
+    </.form>
+    """
+  end
   @doc """
   Renders a button.
 
@@ -441,7 +509,7 @@ defmodule LgbWeb.CoreComponents do
         <h1 class="text-lg font-medium leading-8">
           {render_slot(@inner_block)}
         </h1>
-        <p :if={@subtitle != []} class="mt-2 text-sm leading-6">
+        <p :if={@subtitle != []} class="text-sm leading-6">
           {render_slot(@subtitle)}
         </p>
       </div>
@@ -546,6 +614,22 @@ defmodule LgbWeb.CoreComponents do
   def list(assigns) do
     ~H"""
     <div class="mt-14">
+      <dl class="-my-4 divide-y divide-zinc-100">
+        <div :for={item <- @item} class="flex gap-4 py-4 text-sm leading-6 sm:gap-8">
+          <dt class="w-1/4 flex-none text-zinc-500">{item.title}</dt>
+          <dd class="text-zinc-700">{render_slot(item)}</dd>
+        </div>
+      </dl>
+    </div>
+    """
+  end
+
+  slot :item, required: true do
+    attr :title, :string, required: true
+  end
+  def billing_list(assigns) do
+    ~H"""
+    <div>
       <dl class="-my-4 divide-y divide-zinc-100">
         <div :for={item <- @item} class="flex gap-4 py-4 text-sm leading-6 sm:gap-8">
           <dt class="w-1/4 flex-none text-zinc-500">{item.title}</dt>
@@ -696,19 +780,16 @@ defmodule LgbWeb.CoreComponents do
   end
 
   @doc """
-  Page Align
+  Logged in nav
   """
-  slot :inner_block, required: true
-  attr :no_padding, :boolean, default: false
-
-  def page_align(assigns) do
-    ~H"""
-    <div class={["flex min-h-screen flex-col md:flex-row"]}>
+  def signed_in_nav(assigns) do
+  ~H"""
       <!-- Sidebar Navigation -->
-      <nav class={["fixed flex w-full flex-row justify-around border bg-white md:relative md:h-screen md:w-20 md:flex-col md:border-0 md:bg-transparent", "bottom-0 z-10 items-center py-4 md:top-0 md:left-0 md:justify-start"]}>
+      <nav class={["p-0 md:p-2 self-start sticky top-[64px] flex w-full flex-row justify-around bg-white border md:w-20 md:flex-col md:border-0 md:bg-transparent",
+      "z-10 items-center md:justify-start"]}>
         <.link
           navigate={~p"/profiles/current"}
-          class="flex flex-col items-center rounded-lg p-4 text-gray-700 transition-colors duration-200 hover:text-colorSecondary hover:bg-purple-50"
+          class="loggedinNavLinks"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -727,7 +808,7 @@ defmodule LgbWeb.CoreComponents do
           <span class="userNavText mt-1 text-xs">Profile</span>
         </.link>
         <.link
-          class="flex flex-col items-center rounded-lg p-4 text-gray-700 transition-colors duration-200 hover:text-colorSecondary hover:bg-purple-50"
+          class="loggedinNavLinks"
           navigate={~p"/profiles"}
         >
           <svg
@@ -745,7 +826,7 @@ defmodule LgbWeb.CoreComponents do
           <span class="userNavText mt-1 text-xs">Search</span>
         </.link>
         <.link
-          class="flex flex-col items-center rounded-lg p-4 text-gray-700 transition-colors duration-200 hover:text-colorSecondary hover:bg-purple-50"
+          class="loggedinNavLinks"
           navigate={~p"/conversations"}
         >
           <svg
@@ -765,7 +846,7 @@ defmodule LgbWeb.CoreComponents do
           <span class="userNavText mt-1 text-xs">Inbox</span>
         </.link>
         <.link
-          class="flex flex-col items-center rounded-lg p-4 text-gray-700 transition-colors duration-200 hover:text-colorSecondary hover:bg-purple-50"
+          class="loggedinNavLinks"
           navigate={~p"/chat_rooms"}
         >
           <svg
@@ -785,7 +866,7 @@ defmodule LgbWeb.CoreComponents do
           <span class="userNavText mt-1 text-xs">Chatroom</span>
         </.link>
         <.link
-          class="flex flex-col items-center rounded-lg p-4 text-gray-700 transition-colors duration-200 hover:text-colorSecondary hover:bg-purple-50"
+          class="loggedinNavLinks"
           navigate={~p"/shopping/subscriptions"}
         >
           <svg
@@ -805,7 +886,7 @@ defmodule LgbWeb.CoreComponents do
           <span class="userNavText mt-1 text-xs">Premium</span>
         </.link>
         <.link
-          class="flex flex-col items-center rounded-lg p-4 text-gray-700 transition-colors duration-200 hover:text-colorSecondary hover:bg-purple-50"
+          class="loggedinNavLinks"
           href={~p"/account"}
         >
           <svg
@@ -825,13 +906,93 @@ defmodule LgbWeb.CoreComponents do
           <span class="userNavText mt-1 text-xs">Account</span>
         </.link>
       </nav>
+  """
+  end
+
+  @doc """
+  Page Align
+  """
+  slot :inner_block, required: true
+  attr :no_padding, :boolean, default: false
+
+  def page_align(assigns) do
+    ~H"""
+    <div class={["flex min-h-full flex-col md:flex-row"]}>
+      <!-- Sidebar Navigation -->
+      <.signed_in_nav></.signed_in_nav>
       <!-- Main Content -->
       <main class={["flex-1", if(@no_padding,
     do: "p-0",
-    else: "p-4 pb-24 md:px-24 md:pb-4")]}>
+    else: "p-4")]}>
         <div class={[if(@no_padding,
     do: "h-full px-4",
     else: "mx-auto max-w-5xl")]}>
+          {render_slot(@inner_block)}
+        </div>
+      </main>
+    </div>
+    """
+  end
+
+  slot :inner_block, required: true
+  attr :no_padding, :boolean, default: false
+
+  def chatrooms_page_align(assigns) do
+    ~H"""
+    <div class={["flex min-h-full flex-col md:flex-row"]}>
+      <!-- Sidebar Navigation -->
+      <.signed_in_nav></.signed_in_nav>
+      <!-- Main Content -->
+      <main class={["flex-1", if(@no_padding,
+    do: "p-0",
+    else: "p-4")]}>
+        <div class={[if(@no_padding,
+    do: "h-full px-4",
+    else: "mx-auto flex flex-col w-[80vw]")]}>
+          {render_slot(@inner_block)}
+        </div>
+      </main>
+    </div>
+    """
+  end
+
+  slot :inner_block, required: true
+  attr :no_padding, :boolean, default: false
+
+  def profile_page_align(assigns) do
+    ~H"""
+    <div class={["flex min-h-full flex-col md:flex-row"]}>
+      <!-- Sidebar Navigation -->
+      <.signed_in_nav></.signed_in_nav>
+      <!-- Main Content -->
+      <main class={["flex-1", if(@no_padding,
+    do: "p-0",
+    else: "p-4")]}>
+        <div class={[if(@no_padding,
+    do: "h-full px-4",
+    else: "mx-auto flex flex-col w-[80vw]")]}>
+          {render_slot(@inner_block)}
+        </div>
+      </main>
+    </div>
+    """
+  end
+
+  slot :inner_block, required: true
+  attr :no_padding, :boolean, default: false
+
+  def general_chatroom_page_align(assigns) do
+    ~H"""
+    <div class={["flex min-h-full flex-col md:flex-row"]}>
+      <!-- Sidebar Navigation -->
+      <.signed_in_nav></.signed_in_nav>
+      <!-- Main Content -->
+      <main class={["flex-1", if(@no_padding,
+    do: "p-0",
+    else: "p-4")]}>
+        <div class={[if(@no_padding,
+    do: "px-4",
+    else: "mx-auto flex flex-col w-[80vw]")]}>
           {render_slot(@inner_block)}
         </div>
       </main>
@@ -883,7 +1044,7 @@ defmodule LgbWeb.CoreComponents do
 
   def card(assigns) do
     ~H"""
-    <div class={["rounded-lg", @class, if(@no_background, do: "border bg-white p-4 ", else: "")]}>
+    <div class={["rounded-lg", @class, if(@no_background, do: "border bg-white p-2 ", else: "")]}>
       {render_slot(@inner_block)}
     </div>
     """
@@ -911,7 +1072,7 @@ defmodule LgbWeb.CoreComponents do
               </.link>
             </span>
           </div>
-          
+
     <!-- Navigation Links -->
           <div class="menu cursor-pointer" onclick="expandNavigation()">
             <svg
@@ -950,7 +1111,7 @@ defmodule LgbWeb.CoreComponents do
               </a>
             </div>
           </div>
-          
+
     <!-- Login Button
           <.link
             class="hidden"
