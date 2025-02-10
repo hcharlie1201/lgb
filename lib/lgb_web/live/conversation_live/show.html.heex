@@ -38,7 +38,16 @@
       <div :for={{dom_id, message} <- @streams.all_messages} id={dom_id}>
         <div class={"flex " <> if message.profile.id == @current_profile.id, do: "justify-end", else: "justify-start"}>
           <div class={"max-w-[70%] mx-1 my-1 rounded-3xl p-3 text-sm " <> if message.profile.id == @current_profile.id, do: "bg-green-100", else: "bg-purple-100"}>
-            {message.content} - {Calendar.strftime(message.inserted_at, "%b %d, %I:%M %p")}
+            <div class="flex items-end gap-1">
+              <span>{message.content}</span>
+              <span class="text-xs text-gray-500">
+                {Calendar.strftime(message.inserted_at, "%b %d, %I:%M %p")}
+                <span :if={message.profile.id == @current_profile.id} class="ml-1">
+                  <span :if={message.read} class="text-blue-800">✓✓</span>
+                  <span :if={!message.read} class="text-gray-400">✓✓</span>
+                </span>
+              </span>
+            </div>
           </div>
         </div>
       </div>

@@ -27,6 +27,7 @@ defmodule LgbWeb.ConversationLive.Show do
       end
 
     other_profile = Repo.preload(other_profile, [:first_picture, :user])
+    Lgb.Chatting.read_all_messages(other_profile)
 
     all_messages =
       Chatting.list_conversation_messages_by_page(conversation.id, socket.assigns.page, @per_page)
@@ -118,6 +119,14 @@ defmodule LgbWeb.ConversationLive.Show do
   end
 
   def handle_info(%{event: "new_message", payload: message}, socket) do
+    # Only mark as read if the message is from the other person
+    if message.profile_id == socket.assigns.other_profile.id do
+      # Mark the message as read since the current user is viewing it
+      message
+      |> Ecto.Changeset.change(%{read: true})
+      |> Repo.update()
+    end
+
     {:noreply, stream_insert(socket, :all_messages, message)}
   end
 
