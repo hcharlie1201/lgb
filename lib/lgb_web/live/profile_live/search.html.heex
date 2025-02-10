@@ -34,6 +34,32 @@
       field={@form[:max_weight]}
       placeholder="250 lbs"
     />
+    <div>
+      <.input
+        field={@form[:gender]}
+        name="gender"
+        type="radio"
+        value="male"
+        label="Male"
+        checked={@form.params["gender"] == "male"}
+      />
+      <.input
+        field={@form[:gender]}
+        name="gender"
+        type="radio"
+        value="female"
+        label="Female"
+        checked={@form.params["gender"] == "female"}
+      />
+      <.input
+        field={@form[:gender]}
+        name="gender"
+        type="radio"
+        value="non_binary"
+        label="Non Binary"
+        checked={@form.params["gender"] == "non_binary"}
+      />
+    </div>
     <:actions>
       <.button :if={@form.errors == []}>Search</.button>
       <.button :if={@form.errors != []} disabled class="cursor-not-allowed">
