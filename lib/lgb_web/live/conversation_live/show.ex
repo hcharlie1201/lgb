@@ -119,15 +119,35 @@ defmodule LgbWeb.ConversationLive.Show do
   end
 
   def handle_info(%{event: "new_message", payload: message}, socket) do
-    # Only mark as read if the message is from the other person
     if message.profile_id == socket.assigns.other_profile.id do
-      # Mark the message as read since the current user is viewing it
-      message
-      |> Ecto.Changeset.change(%{read: true})
-      |> Repo.update()
-    end
+      # Mark as read since recipient is viewing it
+      case message
+           |> Ecto.Changeset.change(%{read: true})
+           |> Repo.update() do
+        {:ok, updated_message} ->
+          # Broadcast the read status back to sender
+          LgbWeb.Endpoint.broadcast(
+            "conversation:#{message.conversation_id}",
+            "messages_read",
+            updated_message
+          )
 
-    {:noreply, stream_insert(socket, :all_messages, message)}
+          # Insert the read message into recipient's stream
+          {:noreply, stream_insert(socket, :all_messages, updated_message)}
+      end
+    else
+      # Our own message, just insert it
+      {:noreply, stream_insert(socket, :all_messages, message)}
+    end
+  end
+
+  def handle_info(%{event: "messages_read", payload: message}, socket) do
+    # Update sender's UI to show message was read
+    if message.profile_id == socket.assigns.current_profile.id do
+      {:noreply, stream_insert(socket, :all_messages, message)}
+    else
+      {:noreply, socket}
+    end
   end
 
   def handle_info({Presence, {:join, _presence}}, socket) do
