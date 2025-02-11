@@ -4,7 +4,9 @@ defmodule LgbWeb.ProfileLive.Search do
   alias Lgb.Profiles.Profile
 
   def mount(_params, _session, socket) do
-    {:ok, assign(socket, :form, to_form(%{}))}
+    profile = Lgb.Accounts.User.current_profile(socket.assigns.current_user)
+
+    {:ok, assign(socket, form: to_form(%{}), profile: profile)}
   end
 
   def handle_event("validate", params, socket) do
@@ -23,7 +25,9 @@ defmodule LgbWeb.ProfileLive.Search do
       }
 
       profile = Lgb.Accounts.User.current_profile(socket.assigns.current_user)
-      query = Profiles.get_other_profiles_distance(profile)
+
+      query =
+        Profiles.get_other_profiles_distance(profile, params["latitude"], params["longitude"])
 
       case Flop.validate_and_run(query, flop_params, for: Profile) do
         {:ok, {_, metas}} ->
@@ -36,6 +40,20 @@ defmodule LgbWeb.ProfileLive.Search do
     else
       {:noreply, assign(socket, form: form)}
     end
+  end
+
+  def handle_event("map_clicked", %{"lat" => lat, "lng" => lng}, socket) do
+    form = socket.assigns.form
+
+    updated_params =
+      Map.merge(form.params, %{
+        "latitude" => lat,
+        "longitude" => lng
+      })
+
+    form = to_form(updated_params)
+
+    {:noreply, assign(socket, form: form)}
   end
 
   defp validate_form(params) do

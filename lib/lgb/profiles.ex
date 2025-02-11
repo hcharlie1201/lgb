@@ -177,9 +177,17 @@ defmodule Lgb.Profiles do
     end)
   end
 
-  def get_other_profiles_distance(profile) do
+  def get_other_profiles_distance(profile, lat \\ nil, lng \\ nil) do
+    location_point =
+      if lat != nil and lng != nil do
+        %Geo.Point{coordinates: {String.to_float(lat), String.to_float(lng)}, srid: 4326}
+      else
+        profile.geolocation
+      end
+
+    IO.inspect(location_point)
+
     from(p in Profile,
-      # Add preload here
       preload: [:profile_pictures, :user],
       select_merge: %{
         distance:
@@ -187,7 +195,7 @@ defmodule Lgb.Profiles do
             fragment(
               "ST_Distance(?, ?)",
               p.geolocation,
-              ^profile.geolocation
+              ^location_point
             ),
             :distance
           )
