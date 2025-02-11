@@ -134,6 +134,10 @@
     <% end %>
     <%!-- <script defer phx-track-static type="text/javascript" src={~p"/assets/main.js"} /> --%>
     <script>
+    $(document).ready(function(){
+      const conversationMessages = $("#conversation-messages")
+    conversationMessages.scrollTop(conversationMessages[0].scrollHeight);
+});
       let ogHeight
       const navs = $('.navs')
       function expandNavigation() {

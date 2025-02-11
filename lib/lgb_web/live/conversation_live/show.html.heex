@@ -32,7 +32,7 @@
       id="conversation-messages"
       phx-update="stream"
       phx-viewport-top="load_more"
-      class="h-[800px] flex-1 overflow-y-auto"
+      class="h-full flex-1 overflow-y-auto"
       phx-hook="ScrollBottom"
     >
       <div :for={{dom_id, message} <- @streams.all_messages} id={dom_id}>
