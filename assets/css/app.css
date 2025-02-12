@@ -60,3 +60,7 @@ body {
 .premium-title {
     @apply text-2xl font-medium text-gray-900 mb-4 font-Merriweather;
 }
+
+.unread-message {
+    @apply min-w-5 bg-colorSecondary flex h-5 items-center justify-center rounded-full px-1.5 text-xs font-medium text-white
+}

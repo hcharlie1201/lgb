@@ -15,6 +15,7 @@ defmodule LgbWeb.ConversationLive.Index do
 
     {:ok,
      socket
+     |> assign(:current_profile, profile)
      |> assign(:search_query, "")
      |> stream(:conversations, transformed_conversations)}
   end

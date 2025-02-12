@@ -1,21 +1,22 @@
 <.general_chatroom_page_align no_padding={true}>
   <div class=" rounded-lg border bg-white">
     <.header class="text-center">
-      <h1 class="text-3xl font-bold text-green-600 hidden md:block">Welcome to Chat Room {@chat_room.id}</h1>
+      <h1 class="hidden text-3xl font-bold text-green-600 md:block">
+        Welcome to Chat Room {@chat_room.id}
+      </h1>
       <:subtitle>
         {Enum.count(@streams.presences)} users currently online
       </:subtitle>
     </.header>
   </div>
 
-  <div class="flex flex-col-reverse md:flex-row h-[calc(100vh-226px)] sm:h-[calc(100vh-246px)] md:h-[calc(100vh-220px)]">
-    <.card class="flex-[75%] overflow-y-scroll">
-      <div
-        id="chat-messages-container"
-        phx-update="stream"
-        phx-hook="ScrollBottom"
-        class="flex-1 overflow-y-auto"
-      >
+  <div class="h-[calc(100vh-226px)] flex flex-col-reverse sm:h-[calc(100vh-246px)] md:h-[calc(100vh-220px)] md:flex-row">
+    <section
+      id="chat-messages-container-parent"
+      class="flex-[75%] overflow-y-scroll rounded-lg border bg-white p-2"
+      phx-hook="ScrollBottom"
+    >
+      <div id="chat-messages-container" phx-update="stream" class="flex-1 overflow-y-auto">
         <div :for={{dom_id, message} <- @streams.messages} id={dom_id} class="px-3 py-2">
           <div class="flex justify-between">
             <div>
@@ -30,12 +31,12 @@
           </div>
         </div>
       </div>
-    </.card>
+    </section>
     
-    <!-- Online Users Section -->
+<!-- Online Users Section -->
     <.card class="flex-[10%] sm:flex-[25%]">
-      <h2 class="sm:text-xl font-semibold">Online Users</h2>
-      <div class="overflow-y-auto" id="presence-container" phx-hook="ScrollBottom">
+      <h2 class="font-semibold sm:text-xl">Online Users</h2>
+      <div class="overflow-y-auto" id="presence-container">
         <.table id="users-online" rows={@streams.presences}>
           <:col :let={{_presence, %{user: profile}}} label="">
             {profile.handle}
