@@ -177,22 +177,31 @@ defmodule Lgb.Profiles do
     end)
   end
 
-  def get_other_profiles_distance(profile) do
-    from(p in Profile,
-      # Add preload here
-      preload: [:profile_pictures, :user],
-      select_merge: %{
-        distance:
-          selected_as(
-            fragment(
-              "ST_Distance(?, ?)",
-              p.geolocation,
-              ^profile.geolocation
-            ),
-            :distance
-          )
-      }
-    )
+  def get_other_profiles_distance(profile, lat \\ "", lng \\ "") do
+    location_point =
+      if lat != "" and lng != "" do
+        %Geo.Point{coordinates: {String.to_float(lat), String.to_float(lng)}, srid: 4326}
+      else
+        profile.geolocation
+      end
+
+    query =
+      from(p in Profile,
+        preload: [:profile_pictures, :user],
+        select_merge: %{
+          distance:
+            selected_as(
+              fragment(
+                "ST_DistanceSphere(?, ?)",
+                p.geolocation,
+                ^location_point
+              ),
+              :distance
+            )
+        }
+      )
+
+    query
   end
 
   def create_filter(params) do
@@ -259,7 +268,7 @@ defmodule Lgb.Profiles do
             distance:
               selected_as(
                 fragment(
-                  "ST_Distance(?, ?)",
+                  "ST_DistanceSphere(?, ?)",
                   p.geolocation,
                   ^profile.geolocation
                 ),

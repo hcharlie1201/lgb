@@ -1,65 +1,87 @@
 <.page_align>
   <.profile_simple_form for={@form} id="search-profile" phx-submit="search" phx-change="validate">
+    <.input
+      type="select"
+      label="min height"
+      field={@form[:min_height_cm]}
+      options={Lgb.Profiles.generate_height_options()}
+      prompt=""
+      name="min_height_cm"
+      multiple={false}
+    />
+    <.input
+      type="select"
+      name="max_height_cm"
+      label="max height"
+      field={@form[:max_height_cm]}
+      options={Lgb.Profiles.generate_height_options()}
+      prompt=""
+      multiple={false}
+    />
+    <.input type="number" name="min_age" label="min age" field={@form[:min_age]} placeholder={25} />
+    <.input type="number" name="max_age" label="max age" field={@form[:max_age]} placeholder={50} />
+    <.input
+      type="number"
+      label="min weight"
+      name="min_weight"
+      field={@form[:min_weight]}
+      placeholder="150 lbs"
+    />
+    <.input
+      type="number"
+      label="maximum weight"
+      name="max_weight"
+      field={@form[:max_weight]}
+      placeholder="250 lbs"
+    />
+    <div>
       <.input
-        type="select"
-        label="min height"
-        field={@form[:min_height_cm]}
-        options={Lgb.Profiles.generate_height_options()}
-        prompt=""
-        name="min_height_cm"
-        multiple={false}
+        field={@form[:gender]}
+        name="gender"
+        type="radio"
+        value="male"
+        label="Male"
+        checked={@form.params["gender"] == "male"}
       />
       <.input
-        type="select"
-        name="max_height_cm"
-        label="max height"
-        field={@form[:max_height_cm]}
-        options={Lgb.Profiles.generate_height_options()}
-        prompt=""
-        multiple={false}
-      />
-      <.input type="number" name="min_age" label="min age" field={@form[:min_age]} placeholder={25} />
-      <.input type="number" name="max_age" label="max age" field={@form[:max_age]} placeholder={50} />
-      <.input
-        type="number"
-        label="min weight"
-        name="min_weight"
-        field={@form[:min_weight]}
-        placeholder="150 lbs"
+        field={@form[:gender]}
+        name="gender"
+        type="radio"
+        value="female"
+        label="Female"
+        checked={@form.params["gender"] == "female"}
       />
       <.input
-        type="number"
-        label="maximum weight"
-        name="max_weight"
-        field={@form[:max_weight]}
-        placeholder="250 lbs"
+        field={@form[:gender]}
+        name="gender"
+        type="radio"
+        value="non_binary"
+        label="Non Binary"
+        checked={@form.params["gender"] == "non_binary"}
       />
+    </div>
+    <div class="flex">
       <div>
-        <.input
-          field={@form[:gender]}
-          name="gender"
-          type="radio"
-          value="male"
-          label="Male"
-          checked={@form.params["gender"] == "male"}
-        />
-        <.input
-          field={@form[:gender]}
-          name="gender"
-          type="radio"
-          value="female"
-          label="Female"
-          checked={@form.params["gender"] == "female"}
-        />
-        <.input
-          field={@form[:gender]}
-          name="gender"
-          type="radio"
-          value="non_binary"
-          label="Non Binary"
-          checked={@form.params["gender"] == "non_binary"}
-        />
+        explore
       </div>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 20 20"
+        fill="currentColor"
+        class="size-5"
+      >
+        <path d="M3.105 2.288a.75.75 0 0 0-.826.95l1.414 4.926A1.5 1.5 0 0 0 5.135 9.25h6.115a.75.75 0 0 1 0 1.5H5.135a1.5 1.5 0 0 0-1.442 1.086l-1.414 4.926a.75.75 0 0 0 .826.95 28.897 28.897 0 0 0 15.293-7.155.75.75 0 0 0 0-1.114A28.897 28.897 0 0 0 3.105 2.288Z" />
+      </svg>
+    </div>
+    <div
+      phx-hook="Map"
+      class="z-0 h-96 rounded-lg shadow-md"
+      id="mapid"
+      phx-update="ignore"
+      data-geo={if @profile.geolocation, do: Geo.WKT.encode!(@profile.geolocation), else: ""}
+    />
+    <.input type="hidden" name="latitude" field={@form[:latitude]} />
+    <.input type="hidden" name="longitude" field={@form[:longitude]} />
     <:actions>
       <.button :if={@form.errors == []}>Search</.button>
       <.button :if={@form.errors != []} disabled class="cursor-not-allowed">
