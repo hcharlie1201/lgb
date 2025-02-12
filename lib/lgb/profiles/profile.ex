@@ -28,6 +28,7 @@ defmodule Lgb.Profiles.Profile do
     field :geolocation, Geo.PostGIS.Geometry
     field :distance, :float, virtual: true
     field :gender, Ecto.Enum, values: [:male, :female, :non_binary]
+    field :uuid, Ecto.UUID
 
     timestamps(type: :utc_datetime)
   end

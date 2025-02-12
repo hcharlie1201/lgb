@@ -17,6 +17,7 @@ defmodule LgbWeb.ConversationLive.Index do
      socket
      |> assign(:current_profile, profile)
      |> assign(:search_query, "")
+     |> stream_configure(:conversations, dom_id: &"conversations-#{&1.uuid}")
      |> stream(:conversations, transformed_conversations)}
   end
 
