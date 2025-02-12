@@ -403,6 +403,27 @@ defmodule Lgb.Chatting do
     Repo.all(query)
   end
 
+  def count_unread_messages(conversation_id, current_profile_id) do
+    from(m in ConversationMessage,
+      where: m.conversation_id == ^conversation_id,
+      where: m.profile_id != ^current_profile_id,
+      where: m.read == false
+    )
+    |> Repo.aggregate(:count)
+  end
+
+  def count_unread_messages(current_profile_id) do
+    from(m in ConversationMessage,
+      join: c in Conversation,
+      on: m.conversation_id == c.id,
+      where: m.profile_id != ^current_profile_id,
+      where: m.read == false,
+      where:
+        c.sender_profile_id == ^current_profile_id or c.receiver_profile_id == ^current_profile_id
+    )
+    |> Repo.aggregate(:count)
+  end
+
   def list_conversations(profile, search_params) do
     search_pattern = "%#{search_params}%"
 
@@ -441,6 +462,15 @@ defmodule Lgb.Chatting do
       |> Map.put(:other_profile, other_profile)
       |> Map.put(:last_message, last_message)
     end)
+    |> Enum.sort_by(
+      fn conv ->
+        case conv.last_message do
+          nil -> DateTime.from_naive!(~N[1970-01-01 00:00:00], "Etc/UTC")
+          message -> message.updated_at
+        end
+      end,
+      :desc
+    )
   end
 
   def get_profile_picture(profile) do

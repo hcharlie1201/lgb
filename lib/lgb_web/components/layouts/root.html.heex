@@ -134,16 +134,12 @@
     <% end %>
     <%!-- <script defer phx-track-static type="text/javascript" src={~p"/assets/main.js"} /> --%>
     <script>
-    $(document).ready(function(){
-      const conversationMessages = $("#conversation-messages")
-    conversationMessages.scrollTop(conversationMessages[0].scrollHeight);
-});
       let ogHeight
       const navs = $('.navs')
       function expandNavigation() {
           if(navs.width() == 0){
               $('.navs').css('width', '100vw');
-              
+
               console.log('open')
           }
       }
@@ -158,7 +154,7 @@
           isResizing = true
           if ($(window).width() >= 625) {
               navs.css('width', 'max-content');
-          } 
+          }
           else {
               navs.css('width', '0px');
           }
@@ -177,7 +173,7 @@
               parent.style.height = ogHeight + "px"
               parent.style.paddingTop = "24px"
               parent.style.paddingBottom = "24px"
-              
+
           }
         }
     </script>

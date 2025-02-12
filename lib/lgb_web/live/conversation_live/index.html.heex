@@ -1,45 +1,44 @@
 <.chatrooms_page_align>
-    <div class="mb-4">
-      <div class="relative">
-        <div class="pointer-events-none absolute inset-y-0 left-3 flex items-center">
-          <.icon name="hero-magnifying-glass" class="h-5 w-5 text-gray-400" />
-        </div>
-        <input
-          type="text"
-          placeholder="Search names..."
-          phx-keyup="search"
-          phx-debounce="300"
-          value={@search_query}
-          class="w-full rounded-lg border border-gray-200 bg-white py-3 pr-4 pl-10 text-gray-900 transition-all placeholder:text-gray-400 focus:border-purple-200 focus:outline-none focus:ring-2 focus:ring-purple-100"
-        />
+  <div class="mb-4">
+    <div class="relative">
+      <div class="pointer-events-none absolute inset-y-0 left-3 flex items-center">
+        <.icon name="hero-magnifying-glass" class="h-5 w-5 text-gray-400" />
       </div>
+      <input
+        type="text"
+        placeholder="Search names..."
+        phx-keyup="search"
+        phx-debounce="300"
+        value={@search_query}
+        class="w-full rounded-lg border border-gray-200 bg-white py-3 pr-4 pl-10 text-gray-900 transition-all placeholder:text-gray-400 focus:border-purple-200 focus:outline-none focus:ring-2 focus:ring-purple-100"
+      />
     </div>
-  
-    <div id="conversation" phx-update="stream">
-      <div :for={{dom_id, conversation} <- @streams.conversations} id={dom_id}>
-        <.link patch={~p"/conversations/#{conversation.id}"}>
-          <.list_tile
-            title={conversation.other_profile.handle}
-            subtitle={conversation.last_message && conversation.last_message.content}
-            picture_url={
-              Lgb.Profiles.ProfilePicture.get_picture_url(conversation.other_profile.first_picture)
-            }
-            read={conversation.last_message && conversation.last_message.read}
-          >
-            <:trailer>
-            <!--time-->
-              <div class="flex w-full items-center justify-between gap-2 sm:w-auto sm:justify-end">
-                <span class="text-sm text-gray-500 sm:text-base">
-                  {if conversation.last_message do
-                    Calendar.strftime(conversation.last_message.inserted_at, "%I:%M %p")
-                  else
-                    "No messages yet"
-                  end}
-                </span>
-              </div>
-            </:trailer>
-          </.list_tile>
-        </.link>
-      </div>
+  </div>
+
+  <div id="conversation" phx-update="stream">
+    <div :for={{dom_id, conversation} <- @streams.conversations} id={dom_id}>
+      <.link patch={~p"/conversations/#{conversation.id}"}>
+        <.list_tile
+          title={conversation.other_profile.handle}
+          subtitle={conversation.last_message && conversation.last_message.content}
+          picture_url={
+            Lgb.Profiles.ProfilePicture.get_picture_url(conversation.other_profile.first_picture)
+          }
+          unread_messages={Chatting.count_unread_messages(conversation.id, @current_profile.id)}
+        >
+          <:trailer>
+            <div class="flex w-full items-center justify-between gap-2 sm:w-auto sm:justify-end">
+              <span class="text-sm text-gray-500 sm:text-base">
+                {if conversation.last_message do
+                  Calendar.strftime(conversation.last_message.inserted_at, "%I:%M %p")
+                else
+                  "No messages yet"
+                end}
+              </span>
+            </div>
+          </:trailer>
+        </.list_tile>
+      </.link>
     </div>
+  </div>
 </.chatrooms_page_align>

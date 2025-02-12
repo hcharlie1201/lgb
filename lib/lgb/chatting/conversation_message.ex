@@ -16,5 +16,11 @@ defmodule Lgb.Chatting.ConversationMessage do
     conversation_message
     |> cast(attrs, [:content, :read, :profile_id, :conversation_id])
     |> validate_required([:profile_id, :conversation_id])
+    |> validate_required([:content])
+  end
+
+  def typing_changeset(conversation_message, attrs) do
+    conversation_message
+    |> cast(attrs, [:content])
   end
 end
