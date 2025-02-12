@@ -51,7 +51,7 @@ defmodule LgbWeb.ConversationLiveTest do
              |> render_submit()
 
       html = render(show_live)
-      assert html =~ "Send"
+      assert html =~ "Hello!"
     end
   end
 end

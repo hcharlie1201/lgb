@@ -34,7 +34,7 @@ defmodule LgbWeb.ConversationLive.Show do
     all_messages =
       Chatting.list_conversation_messages_by_page(conversation.id, socket.assigns.page, @per_page)
 
-    topic = "conversation:#{id}"
+    topic = "conversation:#{conversation.id}"
     if connected?(socket), do: LgbWeb.Endpoint.subscribe(topic)
 
     {:noreply,
