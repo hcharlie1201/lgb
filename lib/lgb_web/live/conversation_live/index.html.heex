@@ -17,7 +17,7 @@
 
   <div id="conversation" phx-update="stream">
     <div :for={{dom_id, conversation} <- @streams.conversations} id={dom_id}>
-      <.link patch={~p"/conversations/#{conversation.id}"}>
+      <.link patch={~p"/conversations/#{conversation.uuid}"}>
         <.list_tile
           title={conversation.other_profile.handle}
           subtitle={conversation.last_message && conversation.last_message.content}

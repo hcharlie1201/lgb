@@ -1179,7 +1179,7 @@ defmodule LgbWeb.CoreComponents do
     >
       <div class="relative">
         <.live_component
-          id={@prefix_id <> "#{@profile.id}"}
+          id={@prefix_id <> "#{@profile.uuid}"}
           module={LgbWeb.Components.Carousel}
           uploaded_files={@profile.profile_pictures}
           length={1}

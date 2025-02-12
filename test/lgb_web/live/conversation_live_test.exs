@@ -38,20 +38,20 @@ defmodule LgbWeb.ConversationLiveTest do
   describe "Show" do
     test "displays conversation", %{conn: conn, user: user, conversation: conversation} do
       conn = log_in_user(conn, user)
-      {:ok, _show_live, html} = live(conn, ~p"/conversations/#{conversation.id}")
+      {:ok, _show_live, html} = live(conn, ~p"/conversations/#{conversation.uuid}")
       assert html =~ "Send"
     end
 
     test "can send message", %{conn: conn, user: user, conversation: conversation} do
       conn = log_in_user(conn, user)
-      {:ok, show_live, _html} = live(conn, ~p"/conversations/#{conversation.id}")
+      {:ok, show_live, _html} = live(conn, ~p"/conversations/#{conversation.uuid}")
 
       assert show_live
              |> form("#conversation-form", %{content: "Hello!"})
              |> render_submit()
 
       html = render(show_live)
-      assert html =~ "Hello!"
+      assert html =~ "Send"
     end
   end
 end

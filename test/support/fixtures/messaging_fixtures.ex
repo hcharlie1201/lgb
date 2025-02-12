@@ -12,7 +12,8 @@ defmodule Lgb.MessagingFixtures do
       attrs
       |> Enum.into(%{
         sender_profile_id: sender_profile.id,
-        receiver_profile_id: receiver_profile.id
+        receiver_profile_id: receiver_profile.id,
+        uuid: Ecto.UUID.generate()
       })
       |> Lgb.Chatting.create_conversation()
 
