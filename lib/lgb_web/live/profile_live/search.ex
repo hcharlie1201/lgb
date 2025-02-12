@@ -31,7 +31,12 @@ defmodule LgbWeb.ProfileLive.Search do
 
       case Flop.validate_and_run(query, flop_params, for: Profile) do
         {:ok, {_, metas}} ->
-          path = Flop.Phoenix.build_path(~p"/profiles/results", metas)
+          path =
+            Flop.Phoenix.build_path(
+              ~p"/profiles/results?lat=#{params["latitude"]}&lng=#{params["longitude"]}",
+              metas
+            )
+
           {:noreply, push_navigate(socket, to: path)}
 
         {:error, _} ->
