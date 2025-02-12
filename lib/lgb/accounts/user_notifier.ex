@@ -8,7 +8,7 @@ defmodule Lgb.Accounts.UserNotifier do
     email =
       new()
       |> to(recipient)
-      |> from({"Lgb", "charlie@bii-bi.com"})
+      |> from({"BiBi", "charles@bii-bi.com"})
       |> put_provider_option(:template_id, template_id)
       |> put_provider_option(:template_model, %{
         invite_sender_name: "Charlie",
