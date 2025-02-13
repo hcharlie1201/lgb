@@ -1,7 +1,13 @@
 <.page_align>
-  <div class="grid grid-cols-1 gap-3 lg:grid-cols-3">
+  <div class="display-grid">
     <%= for profile <- @profiles do %>
-      <.profile_preview profile={profile} />
+      <.live_component
+        module={LgbWeb.Components.ProfilePreview}
+        profile={profile}
+        current_user={@current_user}
+        prefix_id="results"
+        id={profile.id}
+      />
     <% end %>
   </div>
   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>

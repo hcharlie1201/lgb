@@ -9,7 +9,7 @@
           class="h-12 w-12 rounded-full object-cover"
         />
         <span class="text-lg font-semibold">
-          <.link navigate={~p"/profiles/#{@other_profile.id}"}>
+          <.link navigate={~p"/profiles/#{@other_profile.uuid}"}>
             <.name_with_online_activity profile={@other_profile} primary={false} />
           </.link>
         </span>

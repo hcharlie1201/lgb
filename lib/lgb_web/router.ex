@@ -78,6 +78,8 @@ defmodule LgbWeb.Router do
       live "/chat_rooms", ChatRoomLive.Index, :index
       live "/chat_rooms/:id", ChatRoomLive.Show, :show
 
+      live "/starred", StarredLive
+
       scope "/profiles", ProfileLive do
         live "/current", MyProfile
         live "/", Search

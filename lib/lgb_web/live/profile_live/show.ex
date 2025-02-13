@@ -25,6 +25,7 @@ defmodule LgbWeb.ProfileLive.Show do
     {:noreply,
      socket
      |> assign(:profile, profile)
+     |> assign(:distance, Lgb.Profiles.calculate_distance(profile, current_profile))
      |> assign(:uploaded_files, Profiles.list_profile_pictures(profile))}
   end
 

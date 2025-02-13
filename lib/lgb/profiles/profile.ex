@@ -13,9 +13,10 @@ defmodule Lgb.Profiles.Profile do
   }
 
   schema "profiles" do
+    has_many :messages, Lgb.Chatting.Message
     has_many :profile_pictures, Lgb.Profiles.ProfilePicture
     has_one :first_picture, Lgb.Profiles.ProfilePicture, foreign_key: :profile_id
-    has_many :messages, Lgb.Chatting.Message
+    has_many :starred_profiles, Lgb.Profiles.Starred
     belongs_to :user, Lgb.Accounts.User
     field :handle, :string
     field :state, :string

@@ -4,6 +4,7 @@ defmodule Lgb.Profiles do
   """
 
   import Ecto.Query, warn: false
+  alias Lgb.Profiles.Starred
   alias Lgb.Repo
 
   alias Lgb.Profiles.Profile
@@ -25,6 +26,62 @@ defmodule Lgb.Profiles do
     end
   end
 
+  def list_starred_profile(profile) do
+    query =
+      from p in Profile,
+        join: starred in Starred,
+        on: starred.starred_profile_id == p.id,
+        # This is correct - finds stars by this profile
+        where: starred.profile_id == ^profile.id,
+        select_merge: %{
+          distance:
+            selected_as(
+              fragment(
+                "ST_DistanceSphere(?, ?)",
+                p.geolocation,
+                ^profile.geolocation
+              ),
+              :distance
+            )
+        },
+        order_by: [asc: selected_as(:distance)],
+        preload: [:profile_pictures, :user]
+
+    Repo.all(query)
+  end
+
+  def create_starred_profile(attr) do
+    Starred.changeset(%Starred{}, attr)
+    |> Repo.insert()
+  end
+
+  def profile_starred?(profile_id, starred_profile_id) do
+    Repo.exists?(
+      from s in Starred,
+        where: s.profile_id == ^profile_id and s.starred_profile_id == ^starred_profile_id
+    )
+  end
+
+  def toggle_star(profile_id, starred_profile_id) do
+    case profile_starred?(profile_id, starred_profile_id) do
+      true ->
+        # Delete the star
+        Repo.delete_all(
+          from s in Starred,
+            where: s.profile_id == ^profile_id and s.starred_profile_id == ^starred_profile_id
+        )
+
+        {:ok, nil}
+
+      false ->
+        # Create the star
+        create_starred_profile(%{
+          profile_id: profile_id,
+          starred_profile_id: starred_profile_id
+        })
+    end
+  end
+
   @doc """
   Gets a single profile.
 
@@ -39,7 +96,22 @@ defmodule Lgb.Profiles do
       ** (Ecto.NoResultsError)
 
   """
-  def get_profile!(id), do: Repo.get!(Profile, id)
+  def get_profile!(id) when is_integer(id), do: Repo.get!(Profile, id)
+
+  def get_profile!(id) when is_binary(id) do
+    # If it's a UUID string
+    case Ecto.UUID.cast(id) do
+      {:ok, uuid} ->
+        query =
+          from p in Profile,
+            where: p.uuid == ^uuid
+
+        Repo.one(query)
+
+      :error ->
+        nil
+    end
+  end
 
   @doc """
   Creates a profile.
@@ -241,7 +313,7 @@ defmodule Lgb.Profiles do
     |> Enum.reject(fn {_, value} -> value in [nil, ""] end)
   end
 
-  def find_global_users(limit) do
+  def find_global_users(limit, profile) do
     query =
       from p in Profile,
         # # Ensure they have a picture
@@ -249,6 +321,17 @@ defmodule Lgb.Profiles do
         # # Only active profiles
         # where: p.active == true,
         # Random ordering
+        select_merge: %{
+          distance:
+            selected_as(
+              fragment(
+                "ST_DistanceSphere(?, ?)",
+                p.geolocation,
+                ^profile.geolocation
+              ),
+              :distance
+            )
+        },
         order_by: fragment("RANDOM()"),
         # Adjust number as needed
         limit: ^limit,
@@ -311,6 +394,21 @@ defmodule Lgb.Profiles do
       miles = distance / 1609.34
       Float.round(miles, 2)
     end
+  end
+
+  def calculate_distance(profile, profile_two) do
+    query =
+      from p in Lgb.Profiles.Profile,
+        where: p.id == ^profile.id,
+        select:
+          fragment(
+            # Convert meters to miles
+            "ST_DistanceSphere(?, ?)",
+            p.geolocation,
+            ^profile_two.geolocation
+          )
+
+    Lgb.Repo.one(query)
   end
 
   def current_user(profile) do
