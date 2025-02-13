@@ -96,8 +96,6 @@ defmodule Lgb.Profiles do
       ** (Ecto.NoResultsError)
 
   """
-  def get_profile!(id) when is_integer(id), do: Repo.get!(Profile, id)
-
   def get_profile!(id) when is_binary(id) do
     # If it's a UUID string
     case Ecto.UUID.cast(id) do

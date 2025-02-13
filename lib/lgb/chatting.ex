@@ -262,6 +262,7 @@ defmodule Lgb.Chatting do
           where: m.profile_id == ^profile.id,
           where: m.read == false,
           order_by: [desc: m.inserted_at],
+          preload: [:profile],
           select: m
       )
 
@@ -477,7 +478,7 @@ defmodule Lgb.Chatting do
     Repo.get(Profile, profile.id) |> Repo.preload(:latest_picture)
   end
 
-  def get_conversation(id) when is_binary(id) do
+  def get_conversation(id) do
     # If it's a UUID string
     case Ecto.UUID.cast(id) do
       {:ok, uuid} ->
@@ -492,16 +493,6 @@ defmodule Lgb.Chatting do
         # Handle invalid UUID format
         nil
     end
-  end
-
-  def get_conversation(id) when is_integer(id) do
-    # If it's a regular ID
-    query =
-      from c in Conversation,
-        where: c.id == ^id,
-        preload: [:sender_profile, :receiver_profile]
-
-    Repo.one(query)
   end
 
   def create_conversation(attrs \\ %{}) do

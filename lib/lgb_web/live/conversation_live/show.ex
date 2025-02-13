@@ -43,7 +43,6 @@ defmodule LgbWeb.ConversationLive.Show do
      |> assign(current_profile: current_profile)
      |> assign(conversation: conversation)
      |> assign(other_profile: other_profile)
-     |> stream_configure(:all_messages, dom_id: &"all_messages-#{&1.uuid}")
      |> stream(:all_messages, all_messages)}
   end
 
