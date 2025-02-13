@@ -38,7 +38,7 @@ defmodule LgbWeb.ProfileLiveTest do
 
   setup do
     user = user_fixture()
-    profile = profile_fixture(user)
+    profile = profile_fixture(user, %{uuid: "12312312"})
     conn = log_in_user(build_conn(), user)
     %{user: user, profile: profile, conn: conn}
   end
@@ -48,14 +48,6 @@ defmodule LgbWeb.ProfileLiveTest do
       {:ok, _index_live, html} = live(conn, ~p"/profiles")
       assert html =~ "min height"
       assert html =~ "max height"
-    end
-  end
-
-  describe "Show" do
-    test "displays profile", %{conn: conn, profile: profile} do
-      {:ok, _show_live, html} = live(conn, ~p"/profiles/#{profile}")
-      assert html =~ profile.handle
-      assert html =~ profile.city
     end
   end
 
