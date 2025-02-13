@@ -37,7 +37,7 @@ defmodule LgbWeb.ProfileLive.Show do
 
     case Chatting.get_or_create_conversation(profile, other_profile) do
       {:ok, conversation} ->
-        {:noreply, push_navigate(socket, to: ~p"/conversations/#{conversation.id}")}
+        {:noreply, push_navigate(socket, to: ~p"/conversations/#{conversation.uuid}")}
 
       {:error, _} ->
         {:noreply, socket}
