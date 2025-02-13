@@ -64,3 +64,7 @@ body {
 .unread-message {
     @apply min-w-5 bg-colorSecondary flex h-5 items-center justify-center rounded-full px-1.5 text-xs font-medium text-white
 }
+
+.display-grid {
+    @apply grid grid-cols-1 gap-3 lg:grid-cols-3
+}

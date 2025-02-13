@@ -788,6 +788,36 @@ defmodule LgbWeb.CoreComponents do
     ~H"""
     <!-- Sidebar Navigation -->
     <nav class={["top-[64px] sticky flex w-full flex-row justify-around self-start border bg-white p-0 md:w-20 md:flex-col md:border-0 md:bg-transparent md:p-2", "z-10 items-center md:justify-start"]}>
+      <.link navigate={~p"/starred"} class="loggedinNavLinks group">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke-width="1.5"
+          stroke="currentColor"
+          class="size-6 group-hover:hidden"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            d="M11.48 3.499a.562.562 0 0 1 1.04 0l2.125 5.111a.563.563 0 0 0 .475.345l5.518.442c.499.04.701.663.321.988l-4.204 3.602a.563.563 0 0 0-.182.557l1.285 5.385a.562.562 0 0 1-.84.61l-4.725-2.885a.562.562 0 0 0-.586 0L6.982 20.54a.562.562 0 0 1-.84-.61l1.285-5.386a.562.562 0 0 0-.182-.557l-4.204-3.602a.562.562 0 0 1 .321-.988l5.518-.442a.563.563 0 0 0 .475-.345L11.48 3.5Z"
+          />
+        </svg>
+
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="currentColor"
+          class="size-6 hidden group-hover:block"
+        >
+          <path
+            fill-rule="evenodd"
+            d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z"
+            clip-rule="evenodd"
+          />
+        </svg>
+        <span class="userNavText mt-1 text-xs">Starred</span>
+      </.link>
       <.link navigate={~p"/profiles/current"} class="loggedinNavLinks">
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -1166,55 +1196,6 @@ defmodule LgbWeb.CoreComponents do
         </div>
       </div>
     </div>
-    """
-  end
-
-  attr :prefix_id, :string, default: ""
-
-  def profile_preview(assigns) do
-    ~H"""
-    <.card
-      no_background={false}
-      class="m-1 border-b-2 border-transparent transition-all duration-200 hover:border-blue-300"
-    >
-      <div class="relative">
-        <.live_component
-          id={@prefix_id <> "#{@profile.uuid}"}
-          module={LgbWeb.Components.Carousel}
-          uploaded_files={@profile.profile_pictures}
-          length={1}
-        />
-        <div class="from-black/50 absolute right-0 bottom-0 left-0 rounded-b-lg bg-gradient-to-t to-transparent p-4">
-          <.link
-            navigate={~p"/profiles/#{@profile.id}"}
-            class="text-lg font-semibold text-white transition-colors hover:text-gray-100"
-          >
-            <.name_with_online_activity profile={@profile} />
-          </.link>
-        </div>
-      </div>
-
-      <div class="space-y-2 p-4">
-        <div class="grid grid-cols-2 gap-3 text-sm">
-          <div class="flex items-center gap-2 text-gray-600">
-            <.icon name="hero-rectangle-stack" class="h-4 w-4" />
-            <span>{Lgb.Profiles.display_height(@profile.height_cm)}</span>
-          </div>
-          <div class="flex items-center gap-2 text-gray-600">
-            <.icon name="hero-scale-solid" class="h-4 w-4" />
-            <span>{Lgb.Profiles.display_weight(@profile.weight_lb)}</span>
-          </div>
-          <div class="flex items-center gap-2 text-gray-600">
-            <.icon name="hero-cake-solid" class="h-4 w-4" />
-            <span>{@profile.age} years</span>
-          </div>
-          <div class="flex items-center gap-2 text-gray-600">
-            <.icon name="hero-map-pin-solid" class="h-4 w-4" />
-            <span>{Lgb.Profiles.display_distance(@profile.distance)} miles away</span>
-          </div>
-        </div>
-      </div>
-    </.card>
     """
   end
 end

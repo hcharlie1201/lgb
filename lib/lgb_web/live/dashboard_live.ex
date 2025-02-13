@@ -19,25 +19,43 @@ defmodule LgbWeb.DashboardLive do
       <br />
       <.header>
         🌎 Global Users
-        <div class="grid grid-cols-1 gap-3 lg:grid-cols-3">
+        <div class="display-grid">
           <%= for profile <- @global_profiles do %>
-            <.profile_preview profile={profile} prefix_id="global_users" />
+            <.live_component
+              id={"global_users_#{profile.uuid}"}
+              module={LgbWeb.Components.ProfilePreview}
+              profile={profile}
+              current_user={@current_user}
+              prefix_id="global_users"
+            />
           <% end %>
         </div>
       </.header>
       <.header>
         🍃 New & Nearby users
-        <div class="grid grid-cols-1 gap-3 lg:grid-cols-3">
+        <div class="display-grid">
           <%= for profile <- @new_and_nearby do %>
-            <.profile_preview profile={profile} prefix_id="new_and_nearby" />
+            <.live_component
+              id={"new_and_nearby_#{profile.uuid}"}
+              module={LgbWeb.Components.ProfilePreview}
+              profile={profile}
+              current_user={@current_user}
+              prefix_id="new_and_nearby"
+            />
           <% end %>
         </div>
       </.header>
       <.header>
         Members that viewed you
-        <div class="grid grid-cols-1 gap-3 lg:grid-cols-3">
-          <%= for profile_view <- @viewers do %>
-            <.profile_preview profile={profile_view.viewer} prefix_id="viewer" />
+        <div class="display-grid">
+          <%= for profile <- @viewers do %>
+            <.live_component
+              id={"viewer_#{profile.uuid}"}
+              module={LgbWeb.Components.ProfilePreview}
+              profile={profile}
+              current_user={@current_user}
+              prefix_id="viewer"
+            />
           <% end %>
         </div>
       </.header>
@@ -50,7 +68,7 @@ defmodule LgbWeb.DashboardLive do
     socket = assign(socket, stripe_customer: stripe_customer)
     profile = Lgb.Accounts.User.current_profile(socket.assigns.current_user)
 
-    global_profiles = Profiles.find_global_users(10)
+    global_profiles = Profiles.find_global_users(10, profile)
     new_and_nearby = Profiles.find_new_and_nearby_users(10, profile)
     viewed_your_profile = Lgb.ProfileViews.find_profile_views(profile)
 

@@ -25,7 +25,8 @@ defmodule Lgb.ProfilesFixtures do
         state: "some state",
         weight_lb: 150,
         age: 25,
-        zip: "12345"
+        zip: "12345",
+        uuid: System.unique_integer()
       })
 
     {:ok, profile} = Lgb.Profiles.create_profile(user, attrs)

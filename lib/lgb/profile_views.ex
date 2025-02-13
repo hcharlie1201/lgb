@@ -116,11 +116,24 @@ defmodule Lgb.ProfileViews do
   def find_profile_views(profile, limit \\ 10) do
     if profile do
       query =
-        from p in ProfileView,
-          where: p.viewed_profile_id == ^profile.id,
-          order_by: [desc: p.inserted_at],
+        from p in Lgb.Profiles.Profile,
+          join: pv in ProfileView,
+          on: p.id == pv.viewer_id,
+          where: pv.viewed_profile_id == ^profile.id,
+          order_by: [desc: pv.inserted_at],
           limit: ^limit,
-          preload: [viewer: [:profile_pictures, :user]]
+          select_merge: %{
+            distance:
+              selected_as(
+                fragment(
+                  "ST_DistanceSphere(?, ?)",
+                  p.geolocation,
+                  ^profile.geolocation
+                ),
+                :distance
+              )
+          },
+          preload: [:profile_pictures, :user]
 
       Repo.all(query)
     else

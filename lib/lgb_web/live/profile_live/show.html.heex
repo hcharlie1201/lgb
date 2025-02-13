@@ -11,7 +11,10 @@
   />
 
   <.list>
-    <:item title="Distance">{Lgb.Profiles.display_distance(@profile.distance)}</:item>
+    <:item title="Distance">
+      {Lgb.Profiles.display_distance(@distance)} miles away
+    </:item>
+    <:item title="Gender">{@profile.gender}</:item>
     <:item title="Handle">{@profile.handle}</:item>
     <:item title="Age">{@profile.age}</:item>
     <:item title="Height">{Lgb.Profiles.display_height(@profile.height_cm)}</:item>
