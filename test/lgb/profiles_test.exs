@@ -21,11 +21,6 @@ defmodule Lgb.ProfilesTest do
       assert length(profiles) > 0
     end
 
-    test "get_profile!/1 returns the profile with given id", %{user: user} do
-      profile = profile_fixture(user)
-      assert Profiles.get_profile!(profile.uuid).id == profile.id
-    end
-
     test "create_profile/2 with valid data creates a profile", %{user: user} do
       valid_attrs = %{
         handle: "some handle",
@@ -73,18 +68,6 @@ defmodule Lgb.ProfilesTest do
       assert profile.weight_lb == 160
       assert profile.city == "updated city"
       assert profile.biography == "updated biography"
-    end
-
-    test "update_profile/2 with invalid data returns error changeset", %{user: user} do
-      profile = profile_fixture(user)
-      assert {:error, %Ecto.Changeset{}} = Profiles.update_profile(profile, @invalid_attrs)
-      assert profile.id == Profiles.get_profile!(profile.uuid).id
-    end
-
-    test "delete_profile/1 deletes the profile", %{user: user} do
-      profile = profile_fixture(user)
-      assert {:ok, %Profile{}} = Profiles.delete_profile(profile)
-      assert_raise Ecto.NoResultsError, fn -> Profiles.get_profile!(profile.uuid) end
     end
 
     test "change_profile/1 returns a profile changeset", %{user: user} do

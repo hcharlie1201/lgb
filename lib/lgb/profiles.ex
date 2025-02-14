@@ -111,6 +111,10 @@ defmodule Lgb.Profiles do
     end
   end
 
+  def get_profile!(id) when is_integer(id) do
+    Repo.get_by(Lgb.Profiles.Profile, id: id)
+  end
+
   @doc """
   Creates a profile.
 
