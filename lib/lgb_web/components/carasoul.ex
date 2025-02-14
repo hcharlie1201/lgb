@@ -1,5 +1,6 @@
 defmodule LgbWeb.Components.Carousel do
   use Phoenix.LiveComponent
+  import LgbWeb.CoreComponents
   alias Phoenix.LiveView.JS
 
   def mount(socket) do
@@ -18,7 +19,11 @@ defmodule LgbWeb.Components.Carousel do
         style={"transform: translateX(-#{@current_index * (100 / @length)}%)"}
       >
         <%= for uploaded_file <- @uploaded_files do %>
-          <div class="w-full flex-shrink-0" style={"width: #{100 / @length}%"}>
+          <div
+            phx-click={show_modal("uploaded-file-#{uploaded_file.id}")}
+            class="w-full flex-shrink-0"
+            style={"width: #{100 / @length}%"}
+          >
             <img
               src={
                 Lgb.Profiles.ProfilePictureUploader.url(
@@ -63,6 +68,23 @@ defmodule LgbWeb.Components.Carousel do
           </button>
         <% end %>
       </div>
+      
+    <!-- Popups -->
+      <%= for uploaded_file <- @uploaded_files do %>
+        <.modal id={"uploaded-file-#{uploaded_file.id}"}>
+          <img
+            src={
+              Lgb.Profiles.ProfilePictureUploader.url(
+                {uploaded_file.image, uploaded_file},
+                :original,
+                signed: true
+              )
+            }
+            alt="Carousel Image"
+            class="h-full w-full rounded-lg object-cover"
+          />
+        </.modal>
+      <% end %>
     </div>
     """
   end
