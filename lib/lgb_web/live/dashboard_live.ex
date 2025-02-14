@@ -7,13 +7,9 @@ defmodule LgbWeb.DashboardLive do
     ~H"""
     <.page_align>
       <.card>
-        <.header>
-          <h1 class="premium-title">Welcome to BiBi . ݁₊</h1>
-          <p class="text-lg">
-            This site is a meeting place for bisexual men and women who are looking for genuine connections,
-            meaningful relationships, and long-term love. Whether you’re seeking a deep emotional bond or a
-            committed partnership, this platform offers a welcoming space to connect, chat, and build something real – and it’s free!
-          </p>
+        <.header class="text-center">
+          <h1>~ Here's a joke ~</h1>
+          <p class="italic my-2 text-lg font-light">"{@joke}"</p>
         </.header>
       </.card>
       <br />
@@ -72,11 +68,17 @@ defmodule LgbWeb.DashboardLive do
     new_and_nearby = Profiles.find_new_and_nearby_users(10, profile)
     viewed_your_profile = Lgb.ProfileViews.find_profile_views(profile)
 
+    joke = case Lgb.ThirdParty.DadJokes.get_joke() do
+      {:ok, joke} -> joke
+      {:error, reason} -> reason
+    end
+
     {:ok,
      assign(socket,
        global_profiles: global_profiles,
        new_and_nearby: new_and_nearby,
-       viewers: viewed_your_profile
+       viewers: viewed_your_profile,
+       joke: joke
      )}
   end
 end
