@@ -23,6 +23,8 @@ defmodule LgbWeb.Router do
     get "/", PageController, :home
     get "/something", SomethingController, :index
     get "/somethingElse", SomethingController, :index2
+    get "/sup", SupController, :greet
+    get "/supToYou", SupController, :greetSomeone
   end
 
   # Other scopes may use custom stacks.
@@ -70,6 +72,7 @@ defmodule LgbWeb.Router do
       on_mount: [{LgbWeb.UserAuth, :ensure_authenticated}, {LgbWeb.UserPresence, :track}] do
       live "/dashboard", DashboardLive
       live "/my_page", MypageLive
+      live "/cook",CookLive
       live "/users/settings", LoginLive.UserSettingsLive, :edit
       live "/users/settings/confirm_email/:token", LoginLive.UserSettingsLive, :confirm_email
 
@@ -112,4 +115,14 @@ defmodule LgbWeb.Router do
       live "/users/confirm", LoginLive.UserConfirmationInstructionsLive, :new
     end
   end
+
+  scope "/", LgbWeb do
+    live "/posts", PostLive.Index, :index
+    live "/posts/new", PostLive.Index, :new
+    live "/posts/:id/edit", PostLive.Index, :edit
+
+    live "/posts/:id", PostLive.Show, :show
+    live "/posts/:id/show/edit", PostLive.Show, :edit
+  end
+
 end
