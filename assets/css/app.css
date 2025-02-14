@@ -58,7 +58,7 @@ body {
 }
 
 .premium-title {
-    @apply text-2xl font-medium text-gray-900 mb-4 font-Merriweather;
+    @apply text-2xl font-medium text-gray-900 font-Merriweather;
 }
 
 .unread-message {
