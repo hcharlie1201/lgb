@@ -8,7 +8,7 @@ defmodule LgbWeb.DashboardLive do
     <.page_align>
       <.card>
         <.header class="text-center">
-          <h1>Here's a Dad Joke, enjoy:</h1>
+          <h1>~ Here's a joke ~</h1>
           <p class="italic my-2 text-lg font-light">"{@joke}"</p>
         </.header>
       </.card>
@@ -72,7 +72,6 @@ defmodule LgbWeb.DashboardLive do
       {:ok, joke} -> joke
       {:error, reason} -> reason
     end
-    IO.inspect(joke)
 
     {:ok,
      assign(socket,
