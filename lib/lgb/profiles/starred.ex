@@ -6,7 +6,7 @@ defmodule Lgb.Profiles.Starred do
     belongs_to :profile, Lgb.Profiles.Profile
     # Changed from has_one to belongs_to
     belongs_to :starred_profile, Lgb.Profiles.Profile
-    field :uuid, Ecto.UUID
+    field :uuid, Ecto.UUID, read_after_writes: true
 
     timestamps(type: :utc_datetime)
   end

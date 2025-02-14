@@ -11,7 +11,7 @@ defmodule Lgb.Accounts.User do
     field :current_password, :string, virtual: true, redact: true
     field :confirmed_at, :utc_datetime
     field :last_login_at, :utc_datetime
-    field :uuid, Ecto.UUID
+    field :uuid, Ecto.UUID, read_after_writes: true
 
     timestamps(type: :utc_datetime)
   end
