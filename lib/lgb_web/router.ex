@@ -66,6 +66,15 @@ defmodule LgbWeb.Router do
     post "/users/log_in", UserSessionController, :create
   end
 
+  scope "/auth", LgbWeb do
+    pipe_through :browser
+
+    get "/:provider", GoogleAuthController, :request
+    get "/:provider/callback", GoogleAuthController, :callback
+  end
+
+  ## End of Authentication Routes
+
   scope "/", LgbWeb do
     pipe_through [:browser, :require_authenticated_user]
 

@@ -389,4 +389,10 @@ defmodule Lgb.Accounts do
     |> Ecto.Changeset.change(%{last_login_at: DateTime.truncate(DateTime.utc_now(), :second)})
     |> Repo.update()
   end
+
+  def register_oauth_user(attrs) do
+    %User{}
+    |> User.oauth_registration_changeset(attrs)
+    |> Repo.insert()
+  end
 end
