@@ -13,7 +13,6 @@ defmodule LgbWeb.Components.Carousel do
       id={"carousel-#{@id}"}
       class={["group relative mx-auto w-full max-w-6xl overflow-hidden rounded-md shadow-md", @class]}
     >
-      <!-- Carousel Container -->
       <div
         class="relative flex h-96 space-x-4 transition-transform duration-500 ease-in-out"
         style={"transform: translateX(-#{@current_index * (100 / @length)}%)"}
