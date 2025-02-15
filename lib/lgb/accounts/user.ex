@@ -8,6 +8,7 @@ defmodule Lgb.Accounts.User do
     field :email, :string
     field :password, :string, virtual: true, redact: true
     field :hashed_password, :string, redact: true
+    field :is_oauth_user, :boolean, default: false
     field :current_password, :string, virtual: true, redact: true
     field :confirmed_at, :utc_datetime
     field :last_login_at, :utc_datetime
@@ -170,6 +171,14 @@ defmodule Lgb.Accounts.User do
     user
     |> Ecto.assoc(:profiles)
     |> Lgb.Repo.one()
+  end
+
+  def oauth_registration_changeset(user, attrs, opts \\ []) do
+    user
+    |> cast(attrs, [:email])
+    |> validate_required([:email])
+    |> validate_email(opts)
+    |> put_change(:is_oauth_user, true)
   end
 
   def is_confirmed?(user) do

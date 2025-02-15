@@ -73,6 +73,7 @@ defmodule Lgb.MixProject do
       {:jason, "~> 1.2"},
       {:sentry, "~> 10.2.0"},
       {:dns_cluster, "~> 0.1.1"},
+      {:ueberauth_google, "~> 0.10"},
       {:bandit, "~> 1.2"}
     ]
   end

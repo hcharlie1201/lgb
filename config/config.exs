@@ -29,6 +29,11 @@ config :lgb, LgbWeb.Endpoint,
 # locally. You can see the emails in your browser, at "/dev/mailbox".
 #
 
+config :ueberauth, Ueberauth,
+  providers: [
+    google: {Ueberauth.Strategy.Google, [default_scope: "email profile"]}
+  ]
+
 # Configure esbuild (the version is required)
 config :esbuild,
   version: "0.17.11",
