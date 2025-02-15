@@ -1074,11 +1074,10 @@ defmodule LgbWeb.CoreComponents do
 
   def non_logged_in_nav(assigns) do
     ~H"""
-    <!-- Hero Section Container -->
-    <div class="relative min-h-screen">
+    <div class="relative">
       <!-- Navigation Bar -->
       <nav class="sticky top-0 z-10 flex px-4 py-4 backdrop-blur-md">
-        <div class="container mx-auto flex flex-col items-center justify-between gap-4 md:flex-row md:gap-0">
+        <section class="mx-auto flex w-full max-w-6xl items-center justify-between md:flex-row md:gap-0">
           <!-- Logo -->
           <div class="flex items-center space-x-2">
             <span class="text-xl font-bold">
@@ -1091,7 +1090,7 @@ defmodule LgbWeb.CoreComponents do
           </div>
           
     <!-- Navigation Links -->
-          <div class="menu cursor-pointer" onclick="expandNavigation()">
+          <div class="menu cursor-pointer md:hidden" onclick="expandNavigation()">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -1103,45 +1102,44 @@ defmodule LgbWeb.CoreComponents do
               <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 9h16.5m-16.5 6.75h16.5" />
             </svg>
           </div>
-          <div class="navs fixed top-0 left-0 h-screen w-0 overflow-x-hidden bg-white shadow-lg sm:static sm:h-max sm:w-full sm:w-min sm:gap-0 sm:rounded-full sm:px-6 sm:py-3">
-            <div class="flex flex-col sm:flex-row sm:p-0">
+
+          <div class="hidden bg-white shadow-lg sm:static sm:h-max sm:w-full sm:w-min sm:gap-0 sm:rounded-full sm:px-6 sm:py-3 md:flex md:items-center md:space-x-8">
+            <div class="flex space-x-6">
+              <a href="/products" class="loggedOutNavbarText">Products</a>
+              <a href="/features" class="loggedOutNavbarText">Features</a>
+              <a href="/blogs" class="loggedOutNavbarText">Blogs</a>
+              <a href="/community" class="loggedOutNavbarText">Community</a>
+              <a href="/pricing" class="loggedOutNavbarText">Pricing</a>
+            </div>
+          </div>
+          <.link
+            navigate={~p"/users/log_in"}
+            class="ml-4 font-medium text-gray-600 hover:text-gray-900"
+          >
+            Log in
+          </.link>
+          
+    <!-- Mobile Navigation -->
+          <div class="navs fixed top-0 left-0 h-screen w-0 overflow-x-hidden bg-white shadow-lg md:hidden">
+            <div class="flex flex-col">
               <button
-                class="bg-colorPrimary m-4 w-max rounded-3xl px-4 py-1 shadow-lg sm:hidden"
+                class="bg-colorPrimary m-4 w-max rounded-3xl px-4 py-1 shadow-lg"
                 onclick="closeNavigation()"
               >
                 esc
               </button>
-              <a href="/products" class="loggedOutNavbarText">
-                Products
-              </a>
-              <a href="/features" class="loggedOutNavbarText">
-                Features
-              </a>
-              <a href="/blogs" class="loggedOutNavbarText">
-                Blogs
-              </a>
-              <a href="/community" class="loggedOutNavbarText">
-                Community
-              </a>
-              <a href="/pricing" class="loggedOutNavbarText">
-                Pricing
-              </a>
+              <a href="/products" class="loggedOutNavbarText">Products</a>
+              <a href="/features" class="loggedOutNavbarText">Features</a>
+              <a href="/blogs" class="loggedOutNavbarText">Blogs</a>
+              <a href="/community" class="loggedOutNavbarText">Community</a>
+              <a href="/pricing" class="loggedOutNavbarText">Pricing</a>
+              <.link navigate={~p"/users/log_in"} class="loggedOutNavbarText">
+                Log in
+              </.link>
             </div>
           </div>
-          
-    <!-- Login Button
-          <.link
-            class="hidden"
-            navigate={~p"/users/log_in"}
-            class="text-gray-600 hover:text-gray-900 font-medium"
-          >
-            Log in
-          </.link>
-    -->
-          <div />
-        </div>
+        </section>
       </nav>
-
       {render_slot(@inner_block)}
     </div>
     """
