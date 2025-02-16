@@ -14,7 +14,7 @@ module.exports = {
   theme: {
     fontFamily: {
       Inter: ['Inter','sans-serif'],
-      Merriweather: ['Merriweather']
+      RobotoSlab: ['RobotoSlab']
     },
     extend: {
       colors: {

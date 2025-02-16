@@ -8,8 +8,8 @@
 }
 
 @font-face {
-    font-family: "Merriweather";
-    src: url("/fonts/Merriweather.ttf") format("truetype");
+    font-family: "RobotoSlab";
+    src: url("/fonts/RobotoSlab.ttf") format("truetype");
 }
 
 @layer components {
@@ -58,7 +58,7 @@ body {
 }
 
 .premium-title {
-    @apply text-2xl font-medium text-gray-900 font-Merriweather;
+    @apply text-2xl font-medium text-gray-900 font-RobotoSlab;
 }
 
 .unread-message {
@@ -67,4 +67,29 @@ body {
 
 .display-grid {
     @apply grid grid-cols-1 gap-3 lg:grid-cols-3
+}
+
+/* PRICING */
+.benefits-card {
+    @apply bg-white p-4 rounded-lg shadow;
+}
+.benefits-header {
+    @apply text-2xl font-semibold text-gray-800 mb-4 font-RobotoSlab font-light;
+}
+
+.card-header {
+    @apply text-lg text-gray-700;
+}
+
+.pricing-cards-holder {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4;
+}
+
+/* landing page */
+.perks-card {
+    @apply flex flex-col w-full items-start gap-8 text-left bg-white rounded-lg p-4 shadow;
+}
+
+.perks-header {
+    @apply text-xl font-medium;
 }

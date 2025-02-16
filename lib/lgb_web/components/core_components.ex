@@ -1088,7 +1088,7 @@ defmodule LgbWeb.CoreComponents do
               </.link>
             </span>
           </div>
-          
+
     <!-- Navigation Links -->
           <div class="menu cursor-pointer md:hidden" onclick="expandNavigation()">
             <svg
@@ -1118,7 +1118,7 @@ defmodule LgbWeb.CoreComponents do
           >
             Log in
           </.link>
-          
+
     <!-- Mobile Navigation -->
           <div class="navs fixed top-0 left-0 h-screen w-0 overflow-x-hidden bg-white shadow-lg md:hidden">
             <div class="flex flex-col">
