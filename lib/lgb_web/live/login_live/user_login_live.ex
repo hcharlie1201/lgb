@@ -3,7 +3,7 @@ defmodule LgbWeb.LoginLive.UserLoginLive do
 
   def render(assigns) do
     ~H"""
-    <div class="mx-auto max-w-sm">
+    <div class="mx-auto my-20 max-w-sm flex flex-col justify-center">
       <.header class="text-center">
         Log in to account
         <:subtitle>
