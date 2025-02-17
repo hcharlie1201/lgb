@@ -2,11 +2,17 @@
   <section class="flex flex-col gap-2">
     <.header class="mb-8 text-3xl font-bold text-gray-800">Gallery</.header>
     
-    <!-- Carousel Section -->
-    <.live_component module={Carousel} id={@profile.id} uploaded_files={@uploaded_files} length={3} />
+<!-- Carousel Section -->
+    <.live_component
+      module={Carousel}
+      id={@profile.id}
+      uploaded_files={@uploaded_files}
+      length={3}
+      current_user={@current_user}
+    />
     
-    <!-- Profile Form -->
-    <.simple_form 
+<!-- Profile Form -->
+    <.simple_form
       for={@form}
       id="my-profile"
       class="relative"
@@ -20,14 +26,11 @@
           class="absolute inset-x-0 top-0 flex items-center justify-center rounded-t-sm bg-white py-1 py-4 hover:bg-gray-100"
         >
           <svg width="40" height="15" xmlns="http://www.w3.org/2000/svg">
-            <!-- First Bar -->
             <rect width="40" height="4" fill="#333333" rx="3" ry="3" />
-            
-            <!-- Second Bar -->
             <rect y="10" width="40" height="4" fill="#333333" rx="3" ry="3" />
           </svg>
         </div>
-    
+
         <section phx-drop-target={@uploads.avatar.ref} class="mb-6">
           <div class="rounded-lg border-2 border-dashed border-gray-300 p-6 text-center transition-colors hover:border-blue-500">
             <.live_file_input upload={@uploads.avatar} />
@@ -36,7 +39,7 @@
             </p>
           </div>
           
-          <!-- Uploaded Files Preview -->
+<!-- Uploaded Files Preview -->
           <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
             <article :for={entry <- @uploads.avatar.entries} class="relative">
               <figure class="rounded-lg bg-gray-100 p-4">
@@ -46,12 +49,12 @@
                 </figcaption>
               </figure>
               
-              <!-- Progress Bar -->
+<!-- Progress Bar -->
               <progress value={entry.progress} max="100" class="mt-2 h-2 w-full rounded">
                 {entry.progress}%
               </progress>
               
-              <!-- Cancel Button -->
+<!-- Cancel Button -->
               <button
                 type="button"
                 phx-click="cancel-upload"
@@ -62,20 +65,23 @@
                 &times;
               </button>
               
-              <!-- Error Messages -->
-              <p :for={err <- upload_errors(@uploads.avatar, entry)} class="mt-2 text-sm text-red-500">
+<!-- Error Messages -->
+              <p
+                :for={err <- upload_errors(@uploads.avatar, entry)}
+                class="mt-2 text-sm text-red-500"
+              >
                 {error_to_string(err)}
               </p>
             </article>
           </div>
           
-          <!-- Global Upload Errors -->
+<!-- Global Upload Errors -->
           <p :for={err <- upload_errors(@uploads.avatar)} class="mt-2 text-sm text-red-500">
             {error_to_string(err)}
           </p>
         </section>
         
-          <!-- Form Fields -->
+<!-- Form Fields -->
         <div class="space-y-6">
           <.input
             value={@profile.handle}
@@ -137,7 +143,9 @@
               type="radio"
               value="non_binary"
               label="Non Binary"
-              checked={@form[:gender].value == :non_binary || @form.params["gender"] == :non_binary}
+              checked={
+                @form[:gender].value == :non_binary || @form.params["gender"] == :non_binary
+              }
             />
           </div>
           <div class="grid grid-cols-1 gap-4 sm:grid-cols-3">
@@ -159,7 +167,9 @@
             class="z-0 h-96 rounded-lg shadow-md"
             id="mapid"
             phx-update="ignore"
-            data-geo={if @profile.geolocation, do: Geo.WKT.encode!(@profile.geolocation), else: ""}
+            data-geo={
+              if @profile.geolocation, do: Geo.WKT.encode!(@profile.geolocation), else: ""
+            }
           >
           </div>
           <.input
@@ -173,7 +183,7 @@
         </div>
       </section>
       
-      <!-- Save Button -->
+<!-- Save Button -->
       <:actions>
         <.button
           phx-disable-with="Confirming"

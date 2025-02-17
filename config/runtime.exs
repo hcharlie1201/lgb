@@ -37,6 +37,10 @@ config :ueberauth, Ueberauth.Strategy.Google.OAuth,
   client_secret: System.get_env("GOOGLE_CLIENT_SECRET"),
   redirect_uri: "http://localhost:4000/auth/google/callback"
 
+config :posthog,
+  api_url: "https://us.i.posthog.com",
+  api_key: System.get_env("POSTHOG")
+
 if config_env() == :prod do
   database_url =
     System.get_env("DATABASE_URL") ||

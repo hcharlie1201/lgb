@@ -201,15 +201,18 @@ defmodule Lgb.Profiles do
       content_type: entry.client_type
     }
 
-    %ProfilePicture{}
-    |> ProfilePicture.changeset(%{
-      profile_id: profile_id,
-      image: image_upload
-    })
-    |> Repo.insert!()
+    profile_picture =
+      %ProfilePicture{}
+      |> ProfilePicture.changeset(%{
+        profile_id: profile_id,
+        image: image_upload
+      })
+      |> Repo.insert!()
 
     # Remove the temporary file saved locally
     File.rm!(dest)
+
+    profile_picture
   end
 
   @doc """

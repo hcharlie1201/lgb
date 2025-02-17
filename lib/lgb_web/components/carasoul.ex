@@ -4,7 +4,7 @@ defmodule LgbWeb.Components.Carousel do
   alias Phoenix.LiveView.JS
 
   def mount(socket) do
-    {:ok, assign(socket, current_index: 0, class: "")}
+    {:ok, assign(socket, current_index: 0, class: "", current_user: nil)}
   end
 
   def render(assigns) do
@@ -17,25 +17,45 @@ defmodule LgbWeb.Components.Carousel do
         class="relative flex h-96 space-x-4 transition-transform duration-500 ease-in-out"
         style={"transform: translateX(-#{@current_index * (100 / @length)}%)"}
       >
-        <%= for uploaded_file <- @uploaded_files do %>
-          <div
-            phx-click={show_modal("uploaded-file-#{uploaded_file.id}")}
-            class="w-full flex-shrink-0"
-            style={"width: #{100 / @length}%"}
+        <div
+          :for={uploaded_file <- @uploaded_files}
+          phx-click={show_modal("uploaded-file-#{uploaded_file.id}")}
+          class="group relative w-full flex-shrink-0"
+          style={"width: #{100 / @length}%"}
+        >
+          <button
+            :if={assigns.current_user}
+            phx-click={JS.push("delete_profile_picture", target: @myself)}
+            phx-value-profile-pic-id={uploaded_file.id}
+            class="bg-white/75 absolute top-0 left-0 z-20 rounded-tl-lg rounded-br-lg opacity-0 transition-opacity duration-300 hover:bg-white group-hover:opacity-80"
           >
-            <img
-              src={
-                Lgb.Profiles.ProfilePictureUploader.url(
-                  {uploaded_file.image, uploaded_file},
-                  :original,
-                  signed: true
-                )
-              }
-              alt="Carousel Image"
-              class="h-full w-full rounded-lg object-cover"
-            />
-          </div>
-        <% end %>
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5 text-gray-700"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M6 18L18 6M6 6l12 12"
+              />
+            </svg>
+          </button>
+          <img
+            src={
+              Lgb.Profiles.ProfilePictureUploader.url(
+                {uploaded_file.image, uploaded_file},
+                :original,
+                signed: true
+              )
+            }
+            alt="Carousel Image"
+            class="h-full w-full rounded-lg object-cover"
+          />
+        </div>
       </div>
 
       <div class="group">
@@ -101,5 +121,18 @@ defmodule LgbWeb.Components.Carousel do
       )
 
     {:noreply, assign(socket, current_index: current_index)}
+  end
+
+  def handle_event("delete_profile_picture", %{"profile-pic-id" => id}, socket) do
+    profile_picture = Lgb.Profiles.ProfilePicture.get!(id)
+
+    case Lgb.Repo.delete(profile_picture) do
+      {:ok, _} ->
+        send(self(), :remove_profile_picture)
+        {:noreply, socket}
+
+      {:error, _} ->
+        {:error, socket}
+    end
   end
 end

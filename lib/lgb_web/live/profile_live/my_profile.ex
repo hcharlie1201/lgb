@@ -110,6 +110,22 @@ defmodule LgbWeb.ProfileLive.MyProfile do
     end
   end
 
+  @impl true
+  def handle_info(:remove_profile_picture, socket) do
+    {:noreply,
+     assign(socket, :uploaded_files, Profiles.list_profile_pictures(socket.assigns.profile))}
+  end
+
+  @impl true
+  def handle_info({LgbWeb.Presence, {:join, _presence}}, socket) do
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_info({LgbWeb.Presence, {:leave, _presence}}, socket) do
+    {:noreply, socket}
+  end
+
   defp error_to_string(:too_large), do: "Too large"
   defp error_to_string(:not_accepted), do: "You have selected an unacceptable file type"
   defp error_to_string(:too_many_files), do: "You have selected too many files"
