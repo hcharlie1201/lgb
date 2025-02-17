@@ -5,13 +5,13 @@ defmodule LgbWeb.LoginLive.UserSettingsLive do
 
   def render(assigns) do
     ~H"""
-    <.header class="text-center">
-      Account Settings
+    <.header class="text-center mt-4">
+      <div class="logo-gradient text-2xl">Account Settings</div>
       <:subtitle>Manage your account email address and password settings</:subtitle>
     </.header>
 
     <div class="flex flex-col items-center space-y-12 divide-y p-4">
-      <div class="min-w-full">
+      <div class="w-[80vw] md:w-[60vw] lg:w-[50vw]">
         <.simple_form
           for={@email_form}
           id="email_form"
@@ -33,7 +33,7 @@ defmodule LgbWeb.LoginLive.UserSettingsLive do
           </:actions>
         </.simple_form>
       </div>
-      <div class="min-w-full">
+      <div class="w-[80vw] md:w-[60vw] lg:w-[50vw]">
         <.simple_form
           for={@password_form}
           id="password_form"
