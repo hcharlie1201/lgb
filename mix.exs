@@ -49,6 +49,7 @@ defmodule Lgb.MixProject do
       {:ecto_sql, "~> 3.10"},
       {:flop, "~> 0.26.1"},
       {:flop_phoenix, "~> 0.23.1"},
+      {:posthog, "~> 0.4.0"},
       {:geo_postgis, "~> 3.7"},
       {:postgrex, ">= 0.0.0"},
       {:phoenix_html, "~> 4.0"},
