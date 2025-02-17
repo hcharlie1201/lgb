@@ -59,7 +59,7 @@
   </head>
   <body>
     <%= if @current_user do %>
-      <nav class="sticky top-0 z-20 flex justify-between bg-white px-10 py-3 ">
+      <nav class="sticky top-0 z-20 flex justify-between items-center bg-white px-10 py-3 ">
         <span class="text-xl font-bold">
           <.link navigate={~p"/"}>
             <h1 class="font-sans logo-gradient">
@@ -143,11 +143,6 @@
         {@inner_content}
       </.non_logged_in_nav>
     <% end %>
-    <!--Footer -->
-    <footer class="flex justify-center bg-purple-900 p-4 text-white">
-      <p>Published January 2025</p>
-      <p></p>
-    </footer>
 
     <script>
       let ogHeight
