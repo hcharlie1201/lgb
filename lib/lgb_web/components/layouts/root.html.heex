@@ -45,6 +45,17 @@
       crossorigin="anonymous"
     >
     </script>
+    <!-- PostHog -->
+
+    <script>
+      document.addEventListener('DOMContentLoaded', function() {
+        <%= if @current_user do %>
+          posthog.identify('<%= @current_user.uuid %>', {
+          email: '<%= @current_user.email %>'
+        });
+        <% end %>
+      });
+    </script>
   </head>
   <body>
     <%= if @current_user do %>
@@ -132,9 +143,6 @@
         {@inner_content}
       </.non_logged_in_nav>
     <% end %>
-    <!--Footer TO-DO -->
-    <%!-- <footer class="flex justify-center p-4 bg-purple-900 text-white">
-    </footer> --%>
 
     <script>
       let ogHeight

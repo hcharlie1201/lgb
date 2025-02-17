@@ -1,4 +1,5 @@
 defmodule Lgb.Profiles.ProfilePicture do
+  alias Inspect.Lgb.Profiles.ProfilePicture
   use Ecto.Schema
   use Waffle.Ecto.Schema
   import Ecto.Changeset
@@ -17,6 +18,10 @@ defmodule Lgb.Profiles.ProfilePicture do
     profile_picture
     |> cast(attrs, [:profile_id])
     |> cast_attachments(attrs, [:image])
+  end
+
+  def get!(id) do
+    Lgb.Repo.get_by!(Lgb.Profiles.ProfilePicture, id: id)
   end
 
   def get_picture_url(profile_picture) do
