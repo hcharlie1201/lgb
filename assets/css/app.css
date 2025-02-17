@@ -30,6 +30,10 @@ body {
     background-attachment: fixed;
 }
 
+.logo-gradient {
+    @apply bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent;
+}
+
 .loggedOutNavbarText {
     @apply text-gray-600 font-medium transition-colors py-4 sm:py-0 hover:text-gray-900 text-xl sm:m-0 sm:text-sm px-4 hover:bg-colorPrimary sm:hover:bg-transparent;
 }
@@ -58,7 +62,7 @@ body {
 }
 
 .premium-title {
-    @apply text-2xl font-medium text-gray-900 font-RobotoSlab;
+    @apply text-2xl text-gray-900 font-RobotoSlab;
 }
 
 .unread-message {
@@ -91,5 +95,14 @@ body {
 }
 
 .perks-header {
-    @apply text-xl font-medium;
+    @apply text-xl font-RobotoSlab;
+}
+
+/* FEATURE PAGE */
+.feature-card {
+    @apply bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition duration-300 ease-in-out hover:scale-105;
+}
+
+.feature-card-header {
+    @apply text-2xl logo-gradient mb-2;
 }
