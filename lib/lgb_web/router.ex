@@ -23,9 +23,12 @@ defmodule LgbWeb.Router do
     get "/", PageController, :home
     get "/products", PageController, :products
     get "/features", PageController, :features
-    get "/blogs", PageController, :blogs
     get "/community", PageController, :community
     get "/pricing", PageController, :pricing
+
+    live "/blogs", BlogLive
+    live "/blog1", BlogsLive.Blog1
+    live "/blog2", BlogsLive.Blog2
   end
 
   # Other scopes may use custom stacks.
