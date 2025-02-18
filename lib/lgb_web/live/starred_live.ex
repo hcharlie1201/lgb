@@ -2,8 +2,6 @@ defmodule LgbWeb.StarredLive do
   use LgbWeb, :live_view
 
   def render(assigns) do
-    IO.inspect(assigns.streams.profiles)
-
     ~H"""
     <.page_align>
       <div id="starred_stream" class="display-grid" phx-update="stream">
