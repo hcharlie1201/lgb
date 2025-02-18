@@ -95,7 +95,7 @@ body {
 
 /* landing page */
 .perks-card {
-    @apply flex flex-col w-full items-start gap-8 text-left bg-white rounded-lg p-4 shadow;
+    @apply flex flex-col w-full items-start gap-8 text-left bg-white rounded-lg p-4 shadow items-center;
 }
 
 .perks-header {
