@@ -34,6 +34,22 @@ defmodule LgbWeb.ProfileLive.Results do
     {:noreply, push_patch(socket, to: path)}
   end
 
+  def handle_event("next", _params, socket) do
+    flop = %{socket.assigns.metas.flop | page: socket.assigns.metas.next_page}
+    metas = %{socket.assigns.metas | flop: flop}
+
+    path = build_paginated_path(metas, socket.assigns.location_params)
+    {:noreply, push_patch(socket, to: path)}
+  end
+
+  def handle_event("prev", _params, socket) do
+    flop = %{socket.assigns.metas.flop | page: socket.assigns.metas.previous_page}
+    metas = %{socket.assigns.metas | flop: flop}
+
+    path = build_paginated_path(metas, socket.assigns.location_params)
+    {:noreply, push_patch(socket, to: path)}
+  end
+
   # Private helpers
 
   defp build_profile_query(profile, %{"lat" => lat, "lng" => lng} = _params)

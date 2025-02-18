@@ -10,18 +10,18 @@
       />
     <% end %>
   </div>
-  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6"></div>
-  <.simple_form for={@form} phx-submit="goto">
-    <:actions>
+  <div class="flex items-center justify-between">
+    <.button :if={@metas.has_previous_page?} phx-click="prev">prev</.button>
+    <.form for={@form} phx-submit="goto">
       <.input
         value={@metas.flop.page}
         name="page"
         type="select"
-        label="Page: "
         options={for n <- 1..@metas.total_pages, do: {n, n}}
         multiple={false}
       />
       <.button>Go to</.button>
-    </:actions>
-  </.simple_form>
+    </.form>
+    <.button :if={@metas.has_next_page?} phx-click="next">next</.button>
+  </div>
 </.page_align>
