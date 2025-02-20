@@ -7,7 +7,7 @@ defmodule Lgb.Chatting.ConversationMessage do
     belongs_to :conversation, Lgb.Chatting.Conversation
     field :read, :boolean, default: false
     field :content, :string
-    field :uuid, Ecto.UUID
+    field :uuid, Ecto.UUID, read_after_writes: true
 
     timestamps(type: :utc_datetime)
   end

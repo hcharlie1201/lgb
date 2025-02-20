@@ -6,7 +6,7 @@ defmodule Lgb.Chatting.Conversation do
     belongs_to :sender_profile, Lgb.Profiles.Profile
     belongs_to :receiver_profile, Lgb.Profiles.Profile
     has_many :conversation_messages, Lgb.Chatting.ConversationMessage
-    field :uuid, Ecto.UUID, default: Ecto.UUID.generate()
+    field :uuid, Ecto.UUID, read_after_writes: true
 
     timestamps(type: :utc_datetime)
   end

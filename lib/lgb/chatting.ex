@@ -513,10 +513,21 @@ defmodule Lgb.Chatting do
 
     case Repo.one(query) do
       nil ->
-        create_conversation(%{
-          sender_profile_id: current_profile.id,
-          receiver_profile_id: other_profile.id
-        })
+        current_profile = Repo.preload(current_profile, :user)
+        other_profile = Repo.preload(other_profile, :user)
+
+        {:ok, conversation} =
+          create_conversation(%{
+            sender_profile_id: current_profile.id,
+            receiver_profile_id: other_profile.id
+          })
+
+        Lgb.Accounts.UserNotifier.deliver_conversation_notification(
+          current_profile.user,
+          other_profile.user
+        )
+
+        {:ok, conversation}
 
       conversation ->
         {:ok, conversation}
