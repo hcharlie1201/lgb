@@ -3,110 +3,116 @@
 @import "tailwindcss/utilities";
 
 @font-face {
-    font-family: "Inter";
-    src: url("/fonts/Inter.ttf") format("truetype");
+  font-family: "Inter";
+  src: url("/fonts/Inter.ttf") format("truetype");
 }
 
 @font-face {
-    font-family: "RobotoSlab";
-    src: url("/fonts/RobotoSlab.ttf") format("truetype");
+  font-family: "RobotoSlab";
+  src: url("/fonts/RobotoSlab.ttf") format("truetype");
 }
 
 @layer components {
-    .join-button {
-        @apply text-xl bg-colorPrimary transition rounded-md px-32 py-3 hover:scale-110;
-    }
+  .join-button {
+    @apply text-xl bg-colorPrimary transition rounded-md px-32 py-3 hover:scale-110;
+  }
 
-    .login-button {
-        @apply bg-colorSecondary border hover:border hover:transition border-colorSecondary hover:text-colorSecondary hover:bg-transparent text-white rounded-md px-3 py-1;
-    }
+  .login-button {
+    @apply bg-colorSecondary border hover:border hover:transition border-colorSecondary hover:text-colorSecondary hover:bg-transparent text-white rounded-md px-3 py-1;
+  }
 }
 
 body {
-    @apply font-Inter font-light relative w-full min-h-full text-sm;
-    background-image: url("/images/background_image_bibi.webp");
-    background-size: cover;
-    background-repeat: no-repeat;
-    background-attachment: fixed;
+  @apply font-Inter font-light relative w-full min-h-full text-sm;
+  background-image: url("/images/background_image_bibi.webp");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
 }
 
 .logo-gradient {
-    @apply bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent;
+  @apply bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent;
 }
 
 .loggedOutNavbarText {
-    @apply text-gray-600 font-medium transition-colors py-4 sm:py-0 hover:text-gray-900 text-xl sm:m-0 sm:text-sm px-4 hover:bg-colorPrimary sm:hover:bg-transparent;
+  @apply text-gray-600 font-medium transition-colors py-4 sm:py-0 hover:text-gray-900 text-xl sm:m-0 sm:text-sm px-4 hover:bg-colorPrimary sm:hover:bg-transparent;
 }
 
 .mainNavBar {
-    @apply leading-6 hover:bg-colorSecondary hover:text-white p-2 rounded-md;
+  @apply leading-6 hover:bg-colorSecondary hover:text-white p-2 rounded-md;
 }
-.menu {@apply sm:hidden}
+.menu {
+  @apply sm:hidden;
+}
 .navText,
 .userNavText {
-    @apply sm:block hidden;
+  @apply sm:block hidden;
 }
 
 .collapsible {
-    @apply overflow-hidden duration-300;
+  @apply overflow-hidden duration-300;
 }
 .loggedinNavLinks {
-    @apply flex p-2 flex-col items-center rounded-lg text-gray-700 transition-colors duration-200 hover:text-colorSecondary hover:bg-purple-50;
+  @apply flex p-2 flex-col items-center rounded-lg text-gray-700 transition-colors duration-200 hover:text-colorSecondary hover:bg-purple-50;
 }
 .pricing-card {
-    transition: all 0.2s ease-in-out;
+  transition: all 0.2s ease-in-out;
 }
 
 .pricing-card:hover {
-    transform: translateY(-2px);
+  transform: translateY(-2px);
 }
 
 .premium-title {
-    @apply text-2xl text-gray-900 font-RobotoSlab;
+  @apply text-2xl text-gray-900 font-RobotoSlab;
 }
 
 .unread-message {
-    @apply min-w-5 bg-colorSecondary flex h-5 items-center justify-center rounded-full px-1.5 text-xs font-medium text-white
+  @apply min-w-5 bg-colorSecondary flex h-5 items-center justify-center rounded-full px-1.5 text-xs font-medium text-white;
 }
 
 .display-grid {
-    @apply grid grid-cols-1 gap-3 lg:grid-cols-3
+  @apply grid grid-cols-1 gap-3 lg:grid-cols-3;
 }
 
 /* PRICING */
 .benefits-card {
-    @apply bg-white p-4 rounded-lg shadow;
+  @apply bg-white p-4 rounded-lg shadow;
 }
 .benefits-header {
-    @apply text-2xl font-semibold text-gray-800 mb-4 font-RobotoSlab font-light;
+  @apply text-2xl font-semibold text-gray-800 mb-4 font-RobotoSlab font-light;
 }
 
 .card-header {
-    @apply text-lg text-gray-700;
+  @apply text-lg text-gray-700;
 }
 
 .premium-benefits {
-    @apply flex items-center;
+  @apply flex items-center;
 }
 
 .pricing-cards-holder {
-    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4;
+  @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4;
 }
 
 /* landing page */
 .perks-card {
-    @apply flex flex-col w-full items-start gap-8 text-left bg-white rounded-lg p-4 shadow items-center;
+  @apply flex flex-col w-full items-start gap-8 text-left bg-white rounded-lg p-4 shadow items-center;
 }
 
 .perks-header {
-    @apply text-xl font-RobotoSlab;
+  @apply text-xl font-RobotoSlab;
 }
 
 /* FEATURE PAGE */
 .feature-card {
-    @apply bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition duration-300 ease-in-out hover:scale-105;
+  @apply bg-white p-6 rounded-lg shadow-md hover:shadow-lg transition duration-300 ease-in-out hover:scale-105;
 }
 
 .feature-card-header {
-    @apply text-2xl logo-gradient mb-2;
+  @apply text-2xl logo-gradient mb-2;
+}
+
+.dating-attribute {
+  @apply border-2 border-yellow-500 bg-gradient-to-br from-blue-500 to-purple-600 text-white shadow-md transform scale-105 ring-2 ring-yellow-400/50;
 }

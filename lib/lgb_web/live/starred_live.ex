@@ -33,4 +33,14 @@ defmodule LgbWeb.StarredLive do
   def handle_info({:remove_profile, profile}, socket) do
     {:noreply, stream_delete(socket, :profiles, profile)}
   end
+
+  @impl true
+  def handle_info({LgbWeb.Presence, {:join, _presence}}, socket) do
+    {:noreply, socket}
+  end
+
+  @impl true
+  def handle_info({LgbWeb.Presence, {:leave, _presence}}, socket) do
+    {:noreply, socket}
+  end
 end

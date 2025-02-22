@@ -125,3 +125,25 @@ end)
 Lgb.Repo.insert!(%Lgb.Subscriptions.SubscriptionPlan{
   stripe_price_id: "price_1Qj7cnJAAjsUxHv9mH5qXwfV"
 })
+
+goals = [
+  %{name: "Life Partner", description: "Seeking a long-term committed relationship"},
+  %{name: "Casual", description: "Open to casual dating"},
+  %{
+    name: "Intimacy without Commitment",
+    description: "Seeking emotional and physical connection without long-term commitment"
+  },
+  %{name: "Marriage", description: "Looking for a partner to marry"},
+  %{
+    name: "Ethical Monogamy",
+    description: "Committed to honest, consensual monogamous relationship"
+  },
+  %{name: "Open to Marriage", description: "Potentially interested in marriage"}
+]
+
+Enum.each(goals, fn goal ->
+  Lgb.Repo.insert!(%Lgb.Profiles.DatingGoal{
+    name: goal.name,
+    description: goal.description
+  })
+end)

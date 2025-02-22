@@ -9,12 +9,18 @@ defmodule LgbWeb.ProfileLive.MyProfile do
   @impl true
   def mount(_params, _session, socket) do
     user = socket.assigns.current_user
+    dating_goals = Lgb.Repo.all(Lgb.Profiles.DatingGoal)
 
     profile = User.current_profile(user)
+    selected_goals = Lgb.Repo.preload(profile, :dating_goals).dating_goals
 
     socket =
       socket
-      |> assign(:uploaded_files, Profiles.list_profile_pictures(profile))
+      |> assign(
+        uploaded_files: Profiles.list_profile_pictures(profile),
+        dating_goals: dating_goals,
+        selected_goals: selected_goals
+      )
       |> allow_upload(:avatar, accept: ~w(image/*), max_entries: 3)
 
     {:ok, assign(socket, profile: profile, form: to_form(Profile.changeset(profile, %{})))}
@@ -28,6 +34,8 @@ defmodule LgbWeb.ProfileLive.MyProfile do
         consume_uploaded_entries(socket, :avatar, fn %{path: path}, entry ->
           Profiles.create_profile_picture!(entry, path, profile.id)
         end)
+
+        Profiles.save_dating_goals(profile, socket.assigns.selected_goals)
 
         {:noreply,
          socket
@@ -92,6 +100,23 @@ defmodule LgbWeb.ProfileLive.MyProfile do
   @impl Phoenix.LiveView
   def handle_event("cancel-upload", %{"ref" => ref}, socket) do
     {:noreply, cancel_upload(socket, :avatar, ref)}
+  end
+
+  def handle_event("toggle_goal", %{"id" => id}, socket) do
+    goal = Enum.find(socket.assigns.dating_goals, &(to_string(&1.id) == id))
+
+    updated_goals =
+      if Enum.any?(socket.assigns.selected_goals, &(&1.id == goal.id)) do
+        Enum.reject(socket.assigns.selected_goals, &(&1.id == goal.id))
+      else
+        if length(socket.assigns.selected_goals) < 2 do
+          [goal | socket.assigns.selected_goals]
+        else
+          socket.assigns.selected_goals
+        end
+      end
+
+    {:noreply, assign(socket, :selected_goals, updated_goals)}
   end
 
   # special case since form doesn't accept struct so we have to update it manually
