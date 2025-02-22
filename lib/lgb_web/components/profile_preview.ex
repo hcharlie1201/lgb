@@ -68,7 +68,7 @@ defmodule LgbWeb.Components.ProfilePreview do
           uploaded_files={@profile.profile_pictures}
           length={1}
         />
-        <div class="from-black/50 absolute right-0 bottom-0 left-0 rounded-b-lg bg-gradient-to-t to-transparent p-4">
+        <div class="bg-gray-400/10 absolute right-0 bottom-0 left-0 rounded-b-lg p-4">
           <.link
             navigate={~p"/profiles/#{@profile.uuid}"}
             class="text-lg font-semibold text-white transition-colors hover:text-gray-100"
