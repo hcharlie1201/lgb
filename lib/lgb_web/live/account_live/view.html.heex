@@ -1,6 +1,8 @@
-<.page_align>
+<.page_align current_user={@current_user}>
   <.card>
-    <.header><div class="text-center">Billing</div></.header>
+    <.header>
+      <div class="text-center">Billing</div>
+    </.header>
     <.billing_list>
       <:item title="Name">{@account_info["name"] || ""}</:item>
       <:item title="Address">{normalize_address(@account_info["address"]) || ""}</:item>
