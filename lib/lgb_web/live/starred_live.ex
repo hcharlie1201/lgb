@@ -3,7 +3,7 @@ defmodule LgbWeb.StarredLive do
 
   def render(assigns) do
     ~H"""
-    <.page_align>
+    <.page_align current_user={@current_user}>
       <div id="starred_stream" class="display-grid" phx-update="stream">
         <div :for={{dom_id, profile} <- @streams.profiles} id={dom_id}>
           <.live_component

@@ -1,4 +1,4 @@
-defmodule LgbWeb.Geolocation do
+defmodule LgbWeb.Components.Geolocation do
   use Phoenix.LiveComponent
   require Logger
 

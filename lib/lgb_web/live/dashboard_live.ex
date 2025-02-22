@@ -6,8 +6,12 @@ defmodule LgbWeb.DashboardLive do
 
   def render(assigns) do
     ~H"""
-    <.page_align>
-      <.live_component module={LgbWeb.Geolocation} id="user-geolocation" current_user={@current_user} />
+    <.page_align current_user={@current_user}>
+      <.live_component
+        module={LgbWeb.Components.Geolocation}
+        id="user-geolocation"
+        current_user={@current_user}
+      />
       <.card>
         <.header class="text-center">
           <h1>~ Here's a joke ~</h1>
