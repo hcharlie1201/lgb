@@ -23,6 +23,7 @@ import { LiveSocket } from "phoenix_live_view";
 import { StripeAddress } from "./stripe/address";
 import { StripeCheckout } from "./stripe/checkout";
 import { ScrollBottom } from "./scroll_bottom";
+import { Geolocation } from "./geolocation";
 import topbar from "../vendor/topbar";
 
 let Hooks = {};
@@ -80,6 +81,7 @@ Hooks.Map = {
 Hooks.StripeAddress = StripeAddress;
 Hooks.StripeCheckout = StripeCheckout;
 Hooks.ScrollBottom = ScrollBottom;
+Hooks.Geolocation = Geolocation;
 
 let csrfToken = document
   .querySelector("meta[name='csrf-token']")
