@@ -1088,7 +1088,7 @@ defmodule LgbWeb.CoreComponents do
               </.link>
             </span>
           </div>
-
+          
     <!-- Navigation Links -->
           <div class="menu cursor-pointer md:hidden" onclick="expandNavigation()">
             <svg
@@ -1118,7 +1118,7 @@ defmodule LgbWeb.CoreComponents do
           >
             Log in
           </.link>
-
+          
     <!-- Mobile Navigation -->
           <div class="navs fixed top-0 left-0 h-screen w-0 overflow-x-hidden bg-white shadow-lg md:hidden">
             <div class="flex flex-col">
@@ -1167,14 +1167,14 @@ defmodule LgbWeb.CoreComponents do
     assigns = assign(assigns, :found_user, found_user)
 
     ~H"""
-    <div class="flex items-center gap-2 rounded-lg p-2 transition-all">
+    <div class="flex items-center gap-2 rounded-lg p-1 transition-all">
       <div class="flex items-center gap-2">
         <div :if={@found_user} class="flex">
           <div class="h-2 w-2 rounded-full bg-green-400"></div>
           <div class="absolute h-2 w-2 animate-ping rounded-full bg-green-400"></div>
         </div>
         <div class={["text-lg font-medium", if(@primary, do: "text-white", else: "text-black")]}>
-          {@profile.handle}
+          {@profile.handle || "⋆.˚"}
         </div>
         <div
           :if={!@found_user and @profile.user.last_login_at != nil and @show}

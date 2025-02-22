@@ -17,45 +17,64 @@ defmodule LgbWeb.Components.Carousel do
         class="relative flex h-96 space-x-4 transition-transform duration-500 ease-in-out"
         style={"transform: translateX(-#{@current_index * (100 / @length)}%)"}
       >
-        <div
-          :for={uploaded_file <- @uploaded_files}
-          phx-click={show_modal("uploaded-file-#{uploaded_file.id}")}
-          class="group relative w-full flex-shrink-0"
-          style={"width: #{100 / @length}%"}
-        >
-          <button
-            :if={assigns.current_user}
-            phx-click={JS.push("delete_profile_picture", target: @myself)}
-            phx-value-profile-pic-id={uploaded_file.id}
-            class="bg-white/75 absolute top-0 left-0 z-20 rounded-tl-lg rounded-br-lg opacity-0 transition-opacity duration-300 hover:bg-white group-hover:opacity-80"
+        <%= if length(@uploaded_files) > 0 do %>
+          <div
+            :for={uploaded_file <- @uploaded_files}
+            phx-click={show_modal("uploaded-file-#{uploaded_file.id}")}
+            class="group relative w-full flex-shrink-0"
+            style={"width: #{100 / @length}%"}
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-5 w-5 text-gray-700"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
+            <button
+              :if={assigns.current_user}
+              phx-click={JS.push("delete_profile_picture", target: @myself)}
+              phx-value-profile-pic-id={uploaded_file.id}
+              class="bg-white/75 absolute top-0 left-0 z-20 rounded-tl-lg rounded-br-lg opacity-0 transition-opacity duration-300 hover:bg-white group-hover:opacity-80"
             >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M6 18L18 6M6 6l12 12"
-              />
-            </svg>
-          </button>
-          <img
-            src={
-              Lgb.Profiles.ProfilePictureUploader.url(
-                {uploaded_file.image, uploaded_file},
-                :original,
-                signed: true
-              )
-            }
-            alt="Carousel Image"
-            class="h-full w-full rounded-lg object-cover"
-          />
-        </div>
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-5 w-5 text-gray-700"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  stroke-width="2"
+                  d="M6 18L18 6M6 6l12 12"
+                />
+              </svg>
+            </button>
+            <img
+              src={
+                Lgb.Profiles.ProfilePictureUploader.url(
+                  {uploaded_file.image, uploaded_file},
+                  :original,
+                  signed: true
+                )
+              }
+              alt="Carousel Image"
+              class="h-full w-full rounded-lg object-cover"
+            />
+          </div>
+        <% else %>
+          <div class="group relative w-full flex-shrink-0" style={"width: #{100 / @length}%"}>
+            <div class="flex h-full w-full items-center justify-center rounded-lg bg-gray-200">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                class="h-32 w-32 text-gray-400"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+              >
+                <path
+                  fill-rule="evenodd"
+                  d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                  clip-rule="evenodd"
+                />
+              </svg>
+            </div>
+          </div>
+        <% end %>
       </div>
 
       <div class="group">
@@ -81,12 +100,14 @@ defmodule LgbWeb.Components.Carousel do
       </div>
       
     <!-- Indicators -->
-      <div class="absolute bottom-4 left-1/2 flex -translate-x-1/2 transform space-x-2">
-        <%= for {_uploaded_file, index} <- Enum.with_index(@uploaded_files) do %>
-          <button class={"#{if index == @current_index, do: "bg-colorSecondary", else: "bg-purple-200"} h-3 w-3 rounded-full opacity-0 transition-colors duration-200 group-hover:opacity-100"}>
-          </button>
-        <% end %>
-      </div>
+      <%= if length(@uploaded_files) > 0 do %>
+        <div class="absolute bottom-4 left-1/2 flex -translate-x-1/2 transform space-x-2">
+          <%= for {_uploaded_file, index} <- Enum.with_index(@uploaded_files) do %>
+            <button class={"#{if index == @current_index, do: "bg-colorSecondary", else: "bg-purple-200"} h-3 w-3 rounded-full opacity-0 transition-colors duration-200 group-hover:opacity-100"}>
+            </button>
+          <% end %>
+        </div>
+      <% end %>
       
     <!-- Popups -->
       <%= for uploaded_file <- @uploaded_files do %>
