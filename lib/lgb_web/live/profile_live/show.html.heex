@@ -22,6 +22,15 @@
     <:item title="City">{@profile.city}</:item>
     <:item title="State">{@profile.state}</:item>
     <:item title="Zip">{@profile.zip}</:item>
+    <:item title="Dating Style">
+      <div class="flex flex-wrap gap-4">
+        <%= for goal <- @dating_goals do %>
+          <div class={["dating-attribute rounded-full px-3 py-1 text-sm transition-all duration-200 ease-in-out"]}>
+            {goal.name}
+          </div>
+        <% end %>
+      </div>
+    </:item>
     <:item title="Biography">{@profile.biography}</:item>
   </.list>
   <.button phx-click="message" class="mt-16" phx-value-id={@profile.uuid}>Message</.button>

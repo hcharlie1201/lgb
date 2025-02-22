@@ -17,6 +17,11 @@ defmodule Lgb.Profiles.Profile do
     has_many :profile_pictures, Lgb.Profiles.ProfilePicture
     has_one :first_picture, Lgb.Profiles.ProfilePicture, foreign_key: :profile_id
     has_many :starred_profiles, Lgb.Profiles.Starred
+
+    many_to_many :dating_goals, Lgb.Profiles.DatingGoal,
+      join_through: "profiles_dating_goals",
+      on_replace: :delete
+
     belongs_to :user, Lgb.Accounts.User
     field :handle, :string
     field :state, :string

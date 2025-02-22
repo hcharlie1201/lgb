@@ -9,6 +9,7 @@ defmodule Lgb.Profiles do
 
   alias Lgb.Profiles.Profile
   alias Lgb.Profiles.ProfilePicture
+  alias Lgb.Profiles.ProfileDatingGoal
 
   @doc """
   Returns the list of profiles.
@@ -414,6 +415,19 @@ defmodule Lgb.Profiles do
           )
 
     Lgb.Repo.one(query)
+  end
+
+  def save_dating_goals(profile, dating_goals) do
+    Repo.transaction(fn ->
+      Repo.delete_all(from pg in ProfileDatingGoal, where: pg.profile_id == ^profile.id)
+
+      Enum.each(dating_goals, fn goal ->
+        Repo.insert!(%ProfileDatingGoal{
+          profile_id: profile.id,
+          dating_goal_id: goal.id
+        })
+      end)
+    end)
   end
 
   def current_user(profile) do

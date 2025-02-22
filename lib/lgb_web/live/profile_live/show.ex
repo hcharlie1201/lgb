@@ -15,6 +15,7 @@ defmodule LgbWeb.ProfileLive.Show do
 
     profile = Profiles.get_profile!(id)
     profile = Lgb.Repo.preload(profile, :user)
+    selected_attributes = Lgb.Repo.preload(profile, :dating_goals).dating_goals
 
     Lgb.ProfileViews.create_or_update_profile_view(%{
       viewer_id: current_profile.id,
@@ -25,6 +26,7 @@ defmodule LgbWeb.ProfileLive.Show do
     {:noreply,
      socket
      |> assign(:profile, profile)
+     |> assign(:dating_goals, selected_attributes)
      |> assign(:distance, Lgb.Profiles.calculate_distance(profile, current_profile))
      |> assign(:uploaded_files, Profiles.list_profile_pictures(profile))}
   end
