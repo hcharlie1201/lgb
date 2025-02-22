@@ -1,4 +1,5 @@
 defmodule LgbWeb.DashboardLive do
+  require Logger
   use LgbWeb, :live_view
 
   alias Lgb.Profiles
@@ -6,10 +7,11 @@ defmodule LgbWeb.DashboardLive do
   def render(assigns) do
     ~H"""
     <.page_align>
+      <.live_component module={LgbWeb.Geolocation} id="user-geolocation" current_user={@current_user} />
       <.card>
         <.header class="text-center">
           <h1>~ Here's a joke ~</h1>
-          <p class="italic my-2 text-lg font-light">"{@joke}"</p>
+          <p class="my-2 text-lg font-light italic">"{@joke}"</p>
         </.header>
       </.card>
       <br />
@@ -68,10 +70,11 @@ defmodule LgbWeb.DashboardLive do
     new_and_nearby = Profiles.find_new_and_nearby_users(10, profile)
     viewed_your_profile = Lgb.ProfileViews.find_profile_views(profile)
 
-    joke = case Lgb.ThirdParty.DadJokes.get_joke() do
-      {:ok, joke} -> joke
-      {:error, reason} -> reason
-    end
+    joke =
+      case Lgb.ThirdParty.DadJokes.get_joke() do
+        {:ok, joke} -> joke
+        {:error, reason} -> reason
+      end
 
     {:ok,
      assign(socket,
