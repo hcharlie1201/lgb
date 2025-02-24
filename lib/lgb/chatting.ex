@@ -258,7 +258,10 @@ defmodule Lgb.Chatting do
   def count_all_unread_conversation_messages(profile) do
     Lgb.Repo.one(
       from m in Lgb.Chatting.ConversationMessage,
-        where: m.profile_id == ^profile.id,
+        join: c in Lgb.Chatting.Conversation,
+        on: m.conversation_id == c.id,
+        where: c.sender_profile_id == ^profile.id or c.receiver_profile_id == ^profile.id,
+        where: m.profile_id != ^profile.id,
         where: m.read == false,
         select: count(m.id)
     )
