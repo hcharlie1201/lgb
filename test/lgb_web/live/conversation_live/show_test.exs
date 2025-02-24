@@ -18,7 +18,7 @@ defmodule LgbWeb.ConversationLive.ShowTest do
     
     %{
       user: user,
-      profile: profile,
+      profile: _profile,
       other_profile: other_profile,
       conversation: conversation
     }
@@ -32,9 +32,9 @@ defmodule LgbWeb.ConversationLive.ShowTest do
       profile: profile
     } do
       # Create a test message
-      message = conversation_message_fixture(conversation, profile, %{content: "Hello!"})
+      message = create_conversation_message(conversation, profile, %{content: "Hello!"})
 
-      {:ok, view, html} =
+      {:ok, _view, html} =
         conn
         |> log_in_user(user)
         |> live(~p"/conversations/#{conversation.uuid}")
@@ -44,7 +44,7 @@ defmodule LgbWeb.ConversationLive.ShowTest do
     end
 
     test "can send new message", %{conn: conn, user: user, conversation: conversation} do
-      {:ok, view, _html} =
+      {:ok, _view, _html} =
         conn
         |> log_in_user(user)
         |> live(~p"/conversations/#{conversation.uuid}")
@@ -78,7 +78,7 @@ defmodule LgbWeb.ConversationLive.ShowTest do
     } do
       # Create multiple messages
       Enum.each(1..25, fn i ->
-        conversation_message_fixture(conversation, profile, %{content: "Message #{i}"})
+        create_conversation_message(conversation, profile, %{content: "Message #{i}"})
       end)
 
       {:ok, view, _html} =
@@ -106,7 +106,7 @@ defmodule LgbWeb.ConversationLive.ShowTest do
       other_profile: other_profile
     } do
       # Create an unread message from other user
-      message = conversation_message_fixture(conversation, other_profile, %{
+      message = create_conversation_message(conversation, other_profile, %{
         content: "Unread message",
         read: false
       })
@@ -141,5 +141,16 @@ defmodule LgbWeb.ConversationLive.ShowTest do
              |> file_input("#conversation-form", :avatar, file_input)
              |> render_upload("test.jpg") =~ "100%"
     end
+  end
+
+  defp create_conversation_message(conversation, profile, attrs) do
+    {:ok, message} = Lgb.Chatting.create_conversation_message(
+      %Lgb.Chatting.ConversationMessage{},
+      Map.merge(attrs, %{
+        "conversation_id" => conversation.id,
+        "profile_id" => profile.id
+      })
+    )
+    message
   end
 end

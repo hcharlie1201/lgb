@@ -2,7 +2,6 @@ defmodule LgbWeb.ConversationLiveTest do
   use LgbWeb.ConnCase
 
   import Phoenix.LiveViewTest
-  import Lgb.MessagingFixtures
   import Lgb.AccountsFixtures
   import Lgb.ProfilesFixtures
   import Lgb.ChattingFixtures
