@@ -44,7 +44,7 @@ defmodule LgbWeb.ConversationLive.ShowTest do
     end
 
     test "can send new message", %{conn: conn, user: user, conversation: conversation} do
-      {:ok, _view, _html} =
+      {:ok, view, _html} =
         conn
         |> log_in_user(user)
         |> live(~p"/conversations/#{conversation.uuid}")
@@ -55,7 +55,15 @@ defmodule LgbWeb.ConversationLive.ShowTest do
              |> form("#conversation-form", %{content: content})
              |> render_submit()
 
+      # Wait for the message to be processed
+      :timer.sleep(100)
+      
+      # Verify the message appears in the view
       assert render(view) =~ content
+
+      # Verify the message was saved to the database
+      assert Lgb.Chatting.list_conversation_messages(conversation.id)
+             |> Enum.any?(fn msg -> msg.content == content end)
     end
 
     test "handles message validation", %{conn: conn, user: user, conversation: conversation} do
@@ -140,6 +148,94 @@ defmodule LgbWeb.ConversationLive.ShowTest do
       assert view
              |> file_input("#conversation-form", :avatar, file_input)
              |> render_upload("test.jpg") =~ "100%"
+    end
+
+    test "handles empty messages appropriately", %{conn: conn, user: user, conversation: conversation} do
+      {:ok, view, _html} =
+        conn
+        |> log_in_user(user)
+        |> live(~p"/conversations/#{conversation.uuid}")
+
+      # Try to submit an empty message
+      assert view
+             |> form("#conversation-form", %{content: ""})
+             |> render_submit() =~ "can&#39;t be blank"
+    end
+
+    test "handles very long messages", %{conn: conn, user: user, conversation: conversation} do
+      {:ok, view, _html} =
+        conn
+        |> log_in_user(user)
+        |> live(~p"/conversations/#{conversation.uuid}")
+
+      long_content = String.duplicate("a", 1000)
+      
+      assert view
+             |> form("#conversation-form", %{content: long_content})
+             |> render_submit()
+
+      assert render(view) =~ long_content
+    end
+
+    test "updates read status in real-time", %{
+      conn: conn,
+      user: user,
+      conversation: conversation,
+      other_profile: other_profile
+    } do
+      # Create an unread message
+      message = create_conversation_message(conversation, other_profile, %{
+        content: "Test message",
+        read: false
+      })
+
+      {:ok, view, _html} =
+        conn
+        |> log_in_user(user)
+        |> live(~p"/conversations/#{conversation.uuid}")
+
+      # Wait for the message to be marked as read
+      :timer.sleep(100)
+
+      # Verify the message is marked as read in the database
+      updated_message = Lgb.Repo.get!(Lgb.Chatting.ConversationMessage, message.id)
+      assert updated_message.read
+
+      # Verify the UI reflects the read status
+      html = render(view)
+      assert html =~ "Test message"
+      assert html =~ "read"
+    end
+
+    test "handles image upload successfully", %{conn: conn, user: user, conversation: conversation} do
+      {:ok, view, _html} =
+        conn
+        |> log_in_user(user)
+        |> live(~p"/conversations/#{conversation.uuid}")
+
+      file_input = %{
+        "0" => %{
+          last_modified: 1_594_171_879_000,
+          name: "test.jpg",
+          content: "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==",
+          type: "image/jpeg"
+        }
+      }
+
+      # Upload the file
+      assert view
+             |> file_input("#conversation-form", :avatar, file_input)
+             |> render_upload("test.jpg") =~ "100%"
+
+      # Submit the form
+      assert view
+             |> form("#conversation-form", %{})
+             |> render_submit()
+
+      # Verify the image was uploaded and appears in the conversation
+      :timer.sleep(100)
+      html = render(view)
+      assert html =~ "test.jpg"
     end
   end
 
