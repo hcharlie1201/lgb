@@ -18,7 +18,7 @@ defmodule LgbWeb.ConversationLive.ShowTest do
 
     %{
       user: user,
-      profile: profile,
+      profile: _profile,
       other_profile: other_profile,
       conversation: conversation
     }
