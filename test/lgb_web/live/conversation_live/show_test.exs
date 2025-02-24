@@ -18,7 +18,7 @@ defmodule LgbWeb.ConversationLive.ShowTest do
 
     %{
       user: user,
-      profile: profile,
+      profile: _profile,
       other_profile: other_profile,
       conversation: conversation
     }
@@ -44,7 +44,7 @@ defmodule LgbWeb.ConversationLive.ShowTest do
     end
 
     test "can send new message", %{conn: conn, user: user, conversation: conversation} do
-      {:ok, view, _html} =
+      {:ok, _view, _html} =
         conn
         |> log_in_user(user)
         |> live(~p"/conversations/#{conversation.uuid}")
