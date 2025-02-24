@@ -8,17 +8,17 @@ defmodule LgbWeb.ConversationLive.ShowTest do
   setup do
     user = user_fixture()
     other_user = user_fixture()
-    
+
     profile = profile_fixture(user)
     profile = profile |> Lgb.Repo.preload(:user)
     other_profile = profile_fixture(other_user)
     other_profile = other_profile |> Lgb.Repo.preload(:user)
-    
+
     conversation = conversation_fixture(profile, other_profile)
-    
+
     %{
       user: user,
-      profile: _profile,
+      profile: profile,
       other_profile: other_profile,
       conversation: conversation
     }
@@ -50,14 +50,14 @@ defmodule LgbWeb.ConversationLive.ShowTest do
         |> live(~p"/conversations/#{conversation.uuid}")
 
       content = "New test message"
-      
+
       assert view
              |> form("#conversation-form", %{content: content})
              |> render_submit()
 
       # Wait for the message to be processed
       :timer.sleep(100)
-      
+
       # Verify the message appears in the view
       assert render(view) =~ content
 
@@ -96,7 +96,7 @@ defmodule LgbWeb.ConversationLive.ShowTest do
 
       # Initial page should have @per_page messages
       assert view |> render() =~ "Message 25"
-      
+
       # Load more messages
       assert view
              |> element("#load-more")
@@ -114,10 +114,11 @@ defmodule LgbWeb.ConversationLive.ShowTest do
       other_profile: other_profile
     } do
       # Create an unread message from other user
-      message = create_conversation_message(conversation, other_profile, %{
-        content: "Unread message",
-        read: false
-      })
+      message =
+        create_conversation_message(conversation, other_profile, %{
+          content: "Unread message",
+          read: false
+        })
 
       {:ok, view, _html} =
         conn
@@ -125,7 +126,8 @@ defmodule LgbWeb.ConversationLive.ShowTest do
         |> live(~p"/conversations/#{conversation.uuid}")
 
       # Message should be marked as read after viewing
-      :timer.sleep(100) # Allow time for async operations
+      # Allow time for async operations
+      :timer.sleep(100)
       updated_message = Lgb.Repo.get!(Lgb.Chatting.ConversationMessage, message.id)
       assert updated_message.read
     end
@@ -140,7 +142,8 @@ defmodule LgbWeb.ConversationLive.ShowTest do
         "0" => %{
           last_modified: 1_594_171_879_000,
           name: "test.jpg",
-          content: "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==",
+          content:
+            "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==",
           type: "image/jpeg"
         }
       }
@@ -150,7 +153,11 @@ defmodule LgbWeb.ConversationLive.ShowTest do
              |> render_upload("test.jpg") =~ "100%"
     end
 
-    test "handles empty messages appropriately", %{conn: conn, user: user, conversation: conversation} do
+    test "handles empty messages appropriately", %{
+      conn: conn,
+      user: user,
+      conversation: conversation
+    } do
       {:ok, view, _html} =
         conn
         |> log_in_user(user)
@@ -169,7 +176,7 @@ defmodule LgbWeb.ConversationLive.ShowTest do
         |> live(~p"/conversations/#{conversation.uuid}")
 
       long_content = String.duplicate("a", 1000)
-      
+
       assert view
              |> form("#conversation-form", %{content: long_content})
              |> render_submit()
@@ -184,10 +191,11 @@ defmodule LgbWeb.ConversationLive.ShowTest do
       other_profile: other_profile
     } do
       # Create an unread message
-      message = create_conversation_message(conversation, other_profile, %{
-        content: "Test message",
-        read: false
-      })
+      message =
+        create_conversation_message(conversation, other_profile, %{
+          content: "Test message",
+          read: false
+        })
 
       {:ok, view, _html} =
         conn
@@ -207,7 +215,11 @@ defmodule LgbWeb.ConversationLive.ShowTest do
       assert html =~ "read"
     end
 
-    test "handles image upload successfully", %{conn: conn, user: user, conversation: conversation} do
+    test "handles image upload successfully", %{
+      conn: conn,
+      user: user,
+      conversation: conversation
+    } do
       {:ok, view, _html} =
         conn
         |> log_in_user(user)
@@ -217,7 +229,8 @@ defmodule LgbWeb.ConversationLive.ShowTest do
         "0" => %{
           last_modified: 1_594_171_879_000,
           name: "test.jpg",
-          content: "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==",
+          content:
+            "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNk+M9QDwADhgGAWjR9awAAAABJRU5ErkJggg==",
           type: "image/jpeg"
         }
       }
@@ -240,13 +253,15 @@ defmodule LgbWeb.ConversationLive.ShowTest do
   end
 
   defp create_conversation_message(conversation, profile, attrs) do
-    {:ok, message} = Lgb.Chatting.create_conversation_message(
-      %Lgb.Chatting.ConversationMessage{},
-      Map.merge(attrs, %{
-        "conversation_id" => conversation.id,
-        "profile_id" => profile.id
-      })
-    )
+    {:ok, message} =
+      Lgb.Chatting.create_conversation_message(
+        %Lgb.Chatting.ConversationMessage{},
+        Map.merge(attrs, %{
+          "conversation_id" => conversation.id,
+          "profile_id" => profile.id
+        })
+      )
+
     message
   end
 end
