@@ -2,9 +2,10 @@ defmodule LgbWeb.ShoppingLive.SubscriptionsLive.ViewTest do
   use LgbWeb.ConnCase
   import Phoenix.LiveViewTest
   import Lgb.SubscriptionsFixtures
+  import Lgb.ProfilesFixtures
 
   describe "subscriptions view" do
-    setup [:register_and_log_in_user, :create_subscription_plans]
+    setup [:register_and_log_in_user, :create_subscription_plans, :create_profile]
 
     test "displays subscription page title", %{conn: conn} do
       {:ok, _view, html} = live(conn, ~p"/shopping/subscriptions")
@@ -34,6 +35,10 @@ defmodule LgbWeb.ShoppingLive.SubscriptionsLive.ViewTest do
       ]
 
       %{subscription_plans: plans}
+    end
+
+    defp create_profile(%{user: user}) do
+      %{profile: profile_fixture(user)}
     end
   end
 end
