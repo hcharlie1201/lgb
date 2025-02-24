@@ -34,9 +34,9 @@ defmodule Lgb.ChattingFixtures do
     attrs =
       attrs
       |> Enum.into(%{
-        content: "some content",
-        profile_id: profile.id,
-        conversation_id: conversation.id
+        "content" => "some content",
+        "profile_id" => profile.id,
+        "conversation_id" => conversation.id
       })
 
     {:ok, message} = Chatting.create_conversation_message(%Chatting.ConversationMessage{}, attrs)
