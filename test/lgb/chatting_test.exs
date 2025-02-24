@@ -153,6 +153,32 @@ defmodule Lgb.ChattingTest do
       assert message.content == "some content"
       assert message.profile_id == profile1.id
       assert message.conversation_id == conversation.id
+      assert message.uuid != nil
+      assert message.read == false
+    end
+
+    test "create_conversation_message/2 with invalid data returns error changeset",
+         %{profile1: profile1, conversation: conversation} do
+      # Missing both content and image
+      invalid_attrs = %{
+        "profile_id" => profile1.id,
+        "conversation_id" => conversation.id
+      }
+
+      assert {:error, %Ecto.Changeset{}} =
+               Chatting.create_conversation_message(%ConversationMessage{}, invalid_attrs)
+    end
+
+    test "create_conversation_message/2 with missing required fields returns error changeset",
+         %{conversation: conversation} do
+      # Missing profile_id
+      invalid_attrs = %{
+        "content" => "some content",
+        "conversation_id" => conversation.id
+      }
+
+      assert {:error, %Ecto.Changeset{}} =
+               Chatting.create_conversation_message(%ConversationMessage{}, invalid_attrs)
     end
 
     test "list_conversation_messages!/2 returns messages for conversation and profile",
