@@ -23,9 +23,6 @@ defmodule Lgb.Chatting.ConversationMessageUploader do
   def storage_dir(_, {_, conversation_message}) do
     conversation_message = Lgb.Repo.preload(conversation_message, :conversation)
     conversation_id = conversation_message.conversation.id
-    Logger.info(conversation_message.uuid)
-    IO.puts("wtf")
-    IO.inspect(conversation_message.uuid)
     "conversation/#{conversation_id}/conversation_message/#{conversation_message.uuid}"
   end
 end
