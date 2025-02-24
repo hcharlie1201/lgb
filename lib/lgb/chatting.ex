@@ -209,19 +209,12 @@ defmodule Lgb.Chatting do
   alias Lgb.Chatting.ConversationMessage
 
   def list_conversation_messages_by_page(conversation_id, page, per_page) do
-    total_messages =
-      from(cm in ConversationMessage, where: cm.conversation_id == ^conversation_id)
-      |> Repo.aggregate(:count, :id)
-
-    start_offset = max(total_messages - page * per_page, 0)
-
     query =
       from cm in ConversationMessage,
         where: cm.conversation_id == ^conversation_id,
-        # Always sort in ascending order
-        order_by: [asc: cm.inserted_at],
+        order_by: [desc: cm.inserted_at],
         limit: ^per_page,
-        offset: ^start_offset,
+        offset: ^((page - 1) * per_page),
         preload: [:profile, :conversation]
 
     Repo.all(query)
@@ -351,10 +344,53 @@ defmodule Lgb.Chatting do
       {:error, %Ecto.Changeset{}}
 
   """
-  def create_conversation_message(conversation_message \\ %ConversationMessage{}, attrs \\ %{}) do
-    conversation_message
-    |> ConversationMessage.changeset(attrs)
-    |> Repo.insert()
+  def create_conversation_message(
+        conversation_message \\ %ConversationMessage{},
+        attrs \\ %{},
+        image_upload \\ nil
+      ) do
+    attrs = maybe_add_image(attrs, image_upload)
+    uuid = Ecto.UUID.generate()
+    attrs = Map.put(attrs, "uuid", uuid)
+
+    result =
+      conversation_message
+      |> ConversationMessage.changeset(attrs)
+      |> Repo.insert()
+
+    # Clean up temp file if it exists
+    if image_upload do
+      cleanup_temp_file(image_upload.path)
+    end
+
+    result
+  end
+
+  defp maybe_add_image(attrs, nil), do: attrs
+
+  defp maybe_add_image(attrs, %{entry: entry, path: path}) do
+    dest = generate_temp_path(entry.client_name)
+
+    File.cp!(path, dest)
+
+    image_upload = %Plug.Upload{
+      path: dest,
+      filename: entry.client_name,
+      content_type: entry.client_type
+    }
+
+    Map.put(attrs, "image", image_upload)
+  end
+
+  defp generate_temp_path(filename) do
+    Path.join(
+      Application.app_dir(:lgb, "priv/static/uploads"),
+      filename
+    )
+  end
+
+  defp cleanup_temp_file(path) do
+    File.rm!(path)
   end
 
   @doc """
@@ -389,6 +425,34 @@ defmodule Lgb.Chatting do
   """
   def delete_conversation_message(%ConversationMessage{} = conversation_message) do
     Repo.delete(conversation_message)
+  end
+
+  def update_conversation_message_with_image!(entry, temp_path, conversation_message) do
+    dest =
+      Path.join(
+        Application.app_dir(:lgb, "priv/static/uploads"),
+        entry.client_name
+      )
+
+    File.cp!(temp_path, dest)
+
+    image_upload = %Plug.Upload{
+      path: dest,
+      filename: entry.client_name,
+      content_type: entry.client_type
+    }
+
+    conversation_message =
+      conversation_message
+      |> ConversationMessage.typing_changeset(%{
+        image: image_upload
+      })
+      |> Repo.update!()
+
+    # Remove the temporary file saved locally
+    File.rm!(dest)
+
+    conversation_message
   end
 
   @doc """

@@ -142,9 +142,9 @@ defmodule Lgb.ChattingTest do
     test "create_conversation_message/2 with valid data creates a message",
          %{profile1: profile1, conversation: conversation} do
       valid_attrs = %{
-        content: "some content",
-        profile_id: profile1.id,
-        conversation_id: conversation.id
+        "content" => "some content",
+        "profile_id" => profile1.id,
+        "conversation_id" => conversation.id
       }
 
       assert {:ok, message} =
@@ -153,6 +153,32 @@ defmodule Lgb.ChattingTest do
       assert message.content == "some content"
       assert message.profile_id == profile1.id
       assert message.conversation_id == conversation.id
+      assert message.uuid != nil
+      assert message.read == false
+    end
+
+    test "create_conversation_message/2 with invalid data returns error changeset",
+         %{profile1: profile1, conversation: conversation} do
+      # Missing both content and image
+      invalid_attrs = %{
+        "profile_id" => profile1.id,
+        "conversation_id" => conversation.id
+      }
+
+      assert {:error, %Ecto.Changeset{}} =
+               Chatting.create_conversation_message(%ConversationMessage{}, invalid_attrs)
+    end
+
+    test "create_conversation_message/2 with missing required fields returns error changeset",
+         %{conversation: conversation} do
+      # Missing profile_id
+      invalid_attrs = %{
+        "content" => "some content",
+        "conversation_id" => conversation.id
+      }
+
+      assert {:error, %Ecto.Changeset{}} =
+               Chatting.create_conversation_message(%ConversationMessage{}, invalid_attrs)
     end
 
     test "list_conversation_messages!/2 returns messages for conversation and profile",
@@ -160,6 +186,71 @@ defmodule Lgb.ChattingTest do
       message = conversation_message_fixture(conversation, profile1)
       assert [loaded_message] = Chatting.list_conversation_messages!(conversation.id, profile1.id)
       assert loaded_message.id == message.id
+    end
+
+    test "list_conversation_messages_by_page/3 returns paginated messages",
+         %{profile1: profile1, conversation: conversation} do
+      # Create 15 messages
+      Enum.each(1..15, fn _ ->
+        conversation_message_fixture(conversation, profile1)
+      end)
+
+      # Get first page (10 messages)
+      messages = Chatting.list_conversation_messages_by_page(conversation.id, 1, 10)
+      assert length(messages) == 10
+
+      # Get second page (5 messages)
+      messages = Chatting.list_conversation_messages_by_page(conversation.id, 2, 10)
+      assert length(messages) == 5
+    end
+
+    test "count_unread_messages/2 returns correct count for conversation",
+         %{profile1: profile1, profile2: profile2, conversation: conversation} do
+      # Create 3 unread messages from profile2 to profile1
+      Enum.each(1..3, fn _ ->
+        conversation_message_fixture(conversation, profile2)
+      end)
+
+      assert Chatting.count_unread_messages(conversation.id, profile1.id) == 3
+    end
+
+    test "count_all_unread_conversation_messages/1 returns total unread across all conversations",
+         %{profile1: profile1, profile2: profile2} do
+      # Create two conversations
+      {:ok, conv1} = Chatting.get_or_create_conversation(profile1, profile2)
+      user3 = Lgb.AccountsFixtures.user_fixture()
+      profile3 = Lgb.ProfilesFixtures.profile_fixture(user3)
+      {:ok, conv2} = Chatting.get_or_create_conversation(profile1, profile3)
+
+      # Add unread messages to both conversations
+      conversation_message_fixture(conv1, profile2)
+      conversation_message_fixture(conv2, profile3)
+
+      assert Chatting.count_all_unread_conversation_messages(profile1) == 2
+    end
+
+    test "preload_and_transform_conversations/2 properly transforms conversations",
+         %{profile1: profile1, profile2: profile2, conversation: conversation} do
+      message = conversation_message_fixture(conversation, profile2)
+      
+      [transformed] = Chatting.preload_and_transform_conversations([conversation], profile1.id)
+      
+      assert transformed.other_profile.id == profile2.id
+      assert transformed.last_message.id == message.id
+    end
+
+    test "list_conversations/2 returns filtered conversations by search term",
+         %{profile1: profile1, profile2: profile2} do
+      # Update profile2's handle to make it searchable
+      {:ok, _} = Lgb.Profiles.update_profile(profile2, %{handle: "searchable_handle"})
+      
+      {:ok, _conversation} = Chatting.get_or_create_conversation(profile1, profile2)
+      
+      results = Chatting.list_conversations(profile1, "searchable")
+      assert length(results) == 1
+      
+      results = Chatting.list_conversations(profile1, "nonexistent")
+      assert length(results) == 0
     end
   end
 end

@@ -33,6 +33,7 @@ defmodule LgbWeb.ConversationLive.Show do
 
     all_messages =
       Chatting.list_conversation_messages_by_page(conversation.id, socket.assigns.page, @per_page)
+      |> Enum.reverse()
 
     topic = "conversation:#{conversation.id}"
     if connected?(socket), do: LgbWeb.Endpoint.subscribe(topic)
@@ -43,7 +44,8 @@ defmodule LgbWeb.ConversationLive.Show do
      |> assign(current_profile: current_profile)
      |> assign(conversation: conversation)
      |> assign(other_profile: other_profile)
-     |> stream(:all_messages, all_messages)}
+     |> stream(:all_messages, all_messages)
+     |> allow_upload(:avatar, accept: ~w(image/*), max_entries: 1)}
   end
 
   def handle_event("validate", params, socket) do
@@ -62,13 +64,27 @@ defmodule LgbWeb.ConversationLive.Show do
         "profile_id" => socket.assigns.current_profile.id
       })
 
-    case Chatting.create_conversation_message(%ConversationMessage{}, params_with_ids) do
+    result =
+      if uploaded_entries(socket, :avatar) != {[], []} do
+        consume_uploaded_entries(socket, :avatar, fn %{path: path}, entry ->
+          create_message(params_with_ids, socket, %{entry: entry, path: path})
+        end)
+        |> Enum.at(0)
+      else
+        create_message(params_with_ids, socket)
+      end
+
+    case result do
       {:ok, message} ->
-        broadcast_new_message(message)
+        {:noreply, reset_form(socket, message)}
+
+      %ConversationMessage{} = message ->
         {:noreply, reset_form(socket, message)}
 
       {:error, _changeset} ->
-        {:noreply, put_flash(socket, :error, "Please enter a valid input")}
+        {:noreply,
+         socket
+         |> put_flash(:error, "Failed to send message")}
     end
   end
 
@@ -113,6 +129,14 @@ defmodule LgbWeb.ConversationLive.Show do
   def handle_info({Presence, {:leave, _presence}}, socket) do
     {:noreply, socket}
   end
+
+  def handle_event("cancel-upload", %{"ref" => ref}, socket) do
+    {:noreply, cancel_upload(socket, :avatar, ref)}
+  end
+
+  defp error_to_string(:too_large), do: "Too large"
+  defp error_to_string(:not_accepted), do: "You have selected an unacceptable file type"
+  defp error_to_string(:too_many_files), do: "You have selected too many files"
 
   # Private helper functions
   defp get_other_profile(conversation, current_profile_id) do
@@ -172,10 +196,10 @@ defmodule LgbWeb.ConversationLive.Show do
   end
 
   defp paginate_message(socket) do
-    socket =
-      socket
-      |> update(:page, &(&1 + 1))
+    # Increment the page
+    socket = update(socket, :page, &(&1 + 1))
 
+    # Fetch older messages
     previous_messages =
       Chatting.list_conversation_messages_by_page(
         socket.assigns.conversation.id,
@@ -183,7 +207,29 @@ defmodule LgbWeb.ConversationLive.Show do
         @per_page
       )
 
-    socket = stream(socket, :all_messages, previous_messages, at: 0)
-    socket
+    # If there are no more messages, do nothing or notify the user
+    if Enum.empty?(previous_messages) do
+      socket
+    else
+      # Prepend the new messages to the existing stream
+      Enum.reduce(previous_messages, socket, fn message, socket ->
+        stream_insert(socket, :all_messages, message, at: 0)
+      end)
+    end
+  end
+
+  defp create_message(params, socket, image_upload \\ nil) do
+    case Chatting.create_conversation_message(
+           %ConversationMessage{},
+           params,
+           image_upload
+         ) do
+      {:ok, message} ->
+        broadcast_new_message(message)
+        {:ok, message}
+
+      {:error, _changeset} ->
+        {:error, socket}
+    end
   end
 end
