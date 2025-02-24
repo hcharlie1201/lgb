@@ -25,6 +25,9 @@ config :lgb, LgbWeb.Endpoint,
   secret_key_base: "arUdtBSmyByKGS9kX4YwnKybN/4ser9GnO7kRUMQv7kVNVzXuYJRC2oT+H3Q28Dy",
   server: false
 
+config :waffle,
+  storage: Waffle.Storage.Local
+
 # In test we don't send emails.
 config :lgb, Lgb.Mailer, adapter: Swoosh.Adapters.Test
 

@@ -33,6 +33,7 @@ defmodule LgbWeb.ConversationLive.Show do
 
     all_messages =
       Chatting.list_conversation_messages_by_page(conversation.id, socket.assigns.page, @per_page)
+      |> Enum.reverse()
 
     topic = "conversation:#{conversation.id}"
     if connected?(socket), do: LgbWeb.Endpoint.subscribe(topic)
@@ -195,10 +196,10 @@ defmodule LgbWeb.ConversationLive.Show do
   end
 
   defp paginate_message(socket) do
-    socket =
-      socket
-      |> update(:page, &(&1 + 1))
+    # Increment the page
+    socket = update(socket, :page, &(&1 + 1))
 
+    # Fetch older messages
     previous_messages =
       Chatting.list_conversation_messages_by_page(
         socket.assigns.conversation.id,
@@ -206,8 +207,15 @@ defmodule LgbWeb.ConversationLive.Show do
         @per_page
       )
 
-    socket = stream(socket, :all_messages, previous_messages, at: 0)
-    socket
+    # If there are no more messages, do nothing or notify the user
+    if Enum.empty?(previous_messages) do
+      socket
+    else
+      # Prepend the new messages to the existing stream
+      Enum.reduce(previous_messages, socket, fn message, socket ->
+        stream_insert(socket, :all_messages, message, at: 0)
+      end)
+    end
   end
 
   defp create_message(params, socket, image_upload \\ nil) do

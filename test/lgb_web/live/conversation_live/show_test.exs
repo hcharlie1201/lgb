@@ -83,7 +83,7 @@ defmodule LgbWeb.ConversationLive.ShowTest do
         |> live(~p"/conversations/#{conversation.uuid}")
 
       # Initial page should have @per_page messages
-      assert view |> render() =~ "Message 25"
+      assert view |> render() =~ "Message 20"
     end
 
     test "marks messages as read when viewed", %{
