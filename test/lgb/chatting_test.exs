@@ -142,9 +142,9 @@ defmodule Lgb.ChattingTest do
     test "create_conversation_message/2 with valid data creates a message",
          %{profile1: profile1, conversation: conversation} do
       valid_attrs = %{
-        content: "some content",
-        profile_id: profile1.id,
-        conversation_id: conversation.id
+        "content" => "some content",
+        "profile_id" => profile1.id,
+        "conversation_id" => conversation.id
       }
 
       assert {:ok, message} =
