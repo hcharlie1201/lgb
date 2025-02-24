@@ -12,18 +12,20 @@ defmodule LgbWeb.Components.SignedInNav do
 
   def update(assigns, socket) do
     current_profile = Lgb.Accounts.User.current_profile(assigns.current_user)
+    count = Lgb.Chatting.count_all_unread_conversation_messages(current_profile)
 
     {:ok,
      socket
      |> assign(assigns)
-     |> assign(current_profile: current_profile)}
+     |> assign(current_profile: current_profile)
+     |> assign(count: count)}
   end
 
   def render(assigns) do
     ~H"""
     <nav
       id={assigns.id}
-      class={["top-[64px] sticky flex w-full flex-row justify-around self-start border bg-white p-0 md:w-20 md:flex-col md:border-0 md:bg-transparent md:p-2", "z-10 items-center md:justify-start"]}
+      class={["top-[64px] sticky flex w-full flex-row justify-around self-start border bg-white p-0 md:w-20 md:flex-col md:border-0 md:bg-transparent md:p-2", "z-10 items-center p-2 md:justify-start"]}
     >
       <.link navigate={~p"/starred"} class="loggedinNavLinks group">
         <svg
@@ -87,7 +89,7 @@ defmodule LgbWeb.Components.SignedInNav do
         </svg>
         <span class="userNavText mt-1 text-xs">Search</span>
       </.link>
-      <.link class="loggedinNavLinks" navigate={~p"/conversations"}>
+      <.link class="loggedinNavLinks relative" navigate={~p"/conversations"}>
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"
@@ -104,6 +106,14 @@ defmodule LgbWeb.Components.SignedInNav do
         </svg>
         <span class="userNavText mt-1 text-xs">
           Inbox
+        </span>
+        
+    <!-- Notification Badge -->
+        <span
+          :if={assigns.count > 0}
+          class="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-blue-500 text-xs font-bold text-white"
+        >
+          {assigns.count}
         </span>
       </.link>
       <.link class="loggedinNavLinks" navigate={~p"/chat_rooms"}>
