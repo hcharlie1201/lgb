@@ -989,7 +989,7 @@ defmodule LgbWeb.CoreComponents do
             navigate={~p"/users/log_in"}
             class="ml-4 font-medium text-gray-600 hover:text-gray-900"
           >
-            Log in
+            Log In
           </.link>
           
     <!-- Mobile Navigation -->
@@ -1007,7 +1007,7 @@ defmodule LgbWeb.CoreComponents do
               <a href="/community" class="loggedOutNavbarText">Community</a>
               <a href="/pricing" class="loggedOutNavbarText">Pricing</a>
               <.link navigate={~p"/users/log_in"} class="loggedOutNavbarText">
-                Log in
+                Log In
               </.link>
             </div>
           </div>

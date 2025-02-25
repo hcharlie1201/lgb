@@ -26,16 +26,23 @@ module.exports = {
         'landingPageTextWidth': '550px',
       },
       keyframes: {
-        fadeIn: {
-          '0%': { opacity: '0' },
-          '100%': { opacity: '1' }
+        fadeInDown: {
+          'from': { opacity: '0', transform: 'translateY(-20px)' },
+          'to': { opacity: '1', transform: 'translateY(0)' },
+        },
+        fadeInUp: {
+          'from': { opacity: '0', transform: 'translateY(20px)' },
+          'to': { opacity: '1', transform: 'translateY(0)' },
+        },
+        floatUpDown: {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-10px)" },
         },
       },
       animation: {
-        fadeIn: 'fadeIn 1s ease-out forwards',
-        fadeInFast: 'fadeIn 0.5s ease-out forwards',
-        fadeInSlow: 'fadeIn 2s ease-out forwards',
-        fadeInDelay: 'fadeIn 1s ease-out 0.5s forwards',
+        fadeInDown: 'fadeInDown 0.8s ease forwards',
+        fadeInUp: 'fadeInUp 0.8s ease forwards',
+        fadeFloat: "fadeInDown 2s ease-out, floatUpDown 2s ease-in-out infinite"
       },
     },
   },
