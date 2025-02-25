@@ -26,9 +26,11 @@ defmodule LgbWeb.Router do
     get "/community", PageController, :community
     get "/pricing", PageController, :pricing
 
-    live "/blogs", BlogLive
-    live "/blog1", BlogsLive.Blog1
-    live "/blog2", BlogsLive.Blog2
+    scope "/blogs" do
+      live "/", BlogLive
+      live "/marketing", BlogsLive.Marketing
+      live "/strategy", BlogsLive.Strategy
+    end
   end
 
   # Other scopes may use custom stacks.
