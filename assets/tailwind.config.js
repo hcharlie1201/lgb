@@ -27,12 +27,12 @@ module.exports = {
       },
       keyframes: {
         fadeIn: {
-          'from': { opacity: '0', transform: 'translateY(20px)' },
-          'to': { opacity: '1', transform: 'translateY(0)' },
+          'from': { opacity: '0' },
+          'to': { opacity: '1' },
         },
       },
       animation: {
-        fadeIn: 'fadeIn 0.8s ease forwards',
+        fadeIn: 'fadeIn 0.5s ease-out',
       },
     },
   },
