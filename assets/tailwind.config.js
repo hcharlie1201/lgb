@@ -33,6 +33,9 @@ module.exports = {
       },
       animation: {
         fadeIn: 'fadeIn 1s ease-out forwards',
+        fadeInFast: 'fadeIn 0.5s ease-out forwards',
+        fadeInSlow: 'fadeIn 2s ease-out forwards',
+        fadeInDelay: 'fadeIn 1s ease-out 0.5s forwards',
       },
     },
   },
