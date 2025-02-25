@@ -1069,4 +1069,16 @@ defmodule LgbWeb.CoreComponents do
     </div>
     """
   end
+
+  slot :inner_block, required: true
+
+  def blog(assigns) do
+    ~H"""
+    <div class="container mx-auto px-4 py-8">
+      <div class="mx-auto max-w-xl">
+        {render_slot(@inner_block)}
+      </div>
+    </div>
+    """
+  end
 end
