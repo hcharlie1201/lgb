@@ -51,6 +51,12 @@ defmodule LgbWeb.MeetupLive.Handlers.LocationHandlers do
      |> assign(:show_location_modal, false)}
   end
 
+  def close_position_modal(socket) do
+    {:noreply,
+     socket
+     |> assign(:show_selected_position_modal, false)}
+  end
+
   @doc """
   Handles deleting a location.
   """
@@ -143,6 +149,7 @@ defmodule LgbWeb.MeetupLive.Handlers.LocationHandlers do
          socket
          |> stream_insert(:locations, formatted_location)
          |> assign(:selected_position, nil)
+         |> assign(:show_selected_position_modal, false)
          |> assign(:form, to_form(Meetups.change_location(%EventLocation{})))
          |> put_flash(:info, "Meetup location created successfully")}
 

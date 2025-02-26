@@ -20,41 +20,6 @@
       </div>
     </div>
     <.card class="p-2">
-      <.header>Create Meetup</.header>
-      <.simple_form for={@form} phx-submit="save-location" phx-change="validate">
-        <.input
-          field={@form[:title]}
-          label="Event Title"
-          placeholder="Socal Dungeon and Dragons"
-          required
-        />
-        <.input
-          field={@form[:location_name]}
-          label="Location Name"
-          placeholder="e.g., Coffee Shop"
-          required
-        />
-        <.input
-          field={@form[:description]}
-          type="textarea"
-          label="Description"
-          placeholder="Enter meetup details..."
-        />
-        <.input field={@form[:date]} type="datetime-local" label="Date & Time" />
-        <.input
-          field={@form[:category]}
-          type="select"
-          label="Category"
-          options={Lgb.Meetups.EventLocation.categories()}
-          prompt="Select your category"
-          multiple={false}
-        />
-        <.input field={@form[:max_participants]} type="number" label="Max # of Participants" />
-        <.button type="submit">
-          Create Meetup
-        </.button>
-      </.simple_form>
-      <hr class="my-6" />
       <.header>Your Meetups</.header>
       <div class="max-h-96 space-y-4 overflow-y-auto">
         <div
@@ -201,4 +166,45 @@
       </div>
     </.modal>
   <% end %>
+
+  <.modal
+    :if={@show_selected_position_modal}
+    show={@show_selected_position_modal}
+    id="selected-position"
+    on_cancel={JS.push("close-position-modal")}
+  >
+    <.simple_form for={@form} phx-submit="save-location" phx-change="validate">
+      <.input
+        field={@form[:title]}
+        label="Event Title"
+        placeholder="Socal Dungeon and Dragons"
+        required
+      />
+      <.input
+        field={@form[:location_name]}
+        label="Location Name"
+        placeholder="1234 Fake Street => Coffee Shop"
+        required
+      />
+      <.input
+        field={@form[:description]}
+        type="textarea"
+        label="Description"
+        placeholder="Enter meetup details..."
+      />
+      <.input field={@form[:date]} type="datetime-local" label="Date & Time" />
+      <.input
+        field={@form[:category]}
+        type="select"
+        label="Category"
+        options={Lgb.Meetups.EventLocation.categories()}
+        prompt="Select your category"
+        multiple={false}
+      />
+      <.input field={@form[:max_participants]} type="number" label="Max # of Participants" />
+      <.button type="submit">
+        Create Meetup
+      </.button>
+    </.simple_form>
+  </.modal>
 </.page_align>

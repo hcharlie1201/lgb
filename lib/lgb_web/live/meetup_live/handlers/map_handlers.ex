@@ -13,6 +13,7 @@ defmodule LgbWeb.MeetupLive.Handlers.MapHandlers do
     {:noreply,
      socket
      |> assign(:selected_position, %{latitude: lat, longitude: lng})
+     |> assign(:show_selected_position_modal, true)
      |> put_flash(:info, "Location selected. Fill out the form to create a meetup.")}
   end
 

@@ -17,6 +17,7 @@ defmodule LgbWeb.MeetupLive.Map do
      |> assign(:form, to_form(Meetups.change_location(%EventLocation{})))
      |> assign(:map_id, "meetup-map-#{socket.assigns.current_user.uuid}")
      |> assign(:selected_position, nil)
+     |> assign(:show_selected_position_modal, false)
      |> assign(:show_location_modal, false)
      |> assign(:selected_location, nil)}
   end
@@ -73,6 +74,11 @@ defmodule LgbWeb.MeetupLive.Map do
   @impl true
   def handle_event("close-location-modal", _params, socket) do
     LocationHandlers.close_location_modal(socket)
+  end
+
+  @impl true
+  def handle_event("close-position-modal", _params, socket) do
+    LocationHandlers.close_position_modal(socket)
   end
 
   #
