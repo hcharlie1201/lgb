@@ -118,11 +118,7 @@ defmodule LgbWeb.Router do
       end
 
       scope "/meetups", MeetupLive do
-        live "/", Index, :index
-        live "/new", New, :new
-        live "/:id", Show, :show
-        live "/:id/edit", Edit, :edit
-        live "/:id/join", Join, :join
+        live "/", Map
       end
     end
   end
