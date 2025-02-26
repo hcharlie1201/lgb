@@ -1,9 +1,20 @@
 const MeetupMap = {
     mounted() {
-        this.markers = [];
-        this.infoWindows = [];
+        // Store markers in an object map keyed by location ID for easy lookup
+        this.markers = {};
+        this.userLocationMarker = null;
 
         // Load Google Maps
+        this.loadGoogleMaps();
+
+        // Set up event listeners
+        this.setupEventListeners();
+
+        // Set up mutation observer for location streams
+        this.setupLocationObserver();
+    },
+
+    loadGoogleMaps() {
         const apiKey = this.el.dataset.apiKey;
 
         if (window.google && window.google.maps) {
@@ -19,59 +30,75 @@ const MeetupMap = {
 
             document.head.appendChild(script);
         }
+    },
 
+    setupEventListeners() {
         // Listen for events to focus on a marker
         window.addEventListener("focus-map-marker", (e) => {
-            const { lat, lng } = e.detail;
-            this.map.setCenter({ lat, lng });
-            this.map.setZoom(15);
-
-            // Find and open the info window
-            const index = this.markers.findIndex(marker =>
-                marker.getPosition().lat() === parseFloat(lat) && marker.getPosition().lng() === parseFloat(lng)
-            );
-
-            if (index !== -1 && this.infoWindows[index]) {
-                this.infoWindows[index].open(this.map, this.markers[index]);
-            }
+            this.focusMarker(e.detail);
         });
 
-        // Listen for location updates from server
-        this.handleEvent("update-locations", (data) => {
-            this.updateMarkers(data.locations);
-        });
-
-        // Listen for map centering
+        // LiveView push event handlers
         this.handleEvent("center-map", (data) => {
-            this.map.setCenter({ lat: parseFloat(data.lat), lng: parseFloat(data.lng) });
-            if (data.zoom) {
-                this.map.setZoom(data.zoom);
+            this.centerMap(data);
+        });
+
+        this.handleEvent("get-user-location", (data) => {
+            this.getUserLocation(data);
+        });
+
+        this.handleEvent("remove-marker", (data) => {
+            this.removeMarker(data.id);
+        });
+    },
+
+    setupLocationObserver() {
+        // Use this if you're using streams for locations
+        const locationContainer = document.getElementById('location-markers');
+        if (!locationContainer) return;
+
+        const observer = new MutationObserver(() => {
+            this.syncMarkersFromDOM();
+        });
+
+        observer.observe(locationContainer, { childList: true, subtree: true });
+
+        // Initial sync
+        this.syncMarkersFromDOM();
+    },
+
+    syncMarkersFromDOM() {
+        const locationElements = document.querySelectorAll('#location-markers > div');
+        const currentIds = new Set();
+
+        // Add or update markers
+        locationElements.forEach(element => {
+            try {
+                const locationData = JSON.parse(element.dataset.location);
+                currentIds.add(locationData.id);
+
+                if (this.markers[locationData.id]) {
+                    // Update existing marker if needed
+                    this.updateMarker(locationData);
+                } else {
+                    // Create new marker
+                    this.addMarker(locationData);
+                }
+            } catch (e) {
+                console.error("Error parsing location data:", e);
             }
         });
 
-        // Listen for geolocation requests
-        this.handleEvent("get-user-location", (data) => {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    (position) => {
-                        this.pushEvent("user-location-result", {
-                            lat: position.coords.latitude.toString(),
-                            lng: position.coords.longitude.toString(),
-                            radius: data.radius
-                        });
-                    },
-                    () => {
-                        alert("Error: Unable to retrieve your location");
-                    }
-                );
-            } else {
-                alert("Error: Your browser doesn't support geolocation");
+        // Remove markers that no longer exist in the DOM
+        Object.keys(this.markers).forEach(id => {
+            if (!currentIds.has(parseInt(id))) {
+                this.removeMarker(id);
             }
         });
     },
 
     initMap() {
-        // Default map center (San Francisco)
+        // Default map center
         const defaultCenter = { lat: 37.7749, lng: -122.4194 };
 
         // Create the map
@@ -85,55 +112,28 @@ const MeetupMap = {
 
         // Add click listener to map
         this.map.addListener("click", (event) => {
-            const position = event.latLng;
-            this.handleMapClick(position);
+            this.handleMapClick(event.latLng);
         });
 
-        // Add bounds_changed listener to load locations in view
+        // Add bounds_changed listener
         this.map.addListener("bounds_changed", () => {
             this.handleBoundsChanged();
         });
 
         // Try to get user's current location
-        if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                (position) => {
-                    const pos = {
-                        lat: position.coords.latitude,
-                        lng: position.coords.longitude,
-                    };
-                    this.map.setCenter(pos);
-
-                    // Add a special marker for user's current location
-                    new google.maps.Marker({
-                        position: pos,
-                        map: this.map,
-                        icon: {
-                            path: google.maps.SymbolPath.CIRCLE,
-                            scale: 10,
-                            fillColor: "#4285F4",
-                            fillOpacity: 0.8,
-                            strokeWeight: 1,
-                            strokeColor: "#FFFFFF",
-                        },
-                        title: "Your Location",
-                    });
-                },
-                () => {
-                    console.log("Error: The Geolocation service failed.");
-                }
-            );
-        }
+        this.tryGetUserInitialLocation();
     },
 
     handleBoundsChanged() {
-        // Don't send too many events - debounce
+        // Debounce to avoid too many events
         if (this.boundsChangeTimeout) {
             clearTimeout(this.boundsChangeTimeout);
         }
 
         this.boundsChangeTimeout = setTimeout(() => {
             const bounds = this.map.getBounds();
+            if (!bounds) return;
+
             const ne = bounds.getNorthEast();
             const sw = bounds.getSouthWest();
 
@@ -162,55 +162,137 @@ const MeetupMap = {
 
         // Add a marker for the selected position
         this.selectionMarker = new google.maps.Marker({
-            position: position,
+            position,
             map: this.map,
             animation: google.maps.Animation.DROP,
-            icon: {
-                path: google.maps.SymbolPath.CIRCLE,
-                scale: 8,
-                fillColor: "#FF5722",
-                fillOpacity: 0.8,
-                strokeWeight: 1,
-                strokeColor: "#FFFFFF",
-            },
+            icon: this.getMarkerIcon('selection')
         });
     },
 
-    updateMarkers(locations) {
-        // Clear existing markers
-        this.markers.forEach(marker => marker.setMap(null));
-        this.markers = [];
-        this.infoWindows = [];
+    addMarker(location) {
+        const position = new google.maps.LatLng(
+            parseFloat(location.latitude),
+            parseFloat(location.longitude)
+        );
 
-        // Add markers for each location
-        locations.forEach(location => {
-            const position = new google.maps.LatLng(
-                parseFloat(location.latitude),
-                parseFloat(location.longitude)
+        // Determine marker icon based on status
+        const iconType = this.getMarkerTypeForLocation(location);
+
+        const marker = new google.maps.Marker({
+            position,
+            map: this.map,
+            title: location.title || location.name,
+            icon: this.getMarkerIcon(iconType)
+        });
+
+        // Add click handler
+        marker.addListener("click", () => {
+            this.pushEvent("open-location-modal", {
+                location_id: location.id
+            });
+        });
+
+        // Store the marker
+        this.markers[location.id] = marker;
+    },
+
+    updateMarker(location) {
+        const marker = this.markers[location.id];
+        if (!marker) return;
+
+        // Update marker icon if participation status changed
+        const iconType = this.getMarkerTypeForLocation(location);
+        marker.setIcon(this.getMarkerIcon(iconType));
+
+        // Update title if needed
+        marker.setTitle(location.title || location.name);
+    },
+
+    removeMarker(id) {
+        if (this.markers[id]) {
+            this.markers[id].setMap(null);
+            delete this.markers[id];
+        }
+    },
+
+    focusMarker({ id, lat, lng }) {
+        this.map.setCenter({ lat: parseFloat(lat), lng: parseFloat(lng) });
+        this.map.setZoom(15);
+
+        // Highlight the marker
+        const marker = this.markers[id];
+        if (marker) {
+            // Optionally animate or highlight the marker
+            marker.setAnimation(google.maps.Animation.BOUNCE);
+            setTimeout(() => marker.setAnimation(null), 1500);
+        }
+    },
+
+    centerMap(data) {
+        this.map.setCenter({
+            lat: parseFloat(data.lat),
+            lng: parseFloat(data.lng)
+        });
+
+        if (data.zoom) {
+            this.map.setZoom(data.zoom);
+        }
+    },
+
+    getUserLocation(data) {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    this.pushEvent("user-location-result", {
+                        lat: position.coords.latitude.toString(),
+                        lng: position.coords.longitude.toString(),
+                        radius: data.radius
+                    });
+                },
+                () => {
+                    alert("Error: Unable to retrieve your location");
+                }
             );
+        } else {
+            alert("Error: Your browser doesn't support geolocation");
+        }
+    },
 
-            // Customize marker based on participation status
-            let markerOptions = {
-                position: position,
-                map: this.map,
-                title: location.title || location.name,
-            };
+    tryGetUserInitialLocation() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (position) => {
+                    const pos = {
+                        lat: position.coords.latitude,
+                        lng: position.coords.longitude,
+                    };
+                    this.map.setCenter(pos);
 
-            // If user is participating, use a different marker color
-            if (location.is_participant) {
-                markerOptions.icon = {
-                    path: google.maps.SymbolPath.CIRCLE,
-                    scale: 10,
-                    fillColor: "#22C55E", // Green marker for participating
-                    fillOpacity: 0.8,
-                    strokeWeight: 1,
-                    strokeColor: "#FFFFFF",
-                };
-            }
+                    // Add a special marker for user's current location
+                    this.userLocationMarker = new google.maps.Marker({
+                        position: pos,
+                        map: this.map,
+                        icon: this.getMarkerIcon('user'),
+                        title: "Your Location",
+                    });
+                },
+                () => {
+                    console.log("Error: The Geolocation service failed.");
+                }
+            );
+        }
+    },
 
-            // If user is the creator, use a star icon
-            if (location.is_creator) {
-                markerOptions.icon = {
+    getMarkerTypeForLocation(location) {
+        if (location.is_creator) return 'creator';
+        if (location.is_participant) return 'participant';
+        return 'default';
+    },
+
+    getMarkerIcon(type) {
+        switch (type) {
+            case 'creator':
+                return {
                     path: google.maps.SymbolPath.STAR,
                     scale: 10,
                     fillColor: "#3B82F6", // Blue star for created events
@@ -218,19 +300,40 @@ const MeetupMap = {
                     strokeWeight: 1,
                     strokeColor: "#FFFFFF",
                 };
-            }
 
-            const marker = new google.maps.Marker(markerOptions);
+            case 'participant':
+                return {
+                    path: google.maps.SymbolPath.CIRCLE,
+                    scale: 10,
+                    fillColor: "#22C55E", // Green marker for participating
+                    fillOpacity: 0.8,
+                    strokeWeight: 1,
+                    strokeColor: "#FFFFFF",
+                };
 
-            // Send the location ID to the server on click
-            marker.addListener("click", () => {
-                this.pushEvent("open-location-modal", {
-                    location_id: location.id
-                });
-            });
+            case 'selection':
+                return {
+                    path: google.maps.SymbolPath.CIRCLE,
+                    scale: 8,
+                    fillColor: "#FF5722", // Orange for selection
+                    fillOpacity: 0.8,
+                    strokeWeight: 1,
+                    strokeColor: "#FFFFFF",
+                };
 
-            this.markers.push(marker);
-        });
+            case 'user':
+                return {
+                    path: google.maps.SymbolPath.CIRCLE,
+                    scale: 10,
+                    fillColor: "#4285F4", // Google blue for user location
+                    fillOpacity: 0.8,
+                    strokeWeight: 1,
+                    strokeColor: "#FFFFFF",
+                };
+
+            default:
+                return null; // Default Google Maps marker
+        }
     }
 };
 
