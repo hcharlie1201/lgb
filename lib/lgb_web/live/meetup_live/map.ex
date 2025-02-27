@@ -19,7 +19,8 @@ defmodule LgbWeb.MeetupLive.Map do
      |> assign(:selected_position, nil)
      |> assign(:show_selected_position_modal, false)
      |> assign(:show_location_modal, false)
-     |> assign(:selected_location, nil)}
+     |> assign(:selected_location, nil)
+     |> assign(:profile, Lgb.Accounts.User.current_profile(socket.assigns.current_user))}
   end
 
   #

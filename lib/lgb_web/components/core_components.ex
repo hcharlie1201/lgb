@@ -1023,48 +1023,45 @@ defmodule LgbWeb.CoreComponents do
   """
 
   attr :show, :boolean, default: false
-  attr :primary, :boolean, default: true
+  attr :profile, :map, required: true
 
   def name_with_online_activity(assigns) do
     user = assigns.profile.user
+    is_online = LgbWeb.Presence.find_user("users", user.id) != nil
 
-    LgbWeb.Presence.find_user("users", user.id)
-
-    found_user =
-      if LgbWeb.Presence.find_user("users", user.id) do
-        true
-      else
-        false
-      end
-
-    assigns = assign(assigns, :found_user, found_user)
+    assigns = assign(assigns, :is_online, is_online)
 
     ~H"""
     <div class="flex items-center gap-2 rounded-lg p-1 transition-all">
       <div class="flex items-center gap-2">
-        <div :if={@found_user} class="flex">
-          <div class="h-2 w-2 rounded-full bg-green-400"></div>
-          <div class="absolute h-2 w-2 animate-ping rounded-full bg-green-400"></div>
-        </div>
-        <div class={["text-lg font-medium", if(@primary, do: "text-white", else: "text-black")]}>
-          {@profile.handle || "⋆.˚"}
-        </div>
-        <div
-          :if={!@found_user and @profile.user.last_login_at != nil and @show}
-          class="text-xs font-light text-gray-400"
-        >
-          <%= cond do %>
-            <% LgbWeb.UserPresence.within_minutes?(@profile.user.last_login_at, 60) -> %>
-              {LgbWeb.UserPresence.format_hours_ago(@profile.user.last_login_at)}
-            <% LgbWeb.UserPresence.within_hours?(@profile.user.last_login_at, 24) -> %>
-              Last active yesterday
-            <% true -> %>
-              Last active {Calendar.strftime(
-                @profile.user.last_login_at || DateTime.utc_now(),
-                "%b %d"
-              )}
-          <% end %>
-        </div>
+        <!-- Online indicator -->
+        <%= if @is_online do %>
+          <div class="relative flex">
+            <div class="h-2 w-2 rounded-full bg-green-400"></div>
+            <div class="absolute h-2 w-2 animate-ping rounded-full bg-green-400 opacity-75"></div>
+          </div>
+        <% end %>
+        
+    <!-- Profile name -->
+        <.link navigate={~p"/profiles/#{@profile.uuid}"} class="link-style">
+          <div class="text-lg font-light text-black">
+            {@profile.handle || "⋆.˚"}
+          </div>
+        </.link>
+        
+    <!-- Last active status (only shown when user is offline) -->
+        <%= if !@is_online && @profile.user.last_login_at && @show do %>
+          <div class="text-xs font-light text-gray-400">
+            <%= cond do %>
+              <% LgbWeb.UserPresence.within_minutes?(@profile.user.last_login_at, 60) -> %>
+                {LgbWeb.UserPresence.format_hours_ago(@profile.user.last_login_at)}
+              <% LgbWeb.UserPresence.within_hours?(@profile.user.last_login_at, 24) -> %>
+                Last active yesterday
+              <% true -> %>
+                Last active {Calendar.strftime(@profile.user.last_login_at, "%b %d")}
+            <% end %>
+          </div>
+        <% end %>
       </div>
     </div>
     """

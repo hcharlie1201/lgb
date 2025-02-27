@@ -2,6 +2,19 @@ defmodule Lgb.Meetups do
   import Ecto.Query
   import Geo.PostGIS
   alias Lgb.Repo
+
+  alias Lgb.Meetups.{
+    EventLocation,
+    EventParticipant,
+    EventComment,
+    CommentLike,
+    EventCommentReply,
+    CommentReplyLike
+  }
+
+  import Ecto.Query
+  import Geo.PostGIS
+  alias Lgb.Repo
   alias Lgb.Meetups.EventLocation
 
   @doc """
@@ -69,11 +82,9 @@ defmodule Lgb.Meetups do
   Lists all participants for a meetup.
   """
   def list_participants(event_location_id) do
-    Repo.all(
-      from p in Lgb.Meetups.EventParticipant,
-        where: p.event_location_id == ^event_location_id,
-        preload: [:profile]
-    )
+    Lgb.Meetups.get_location!(event_location_id)
+    |> Repo.preload(participants: :first_picture)
+    |> Map.get(:participants)
   end
 
   @doc """
@@ -108,6 +119,21 @@ defmodule Lgb.Meetups do
 
     # Add latitude and longitude for the UI
     Map.merge(location, %{latitude: lat, longitude: lng})
+  end
+
+  def get_location_by_uuid(uuid) do
+    location = Repo.get_by!(EventLocation, uuid: uuid)
+
+    # Extract coordinates from PostGIS point
+    %{coordinates: {lng, lat}} = location.geolocation
+
+    # Add latitude and longitude for the UI
+    Map.merge(location, %{latitude: lat, longitude: lng})
+  end
+
+  def get_host(event_location) do
+    Repo.get!(Lgb.Profiles.Profile, event_location.creator_id)
+    |> Repo.preload(:first_picture)
   end
 
   def create_location(attrs \\ %{}) do
@@ -160,6 +186,7 @@ defmodule Lgb.Meetups do
 
       %{
         id: location.id,
+        uuid: location.uuid,
         date: location.date,
         description: location.description,
         title: location.title,
@@ -171,5 +198,193 @@ defmodule Lgb.Meetups do
         creator_id: location.creator_id
       }
     end)
+  end
+
+  def delete_event_comment(comment_id, profile_id) do
+    comment = Repo.get!(EventComment, comment_id)
+
+    # Optional: Add authorization check
+    if comment.profile_id != profile_id do
+      {:error, "You can only delete your own comments"}
+    else
+      Repo.delete(comment)
+    end
+  end
+
+  def delete_comment_reply(reply_id, profile_id) do
+    reply = Repo.get!(EventCommentReply, reply_id)
+
+    # Optional: Add authorization check
+    if reply.profile_id != profile_id do
+      {:error, "You can only delete your own replies"}
+    else
+      Repo.delete(reply)
+    end
+  end
+
+  @doc """
+  List all comments for an event location with replies and profiles.
+  """
+  def list_event_comments(event_location) do
+    query =
+      from c in EventComment,
+        where: c.event_location_id == ^event_location.id,
+        order_by: [desc: c.inserted_at],
+        preload: [profile: :first_picture, replies: [:profile, :likes]]
+
+    Repo.all(query)
+    |> Enum.map(fn comment ->
+      likes_count =
+        length(Repo.all(from l in CommentLike, where: l.event_comment_id == ^comment.id))
+
+      Map.put(comment, :likes_count, likes_count)
+    end)
+  end
+
+  @doc """
+  Get the participation status of a user for an event.
+  """
+  def get_user_participation_status(event_location, profile) do
+    if is_nil(profile) do
+      :not_attending
+    else
+      if is_participant?(event_location.id, profile.id) do
+        :attending
+      else
+        :not_attending
+      end
+    end
+  end
+
+  @doc """
+  Join an event.
+  """
+  def join_event(event_location, user) do
+    case join_meetup(event_location.id, user.profile.id) do
+      {:ok, participant} ->
+        participant = Repo.preload(participant, :profile)
+        {:ok, participant}
+
+      {:error, :already_participating} ->
+        {:error, "You are already attending this event"}
+
+      {:error, :event_full} ->
+        {:error, "This event is full"}
+
+      {:error, changeset} ->
+        {:error, "Could not join: #{inspect(changeset.errors)}"}
+    end
+  end
+
+  @doc """
+  Leave an event.
+  """
+  def leave_event(event_location, user) do
+    case leave_meetup(event_location.id, user.profile.id) do
+      {:ok, record} -> {:ok, record}
+      {:error, :not_participating} -> {:error, "You are not attending this event"}
+      {:error, changeset} -> {:error, "Could not leave: #{inspect(changeset.errors)}"}
+    end
+  end
+
+  @doc """
+  Create a comment for an event.
+  """
+  def create_event_comment(attrs) do
+    %EventComment{}
+    |> EventComment.changeset(attrs)
+    |> Repo.insert()
+  end
+
+  @doc """
+  Toggle a like on a comment.
+  """
+  def toggle_comment_like(comment_id, profile_id) do
+    # Check if like already exists
+    like_query =
+      from l in CommentLike,
+        where: l.event_comment_id == ^comment_id and l.profile_id == ^profile_id
+
+    existing_like = Repo.one(like_query)
+
+    # Get the comment for returning later
+    comment =
+      Repo.get!(EventComment, comment_id)
+      |> Repo.preload(profile: :first_picture, replies: [:profile, :likes])
+
+    result =
+      if existing_like do
+        # Unlike
+        Repo.delete(existing_like)
+      else
+        # Like
+        %CommentLike{}
+        |> CommentLike.changeset(%{event_comment_id: comment_id, profile_id: profile_id})
+        |> Repo.insert()
+      end
+
+    case result do
+      {:ok, _} ->
+        # Return updated comment with likes count
+        likes_count =
+          Repo.one(
+            from l in CommentLike, where: l.event_comment_id == ^comment_id, select: count(l.id)
+          )
+
+        updated_comment = Map.put(comment, :likes_count, likes_count)
+        {:ok, updated_comment}
+
+      {:error, changeset} ->
+        {:error, changeset}
+    end
+  end
+
+  @doc """
+  Create a reply to a comment.
+  """
+  def create_comment_reply(attrs) do
+    %EventCommentReply{}
+    |> EventCommentReply.changeset(attrs)
+    |> Repo.insert()
+    |> case do
+      {:ok, reply} -> {:ok, Repo.preload(reply, [:profile, :likes])}
+      error -> error
+    end
+  end
+
+  @doc """
+  Toggle a like on a comment reply.
+  """
+  def toggle_reply_like(reply_id, profile_id) do
+    # Check if like already exists
+    like_query =
+      from l in CommentReplyLike,
+        where: l.event_comment_reply_id == ^reply_id and l.profile_id == ^profile_id
+
+    existing_like = Repo.one(like_query)
+
+    # Get the reply for returning later
+    reply = Repo.get!(EventCommentReply, reply_id) |> Repo.preload([:profile, :likes])
+
+    result =
+      if existing_like do
+        # Unlike
+        Repo.delete(existing_like)
+      else
+        # Like
+        %CommentReplyLike{}
+        |> CommentReplyLike.changeset(%{event_comment_reply_id: reply_id, profile_id: profile_id})
+        |> Repo.insert()
+      end
+
+    case result do
+      {:ok, _} ->
+        # Return updated reply with fresh likes
+        updated_reply = Repo.get!(EventCommentReply, reply_id) |> Repo.preload([:profile, :likes])
+        {:ok, updated_reply}
+
+      {:error, changeset} ->
+        {:error, changeset}
+    end
   end
 end

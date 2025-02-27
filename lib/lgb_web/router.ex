@@ -119,6 +119,7 @@ defmodule LgbWeb.Router do
 
       scope "/meetups", MeetupLive do
         live "/", Map
+        live "/:id", ViewEvent
       end
     end
   end

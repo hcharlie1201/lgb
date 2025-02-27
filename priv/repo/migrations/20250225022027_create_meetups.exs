@@ -30,6 +30,7 @@ defmodule Lgb.Repo.Migrations.CreateMeetups do
       add :max_participants, :integer, default: 20
       add :creator_id, references(:profiles, on_delete: :delete_all), null: false
       add :category, :meetup_category, null: false
+      add :uuid, :uuid, default: fragment("uuid_generate_v4()"), null: false
 
       timestamps()
     end

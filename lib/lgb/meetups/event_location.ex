@@ -24,6 +24,7 @@ defmodule Lgb.Meetups.EventLocation do
     field :geolocation, Geo.PostGIS.Geometry
     field :max_participants, :integer, default: 10
     field :category, Ecto.Enum, values: @categories
+    field :uuid, Ecto.UUID, read_after_writes: true
 
     belongs_to :creator, Lgb.Profiles.Profile
     many_to_many :participants, Lgb.Profiles.Profile, join_through: "event_participants"

@@ -21,6 +21,7 @@ defmodule LgbWeb.MeetupLive.Handlers.LocationHandlers do
     # Create a map with all the data needed for display
     location_for_modal = %{
       id: location.id,
+      uuid: location.uuid,
       title: location.title,
       description: location.description,
       location_name: location.location_name,

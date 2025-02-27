@@ -1,37 +1,191 @@
 <.page_align current_user={@current_user}>
-  <.header>
-    <.name_with_online_activity profile={@profile} show={true} primary={false} />
-  </.header>
-  <!-- Carousel Section -->
-  <.live_component
-    module={LgbWeb.Components.Carousel}
-    id={@profile.id}
-    uploaded_files={@uploaded_files}
-    length={3}
-  />
-
-  <.list>
-    <:item title="Distance">
-      {Lgb.Profiles.display_distance(@distance)} miles away
-    </:item>
-    <:item title="Gender">{@profile.gender}</:item>
-    <:item title="Handle">{@profile.handle}</:item>
-    <:item title="Age">{@profile.age}</:item>
-    <:item title="Height">{Lgb.Profiles.display_height(@profile.height_cm)}</:item>
-    <:item title="Weight">{Lgb.Profiles.display_weight(@profile.weight_lb)}</:item>
-    <:item title="City">{@profile.city}</:item>
-    <:item title="State">{@profile.state}</:item>
-    <:item title="Zip">{@profile.zip}</:item>
-    <:item title="Dating Style">
-      <div class="flex flex-wrap gap-4">
-        <%= for goal <- @dating_goals do %>
-          <div class={["dating-attribute rounded-full px-3 py-1 text-sm transition-all duration-200 ease-in-out"]}>
-            {goal.name}
-          </div>
-        <% end %>
+  <div class="overflow-hidden rounded-xl bg-white shadow-sm">
+    <!-- Profile Header with Name and Online Status -->
+    <div class="relative">
+      <!-- Cover Image/Background -->
+      <div class="h-48 bg-gradient-to-r from-blue-500 to-indigo-600"></div>
+      
+<!-- Profile Picture Overlay -->
+      <div class="absolute bottom-0 left-8 translate-y-1/2 transform">
+        <div class="h-24 w-24 overflow-hidden rounded-full border-4 border-white bg-white shadow-md">
+          <%= if @profile.first_picture do %>
+            <img
+              src={
+                Lgb.Profiles.ProfilePictureUploader.url(
+                  {@profile.first_picture.image, @profile.first_picture},
+                  :original,
+                  signed: true
+                )
+              }
+              alt={@profile.handle}
+              class="h-full w-full object-cover"
+            />
+          <% else %>
+            <div class="flex h-full w-full items-center justify-center bg-gray-100">
+              <span class="text-2xl font-semibold text-gray-500">
+                {String.first(@profile.handle || "")}
+              </span>
+            </div>
+          <% end %>
+        </div>
       </div>
-    </:item>
-    <:item title="Biography">{@profile.biography}</:item>
-  </.list>
-  <.button phx-click="message" class="mt-16" phx-value-id={@profile.uuid}>Message</.button>
+      
+<!-- Action Buttons -->
+      <div class="absolute right-6 bottom-4 flex gap-2">
+        <.button
+          :if={@profile.user.id != @current_user.id}
+          phx-click="message"
+          phx-value-id={@profile.uuid}
+          class="flex items-center gap-2 bg-indigo-600 transition-all hover:bg-indigo-700"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-4 w-4"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
+            />
+          </svg>
+          Message
+        </.button>
+        <.button
+          :if={@profile.user.id != @current_user.id}
+          class="flex items-center gap-2 bg-gray-200 text-gray-700 transition-all hover:bg-gray-300"
+        >
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-4 w-4"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.783-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z"
+            />
+          </svg>
+          Favorite
+        </.button>
+      </div>
+    </div>
+    
+<!-- Profile Info Section -->
+    <div class="animate-fadeInUp px-8 pt-16 pb-8">
+      <!-- Name and Status -->
+      <div class="mb-6">
+        <div class="flex items-center gap-2">
+          <.name_with_online_activity profile={@profile} primary={true} />
+        </div>
+        <div class="mt-1 font-medium text-indigo-600">
+          <span class="flex items-center gap-1">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
+              />
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
+              />
+            </svg>
+            {Lgb.Profiles.display_distance(@distance)} miles away
+          </span>
+        </div>
+      </div>
+      
+<!-- Gallery/Carousel Section -->
+      <div class="mb-8">
+        <.live_component
+          module={LgbWeb.Components.Carousel}
+          id={@profile.id}
+          uploaded_files={@uploaded_files}
+          length={3}
+        />
+      </div>
+      
+<!-- Dating Goals/Style Section -->
+      <div class="mb-8">
+        <h2 class="mb-3 text-lg font-semibold text-gray-900">Dating Style</h2>
+        <div class="flex flex-wrap gap-2">
+          <%= for goal <- @dating_goals do %>
+            <span class="rounded-full bg-indigo-100 px-3 py-1 text-sm font-medium text-indigo-800">
+              {goal.name}
+            </span>
+          <% end %>
+        </div>
+      </div>
+      
+<!-- Biography Section -->
+      <div class="mb-8">
+        <h2 class="mb-2 text-lg font-semibold text-gray-900">About</h2>
+        <p class="leading-relaxed text-gray-700">{@profile.biography}</p>
+      </div>
+      
+<!-- Personal Details Grid -->
+      <div class="grid grid-cols-2 gap-4 md:grid-cols-3">
+        <div class="dugout rounded-lg border border-indigo-100 p-4">
+          <span class="block text-sm text-gray-500">Age</span>
+          <span class="block font-medium text-gray-900">{@profile.age}</span>
+        </div>
+        <div class="dugout rounded-lg border border-indigo-100 p-4">
+          <span class="block text-sm text-gray-500">Gender</span>
+          <span class="block font-medium capitalize text-gray-900">{@profile.gender}</span>
+        </div>
+        <div class="dugout rounded-lg border border-indigo-100 p-4">
+          <span class="block text-sm text-gray-500">Height</span>
+          <span class="block font-medium text-gray-900">
+            {Lgb.Profiles.display_height(@profile.height_cm)}
+          </span>
+        </div>
+        <div class="dugout rounded-lg border border-indigo-100 p-4">
+          <span class="block text-sm text-gray-500">Weight</span>
+          <span class="block font-medium text-gray-900">
+            {Lgb.Profiles.display_weight(@profile.weight_lb)}
+          </span>
+        </div>
+        <div class="dugout rounded-lg border border-indigo-100 p-4">
+          <span class="block text-sm text-gray-500">Location</span>
+          <span class="block font-medium text-gray-900">{@profile.city}, {@profile.state}</span>
+        </div>
+        <div class="dugout rounded-lg border border-indigo-100 p-4">
+          <span class="block text-sm text-gray-500">Zip</span>
+          <span class="block font-medium text-gray-900">{@profile.zip}</span>
+        </div>
+      </div>
+      
+<!-- Location Map (Optional) -->
+      <div class="mt-8">
+        <h2 class="mb-3 text-lg font-semibold text-gray-900">Location</h2>
+        <div class="h-64 overflow-hidden rounded-lg bg-gray-100 shadow-sm">
+          <iframe
+            width="100%"
+            height="100%"
+            frameborder="0"
+            style="border:0"
+            src={"https://www.google.com/maps/embed/v1/place?key=#{System.fetch_env!("GOOGLE_MAPS_API_KEY")}&q=#{@profile.city},#{@profile.state}"}
+            allowfullscreen
+          >
+          </iframe>
+        </div>
+      </div>
+    </div>
+  </div>
 </.page_align>
