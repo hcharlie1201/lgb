@@ -150,7 +150,11 @@ defmodule LgbWeb.Components.SignedInNav do
         </svg>
         <span class="userNavText mt-1 text-xs">Premium</span>
       </.link>
-      <.link class="loggedinNavLinks" href={~p"/meetups"}>
+      <.link
+        :if={Lgb.ThirdParty.Posthog.enabled?(:meetup, @current_user.uuid)}
+        class="loggedinNavLinks"
+        href={~p"/meetups"}
+      >
         <svg
           xmlns="http://www.w3.org/2000/svg"
           fill="none"

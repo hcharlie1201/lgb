@@ -61,12 +61,18 @@ defmodule LgbWeb.MeetupLive.ViewEvent do
 
   # Attend Event Handler
   def handle_event("attend_event", _, socket) do
-    {:noreply, ParticipantHandlers.handle_join_meetup(socket.assigns.event_location.id, socket)}
+    ParticipantHandlers.handle_join_meetup(
+      Integer.to_string(socket.assigns.event_location.id),
+      socket
+    )
   end
 
   # Leave Event Handler
   def handle_event("leave_event", _, socket) do
-    {:noreply, ParticipantHandlers.handle_leave_meetup(socket.assigns.event_location.id, socket)}
+    ParticipantHandlers.handle_leave_meetup(
+      Integer.to_string(socket.assigns.event_location.id),
+      socket
+    )
   end
 
   # Add Comment Handler

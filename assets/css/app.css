@@ -126,5 +126,5 @@ body {
 }
 
 .dugout {
-  @apply bg-indigo-50
+  @apply bg-indigo-50 border border-indigo-100
 }
