@@ -14,7 +14,7 @@ defmodule LgbWeb.ProfileLive.Show do
     current_profile = Lgb.Accounts.User.current_profile(user)
 
     profile = Profiles.get_profile!(id)
-    profile = Lgb.Repo.preload(profile, :user)
+    profile = Lgb.Repo.preload(profile, [:user, :first_picture])
     selected_attributes = Lgb.Repo.preload(profile, :dating_goals).dating_goals
 
     Lgb.ProfileViews.create_or_update_profile_view(%{

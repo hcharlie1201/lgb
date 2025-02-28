@@ -69,12 +69,7 @@ defmodule LgbWeb.Components.ProfilePreview do
           length={1}
         />
         <div class="bg-gray-400/10 absolute right-0 bottom-0 left-0 rounded-b-lg p-4">
-          <.link
-            navigate={~p"/profiles/#{@profile.uuid}"}
-            class="text-lg font-semibold text-white transition-colors hover:text-gray-100"
-          >
-            <.name_with_online_activity profile={@profile} />
-          </.link>
+            <.name_with_online_activity profile={@profile} primary={false} />
         </div>
       </div>
       <div class="space-y-2 p-4">

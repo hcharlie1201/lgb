@@ -116,3 +116,15 @@ body {
 .dating-attribute {
   @apply border-2 border-yellow-500 bg-gradient-to-br from-blue-500 to-purple-600 text-white shadow-md transform scale-105 ring-2 ring-yellow-400/50;
 }
+
+.link-style {
+  @apply relative text-blue-600 font-medium after:block after:h-[2px] after:w-full after:bg-blue-600 after:scale-x-0 after:transition-transform after:duration-300 after:ease-in-out hover:after:scale-x-100;
+}
+
+.primary-button {
+  @apply inline-flex items-center rounded border border-transparent bg-indigo-600 px-3 py-1.5 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2;
+}
+
+.dugout {
+  @apply bg-indigo-50 border border-indigo-100
+}
