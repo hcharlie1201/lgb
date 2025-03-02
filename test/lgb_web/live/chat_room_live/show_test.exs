@@ -67,7 +67,8 @@ defmodule LgbWeb.ChatRoomLive.ShowTest do
         profile: %{
           id: profile.id,
           handle: profile.handle,
-          state: "online"
+          state: "online",
+          uuid: profile.uuid
         },
         inserted_at: DateTime.utc_now() |> DateTime.truncate(:second)
       }
