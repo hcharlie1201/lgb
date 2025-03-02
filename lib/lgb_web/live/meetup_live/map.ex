@@ -3,6 +3,7 @@ defmodule LgbWeb.MeetupLive.Map do
   alias Lgb.Meetups
   alias Lgb.Meetups.EventLocation
   alias LgbWeb.MeetupLive.Handlers.{MapHandlers, LocationHandlers, ParticipantHandlers}
+  import LgbWeb.MeetupLive.Components.{MapComponent, EventCardComponent}
 
   #
   # Lifecycle callbacks
