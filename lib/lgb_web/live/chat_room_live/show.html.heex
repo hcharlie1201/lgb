@@ -20,7 +20,11 @@
         <div :for={{dom_id, message} <- @streams.messages} id={dom_id} class="px-3 py-2">
           <div class="flex justify-between">
             <div>
-              <span class="text-colorSecondary">{message.profile.handle}</span>
+              <span class="text-colorSecondary">
+                <.link navigate={~p"/profiles/#{message.profile.uuid}"}>
+                  {message.profile.handle}
+                </.link>
+              </span>
               {if message.profile.state do
                 "(#{message.profile.state})"
               end}: {message.content}
@@ -39,7 +43,7 @@
       <div class="overflow-y-auto" id="presence-container">
         <.table id="users-online" rows={@streams.presences}>
           <:col :let={{_presence, %{user: profile}}} label="">
-            {profile.handle}
+            <.link navigate={~p"/profiles/#{profile.uuid}"}>{profile.handle}</.link>
             {if profile.state do
               "(#{profile.state})"
             end}
