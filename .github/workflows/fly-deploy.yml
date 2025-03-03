@@ -40,9 +40,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
 
-      # Install dependencies
-      - name: Install dependencies
+      # Install Elixir dependencies
+      - name: Install Elixir dependencies
         run: mix deps.get
+
+      # Install Node.js dependencies
+      - name: Install Node.js dependencies
+        run: npm install --prefix assets
 
       # Compile assets
       - name: Compile assets
