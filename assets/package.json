@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "@mux/upchunk": "^3.4.0"
+    "@mux/upchunk": "^3.4.0",
+    "three": "^0.174.0"
   }
-  
 }
