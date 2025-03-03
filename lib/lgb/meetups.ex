@@ -12,11 +12,6 @@ defmodule Lgb.Meetups do
     CommentReplyLike
   }
 
-  import Ecto.Query
-  import Geo.PostGIS
-  alias Lgb.Repo
-  alias Lgb.Meetups.EventLocation
-
   @doc """
   Joins a user to a meetup event.
   """
@@ -136,10 +131,21 @@ defmodule Lgb.Meetups do
     |> Repo.preload(:first_picture)
   end
 
-  def create_location(attrs \\ %{}) do
-    %EventLocation{}
-    |> EventLocation.changeset(attrs)
-    |> Repo.insert()
+  def create_location(attrs \\ %{}, image_upload \\ nil) do
+    uuid = Ecto.UUID.generate()
+    attrs = Lgb.Uploader.maybe_add_image(attrs, image_upload) |> Map.put("uuid", uuid)
+
+    result =
+      %EventLocation{}
+      |> EventLocation.changeset(attrs)
+      |> Repo.insert()
+
+    # Clean up temp file if it exists
+    if image_upload do
+      Lgb.Uploader.cleanup_temp_file(image_upload.path)
+    end
+
+    result
   end
 
   def update_location(%EventLocation{} = location, attrs) do
