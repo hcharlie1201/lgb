@@ -13,21 +13,23 @@
   document.getElementById('non-signed-in-nav-login').classList.add('text-white');
 </script>
 <div
-  class="z-[-2] relative flex min-h-screen items-center justify-center overflow-hidden bg-black"
+  class="z-[-2] absolute inset-0 h-screen min-h-screen bg-black"
   style="background: linear-gradient(to bottom, rgba(0, 0, 0, 1) 90%, rgba(0, 0, 0, 0) 100%);"
 >
+  >
   <!-- Background Spline Scene -->
-  <div class="h-[80%] top-[-100px] absolute right-0 left-0">
-    <!-- Adjust the top value here -->
+  <div class="mt-[-100px] mx-auto flex h-screen w-full max-w-6xl items-center justify-center">
     <spline-viewer
       url="https://prod.spline.design/CGPgyQWBTHOmUvjM/scene.splinecode"
-      class="h-full w-full"
+      loading="lazy"
     >
     </spline-viewer>
   </div>
-  
-<!-- Foreground Content -->
-  <div class="relative px-4 py-20 text-center">
+</div>
+
+<!-- Foreground Content (completely separated) -->
+<div class="relative flex min-h-screen items-center justify-center px-4 py-20 text-center">
+  <div>
     <h1 class="font-RobotoSlab mb-6 text-5xl font-light text-white md:text-6xl">
       A Platform Built For <br /> Connections That
       <span class="relative">
@@ -49,8 +51,8 @@
 </div>
 <div class="container mx-auto px-4 py-24">
   <div class="flex flex-col gap-8 md:flex-row">
-    <section class=" flex flex-1 flex-col">
-      <h1 class="premium-title text-navy mb-6 text-lg md:text-xl lg:text-2xl">
+    <section class="flex flex-1 flex-col text-white">
+      <h1 class="font-RobotoSlab mb-6 text-lg text-white md:text-xl lg:text-2xl">
         Find Your Connection. Effortless Dating.
       </h1>
       <p class="mt-2 text-lg leading-relaxed">
