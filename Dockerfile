@@ -60,7 +60,7 @@ RUN mix compile
 
 # Copy runtime config
 COPY config/runtime.exs config/
-
+COPY rel rel
 # Build the release
 RUN mix release
 
