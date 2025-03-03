@@ -949,7 +949,7 @@ defmodule LgbWeb.CoreComponents do
     ~H"""
     <div class="relative">
       <!-- Navigation Bar -->
-      <nav class="sticky top-0 z-10 flex px-4 py-4 backdrop-blur-md">
+      <nav id="non-signed-in-nav" class="sticky top-0 z-10 flex px-4 py-4 backdrop-blur-md">
         <section class="mx-auto flex w-full max-w-6xl items-center justify-between md:flex-row md:gap-0">
           <!-- Logo -->
           <div class="flex items-center space-x-2">
@@ -987,6 +987,7 @@ defmodule LgbWeb.CoreComponents do
           </div>
           <.link
             navigate={~p"/users/log_in"}
+            id="non-signed-in-nav-login"
             class="ml-4 font-medium text-gray-600 hover:text-gray-900"
           >
             Log In
