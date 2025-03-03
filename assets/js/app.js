@@ -24,6 +24,7 @@ import { StripeAddress } from "./stripe/address";
 import { StripeCheckout } from "./stripe/checkout";
 import { ScrollBottom } from "./scroll_bottom";
 import { Geolocation } from "./geolocation";
+import { StarsBackground } from "./stars_background";
 import MeetupMap from "./meetup_map";
 import topbar from "../vendor/topbar";
 
@@ -83,7 +84,8 @@ Hooks.StripeAddress = StripeAddress;
 Hooks.StripeCheckout = StripeCheckout;
 Hooks.ScrollBottom = ScrollBottom;
 Hooks.Geolocation = Geolocation;
-Hooks.MeetupMap = MeetupMap
+Hooks.StarsBackground = StarsBackground;
+Hooks.MeetupMap = MeetupMap;
 
 let csrfToken = document
   .querySelector("meta[name='csrf-token']")

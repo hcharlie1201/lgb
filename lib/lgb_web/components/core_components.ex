@@ -934,7 +934,7 @@ defmodule LgbWeb.CoreComponents do
 
   def card(assigns) do
     ~H"""
-    <div class={["rounded-lg", @class, if(@no_background, do: "border bg-white p-2 ", else: "")]}>
+    <div class={["rounded-lg", @class, if(@no_background, do: "border bg-white p-2", else: "")]}>
       {render_slot(@inner_block)}
     </div>
     """
