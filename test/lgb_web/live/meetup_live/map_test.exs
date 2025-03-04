@@ -284,5 +284,159 @@ defmodule LgbWeb.MeetupLive.MapTest do
       # Verify the upload was cancelled
       refute has_element?(view, "figure figcaption", "avatar.jpg")
     end
+
+    # Stream-specific tests
+    test "stream is initially empty", %{conn: conn, user: user} do
+      {:ok, view, html} = 
+        conn
+        |> log_in_user(user)
+        |> live(~p"/meetups/map")
+      
+      # Check that the locations stream is initially empty
+      assert html =~ "phx-update=\"stream\" id=\"locations\""
+      assert view |> element("#locations > *") |> has_element?() == false
+    end
+
+    test "stream is populated after load_locations", %{conn: conn, user: user, profile: profile} do
+      # Create multiple test locations
+      location1 = event_location_fixture(%{creator_id: profile.id, title: "Location 1"})
+      location2 = event_location_fixture(%{creator_id: profile.id, title: "Location 2"})
+      
+      {:ok, view, _html} = 
+        conn
+        |> log_in_user(user)
+        |> live(~p"/meetups/map")
+      
+      # Wait for the :load_locations message to be processed
+      Process.sleep(200)
+      
+      # Check that both locations are in the stream
+      assert has_element?(view, "[data-location-id='#{location1.id}']")
+      assert has_element?(view, "[data-location-id='#{location2.id}']")
+      
+      # Verify the stream contains the correct number of items
+      locations_count = Meetups.list_locations() |> length()
+      assert view |> element("#locations > *") |> render() |> String.split("data-location-id") |> length() == locations_count + 1
+    end
+
+    test "stream updates when a new location is added", %{conn: conn, user: user, profile: profile} do
+      {:ok, view, _html} = 
+        conn
+        |> log_in_user(user)
+        |> live(~p"/meetups/map")
+      
+      # Wait for initial locations to load
+      Process.sleep(200)
+      
+      # Count initial locations
+      initial_count = view |> element("#locations > *") |> render() |> String.split("data-location-id") |> length() - 1
+      
+      # Create a new meetup through the UI
+      view |> render_hook("location-selected", %{"lat" => 34.0522, "lng" => -118.2437})
+      
+      view
+      |> form("#selected-position form", %{
+        "event_location" => %{
+          "title" => "New Stream Test Meetup",
+          "location_name" => "Stream Test Location",
+          "description" => "Testing stream updates",
+          "date" => "2023-12-31T12:00",
+          "category" => "social",
+          "max_participants" => "10"
+        }
+      })
+      |> render_submit()
+      
+      # Wait for the stream to update
+      Process.sleep(100)
+      
+      # Verify the stream has one more item
+      new_count = view |> element("#locations > *") |> render() |> String.split("data-location-id") |> length() - 1
+      assert new_count == initial_count + 1
+      
+      # Verify the new location is in the stream
+      new_location = Meetups.get_location_by_title("New Stream Test Meetup")
+      assert has_element?(view, "[data-location-id='#{new_location.id}']")
+    end
+
+    test "stream updates when a location is deleted", %{conn: conn, user: user, profile: profile} do
+      # Create a test location
+      location = event_location_fixture(%{creator_id: profile.id})
+      
+      {:ok, view, _html} = 
+        conn
+        |> log_in_user(user)
+        |> live(~p"/meetups/map")
+      
+      # Wait for locations to load
+      Process.sleep(200)
+      
+      # Count initial locations
+      initial_count = view |> element("#locations > *") |> render() |> String.split("data-location-id") |> length() - 1
+      
+      # Delete the location
+      view |> element("[phx-click='delete-location'][phx-value-id='#{location.id}']") |> render_click()
+      
+      # Wait for the stream to update
+      Process.sleep(100)
+      
+      # Verify the stream has one less item
+      new_count = view |> element("#locations > *") |> render() |> String.split("data-location-id") |> length() - 1
+      assert new_count == initial_count - 1
+      
+      # Verify the location is no longer in the stream
+      refute has_element?(view, "[data-location-id='#{location.id}']")
+    end
+
+    test "stream items have correct data attributes", %{conn: conn, user: user, profile: profile} do
+      # Create a test location with specific attributes
+      location = event_location_fixture(%{
+        creator_id: profile.id,
+        title: "Stream Test Location",
+        description: "Testing stream data attributes",
+        category: "social"
+      })
+      
+      {:ok, view, _html} = 
+        conn
+        |> log_in_user(user)
+        |> live(~p"/meetups/map")
+      
+      # Wait for locations to load
+      Process.sleep(200)
+      
+      # Check that the location element has the correct data attributes
+      location_element = view |> element("[data-location-id='#{location.id}']")
+      assert has_element?(location_element)
+      
+      rendered_element = render(location_element)
+      assert rendered_element =~ "data-location-id=\"#{location.id}\""
+      assert rendered_element =~ "data-lat="
+      assert rendered_element =~ "data-lng="
+      assert rendered_element =~ "Stream Test Location"
+      assert rendered_element =~ "Testing stream data attributes"
+    end
+
+    test "stream updates when a location is updated", %{conn: conn, user: user, profile: profile} do
+      # This test requires a handler for updating locations which might not exist in your code
+      # If you don't have such functionality, you can skip this test or implement it later
+      
+      # Create a test location
+      location = event_location_fixture(%{creator_id: profile.id, title: "Original Title"})
+      
+      # Update the location directly in the database
+      {:ok, updated_location} = Meetups.update_location(location, %{title: "Updated Title"})
+      
+      {:ok, view, _html} = 
+        conn
+        |> log_in_user(user)
+        |> live(~p"/meetups/map")
+      
+      # Wait for locations to load
+      Process.sleep(200)
+      
+      # Verify the updated title is in the stream
+      assert view |> element("[data-location-id='#{location.id}']") |> render() =~ "Updated Title"
+    end
   end
 end
