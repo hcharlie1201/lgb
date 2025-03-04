@@ -61,7 +61,7 @@ defmodule LgbWeb.MeetupLive.Handlers.LocationHandlers do
   @doc """
   Handles deleting a location.
   """
-  def handle_delete_location(id, socket) do
+  def handle_delete_location(id, dom_id, socket) do
     id = String.to_integer(id)
     location = Meetups.get_location!(id)
     {:ok, _} = Meetups.delete_location(location)
@@ -69,7 +69,7 @@ defmodule LgbWeb.MeetupLive.Handlers.LocationHandlers do
     # Delete from the stream by ID
     {:noreply,
      socket
-     |> stream_delete(:locations, %{id: id})
+     |> stream_delete_by_dom_id(:locations, dom_id)
      |> put_flash(:info, "Meetup location deleted")}
   end
 

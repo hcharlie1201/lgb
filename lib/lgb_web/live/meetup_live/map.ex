@@ -101,8 +101,8 @@ defmodule LgbWeb.MeetupLive.Map do
   # Location management event handlers
   #
   @impl true
-  def handle_event("delete-location", %{"id" => id}, socket) do
-    LocationHandlers.handle_delete_location(id, socket)
+  def handle_event("delete-location", %{"id" => id, "dom_id" => dom_id}, socket) do
+    LocationHandlers.handle_delete_location(id, dom_id, socket)
   end
 
   #

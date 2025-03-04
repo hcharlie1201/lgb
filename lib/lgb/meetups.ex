@@ -142,7 +142,7 @@ defmodule Lgb.Meetups do
 
     # Clean up temp file if it exists
     if image_upload do
-      Lgb.Uploader.cleanup_temp_file(image_upload.path)
+      Lgb.Uploader.cleanup_temp_file(image_upload.entry)
     end
 
     result
@@ -201,7 +201,17 @@ defmodule Lgb.Meetups do
         longitude: lng,
         location_name: location.location_name,
         max_participants: location.max_participants,
-        creator_id: location.creator_id
+        creator_id: location.creator_id,
+        url:
+          if location.image do
+            Lgb.Meetups.EventLocationPictureUplodaer.url(
+              {location.image, location},
+              :original,
+              signed: true
+            )
+          else
+            nil
+          end
       }
     end)
   end

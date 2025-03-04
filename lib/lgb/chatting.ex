@@ -363,7 +363,7 @@ defmodule Lgb.Chatting do
 
     # Clean up temp file if it exists
     if image_upload do
-      Lgb.Uploader.cleanup_temp_file(image_upload.path)
+      Lgb.Uploader.cleanup_temp_file(image_upload.entry)
     end
 
     result

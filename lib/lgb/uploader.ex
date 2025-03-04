@@ -1,5 +1,7 @@
 defmodule Lgb.Uploader do
-  def cleanup_temp_file(path) do
+  def cleanup_temp_file(entry) do
+    path = generate_temp_path(entry.client_name)
+
     File.rm!(path)
   end
 

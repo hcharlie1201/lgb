@@ -4,13 +4,6 @@ defmodule LgbWeb.MeetupLive.Handlers.EventHandlers do
 
   alias Lgb.Meetups
 
-  alias Lgb.Meetups.{
-    EventLocation,
-    EventParticipant,
-    EventComment,
-    EventCommentReply
-  }
-
   # Comment Likes
   def handle_toggle_comment_like(socket, comment_id) do
     current_profile = socket.assigns.current_profile

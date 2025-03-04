@@ -171,8 +171,6 @@ export const StarsBackground = {
 
             // Set initial rotation for the entire group
             this.stars.rotation.set(0, 0, Math.PI / 4);
-
-            console.log("First star group created successfully");
         } catch (error) {
             console.error("Error creating first star group:", error);
         }
@@ -289,8 +287,6 @@ export const StarsBackground = {
 
             // Set initial rotation for the entire group
             this.starsOpposite.rotation.set(0, 0, -Math.PI / 4); // Different initial rotation
-
-            console.log("Second star group created successfully");
         } catch (error) {
             console.error("Error creating second star group:", error);
         }
@@ -356,7 +352,6 @@ export const StarsBackground = {
     },
 
     destroyed() {
-        console.log("Stars background hook destroyed");
         // Clean up
         cancelAnimationFrame(this.animationFrame);
         window.removeEventListener('resize', this.handleResize);
