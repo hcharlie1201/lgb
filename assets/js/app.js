@@ -25,7 +25,7 @@ import { StripeCheckout } from "./stripe/checkout";
 import { ScrollBottom } from "./scroll_bottom";
 import { Geolocation } from "./geolocation";
 import { StarsBackground } from "./stars_background";
-import MeetupMap from "./meetup_map";
+import { MeetupMap } from "./meetup_map/index.js";
 import topbar from "../vendor/topbar";
 
 let Hooks = {};

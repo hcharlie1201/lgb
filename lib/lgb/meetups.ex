@@ -12,11 +12,6 @@ defmodule Lgb.Meetups do
     CommentReplyLike
   }
 
-  import Ecto.Query
-  import Geo.PostGIS
-  alias Lgb.Repo
-  alias Lgb.Meetups.EventLocation
-
   @doc """
   Joins a user to a meetup event.
   """
@@ -112,16 +107,18 @@ defmodule Lgb.Meetups do
 
   # Get location with its latitude and longitude for the UI
   def get_location!(id) do
-    location = Repo.get!(EventLocation, id)
+    location = Repo.get(EventLocation, id)
 
-    # Extract coordinates from PostGIS point
-    %{coordinates: {lng, lat}} = location.geolocation
-
-    # Add latitude and longitude for the UI
-    Map.merge(location, %{latitude: lat, longitude: lng})
+    if location != nil do
+      %{coordinates: {lng, lat}} = location.geolocation
+      Map.merge(location, %{latitude: lat, longitude: lng})
+    else
+      location
+    end
   end
 
   def get_location_by_uuid(uuid) do
+    IO.inspect(uuid)
     location = Repo.get_by!(EventLocation, uuid: uuid)
 
     # Extract coordinates from PostGIS point
@@ -136,10 +133,21 @@ defmodule Lgb.Meetups do
     |> Repo.preload(:first_picture)
   end
 
-  def create_location(attrs \\ %{}) do
-    %EventLocation{}
-    |> EventLocation.changeset(attrs)
-    |> Repo.insert()
+  def create_location(attrs \\ %{}, image_upload \\ nil) do
+    uuid = Ecto.UUID.generate()
+    attrs = Lgb.Uploader.maybe_add_image(attrs, image_upload) |> Map.put("uuid", uuid)
+
+    result =
+      %EventLocation{}
+      |> EventLocation.changeset(attrs)
+      |> Repo.insert()
+
+    # Clean up temp file if it exists
+    if image_upload do
+      Lgb.Uploader.cleanup_temp_file(image_upload.entry)
+    end
+
+    result
   end
 
   def update_location(%EventLocation{} = location, attrs) do
@@ -195,7 +203,17 @@ defmodule Lgb.Meetups do
         longitude: lng,
         location_name: location.location_name,
         max_participants: location.max_participants,
-        creator_id: location.creator_id
+        creator_id: location.creator_id,
+        url:
+          if location.image do
+            Lgb.Meetups.EventLocationPictureUplodaer.url(
+              {location.image, location},
+              :original,
+              signed: true
+            )
+          else
+            nil
+          end
       }
     end)
   end

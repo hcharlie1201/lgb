@@ -61,7 +61,7 @@ defmodule LgbWeb.MeetupLive.Handlers.LocationHandlers do
   @doc """
   Handles deleting a location.
   """
-  def handle_delete_location(id, socket) do
+  def handle_delete_location(id, dom_id, socket) do
     id = String.to_integer(id)
     location = Meetups.get_location!(id)
     {:ok, _} = Meetups.delete_location(location)
@@ -69,7 +69,7 @@ defmodule LgbWeb.MeetupLive.Handlers.LocationHandlers do
     # Delete from the stream by ID
     {:noreply,
      socket
-     |> stream_delete(:locations, %{id: id})
+     |> stream_delete_by_dom_id(:locations, dom_id)
      |> put_flash(:info, "Meetup location deleted")}
   end
 
@@ -121,10 +121,9 @@ defmodule LgbWeb.MeetupLive.Handlers.LocationHandlers do
   # Private functions
 
   defp do_save_location(socket, location_params, position) do
-    # Add the position and user_id to the params
     profile = Lgb.Accounts.User.current_profile(socket.assigns.current_user)
 
-    location_params =
+    updated_params =
       Map.merge(location_params, %{
         "geolocation" => %Geo.Point{
           coordinates: {String.to_float(position.longitude), String.to_float(position.latitude)},
@@ -133,17 +132,27 @@ defmodule LgbWeb.MeetupLive.Handlers.LocationHandlers do
         "creator_id" => profile.id
       })
 
-    case Meetups.create_location(location_params) do
-      {:ok, location} ->
-        # Get the normalized location data with participation info
-        current_profile = Lgb.Accounts.User.current_profile(socket.assigns.current_user)
+    case uploaded_entries(socket, :avatar) do
+      {[], []} ->
+        handle_location_creation(socket, updated_params, profile)
 
+      _ ->
+        consume_uploaded_entries(socket, :avatar, fn %{path: path}, entry ->
+          handle_location_creation(socket, updated_params, profile, %{entry: entry, path: path})
+        end)
+        |> Enum.at(0)
+    end
+  end
+
+  defp handle_location_creation(socket, location_params, profile, metadata \\ nil) do
+    case Meetups.create_location(location_params, metadata) do
+      {:ok, location} ->
         formatted_location =
           Meetups.normalize_location([location])
           |> List.first()
           |> Map.merge(%{
             is_participant: false,
-            is_creator: location.creator_id == current_profile.id
+            is_creator: location.creator_id == profile.id
           })
 
         {:noreply,

@@ -6,7 +6,7 @@ defmodule LgbWeb.MeetupLive.Components.MapComponent do
 
   def map(assigns) do
     ~H"""
-    <div class="h-[40vh] md:h-[calc(100vh-160px)]">
+    <div id="map_component" class="h-[40vh] md:h-[calc(100vh-160px)]">
       <div
         phx-update="ignore"
         id={@map_id}
@@ -14,14 +14,6 @@ defmodule LgbWeb.MeetupLive.Components.MapComponent do
         phx-hook="MeetupMap"
         data-api-key={System.fetch_env!("GOOGLE_MAPS_API_KEY")}
       />
-
-      <div id="location-markers" class="hidden" phx-update="stream">
-        <div
-          :for={{dom_id, location} <- @locations}
-          id={dom_id}
-          data-location={Jason.encode!(location)}
-        />
-      </div>
     </div>
     """
   end

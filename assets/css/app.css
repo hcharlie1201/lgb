@@ -132,3 +132,7 @@ body {
 .dugout {
   @apply bg-indigo-50 border border-indigo-100
 }
+
+.marker {
+  @apply w-[100px] h-[100px] rounded-full overflow-hidden border-4 border-pink-400 border-solid outline-offset-2 outline-sky-500 focus:outline-2 
+}

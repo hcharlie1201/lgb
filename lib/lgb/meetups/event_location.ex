@@ -1,5 +1,6 @@
 defmodule Lgb.Meetups.EventLocation do
   use Ecto.Schema
+  use Waffle.Ecto.Schema
   import Ecto.Changeset
 
   @categories [
@@ -24,7 +25,8 @@ defmodule Lgb.Meetups.EventLocation do
     field :geolocation, Geo.PostGIS.Geometry
     field :max_participants, :integer, default: 10
     field :category, Ecto.Enum, values: @categories
-    field :uuid, Ecto.UUID, read_after_writes: true
+    field :image, Lgb.Meetups.EventLocationPictureUplodaer.Type
+    field :uuid, Ecto.UUID
 
     belongs_to :creator, Lgb.Profiles.Profile
     many_to_many :participants, Lgb.Profiles.Profile, join_through: "event_participants"
@@ -43,7 +45,8 @@ defmodule Lgb.Meetups.EventLocation do
       :geolocation,
       :max_participants,
       :creator_id,
-      :category
+      :category,
+      :uuid
     ])
     |> validate_required([
       :title,
@@ -54,8 +57,10 @@ defmodule Lgb.Meetups.EventLocation do
       :creator_id,
       :category
     ])
+    |> unique_constraint(:uuid)
     |> validate_number(:max_participants, greater_than: 10)
     |> foreign_key_constraint(:creator_id)
+    |> cast_attachments(attrs, [:image])
   end
 
   def categories, do: @categories

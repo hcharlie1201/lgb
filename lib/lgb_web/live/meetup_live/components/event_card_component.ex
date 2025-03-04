@@ -15,13 +15,14 @@ defmodule LgbWeb.MeetupLive.Components.EventCardComponent do
     ~H"""
     <.card class="bg-white/95 absolute top-16 bottom-10 left-10 z-10 w-1/6 overflow-hidden">
       <.header>Going events</.header>
-      <div class="max-h-96 space-y-4 overflow-y-auto">
+      <div id="location-markers" class="max-h-96 space-y-4 overflow-y-auto" phx-update="stream">
         <div id="events-empty-state" class="hidden py-8 text-center italic text-gray-500 only:block">
           No meetups created yet. Click on the map to create one!
         </div>
         <div
           :for={{dom_id, location} <- @locations}
-          id={"visible-#{dom_id}"}
+          id={dom_id}
+          data-location={Jason.encode!(location)}
           class="cursor-pointer rounded-md bg-gray-100 p-4 hover:bg-gray-200"
           phx-click={
             JS.push_focus()
@@ -34,7 +35,12 @@ defmodule LgbWeb.MeetupLive.Components.EventCardComponent do
             <.link class="link-style" navigate={~p"/meetups/#{location.uuid}"}>
               {location.location_name}
             </.link>
-            <button phx-click="delete-location" phx-value-id={location.id} class="text-red-500">
+            <button
+              phx-click="delete-location"
+              phx-value-id={location.id}
+              phx-value-dom_id={dom_id}
+              class="text-red-500"
+            >
               <svg
                 xmlns="http://www.w3.org/2000/svg"
                 class="h-5 w-5"

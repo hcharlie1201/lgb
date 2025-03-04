@@ -21,6 +21,7 @@ defmodule LgbWeb.MeetupLive.Map do
      |> assign(:show_selected_position_modal, false)
      |> assign(:show_location_modal, false)
      |> assign(:selected_location, nil)
+     |> allow_upload(:avatar, accept: ~w(image/*), max_entries: 1)
      |> assign(:profile, Lgb.Accounts.User.current_profile(socket.assigns.current_user))}
   end
 
@@ -53,11 +54,6 @@ defmodule LgbWeb.MeetupLive.Map do
   @impl true
   def handle_event("map-bounds-changed", params, socket) do
     MapHandlers.handle_map_bounds_changed(params, socket)
-  end
-
-  @impl true
-  def handle_event("find-nearby", params, socket) do
-    MapHandlers.handle_find_nearby(params, socket)
   end
 
   @impl true
@@ -100,8 +96,8 @@ defmodule LgbWeb.MeetupLive.Map do
   # Location management event handlers
   #
   @impl true
-  def handle_event("delete-location", %{"id" => id}, socket) do
-    LocationHandlers.handle_delete_location(id, socket)
+  def handle_event("delete-location", %{"id" => id, "dom_id" => dom_id}, socket) do
+    LocationHandlers.handle_delete_location(id, dom_id, socket)
   end
 
   #
@@ -110,6 +106,10 @@ defmodule LgbWeb.MeetupLive.Map do
   @impl true
   def handle_info(:load_locations, socket) do
     LocationHandlers.load_locations(socket)
+  end
+
+  def handle_event("cancel-upload", %{"ref" => ref}, socket) do
+    {:noreply, cancel_upload(socket, :avatar, ref)}
   end
 
   @impl true

@@ -349,9 +349,12 @@ defmodule Lgb.Chatting do
         attrs \\ %{},
         image_upload \\ nil
       ) do
-    attrs = maybe_add_image(attrs, image_upload)
     uuid = Ecto.UUID.generate()
-    attrs = Map.put(attrs, "uuid", uuid)
+
+    attrs =
+      attrs
+      |> Lgb.Uploader.maybe_add_image(image_upload)
+      |> Map.put("uuid", uuid)
 
     result =
       conversation_message
@@ -360,37 +363,10 @@ defmodule Lgb.Chatting do
 
     # Clean up temp file if it exists
     if image_upload do
-      cleanup_temp_file(image_upload.path)
+      Lgb.Uploader.cleanup_temp_file(image_upload.entry)
     end
 
     result
-  end
-
-  defp maybe_add_image(attrs, nil), do: attrs
-
-  defp maybe_add_image(attrs, %{entry: entry, path: path}) do
-    dest = generate_temp_path(entry.client_name)
-
-    File.cp!(path, dest)
-
-    image_upload = %Plug.Upload{
-      path: dest,
-      filename: entry.client_name,
-      content_type: entry.client_type
-    }
-
-    Map.put(attrs, "image", image_upload)
-  end
-
-  defp generate_temp_path(filename) do
-    Path.join(
-      Application.app_dir(:lgb, "priv/static/uploads"),
-      filename
-    )
-  end
-
-  defp cleanup_temp_file(path) do
-    File.rm!(path)
   end
 
   @doc """
