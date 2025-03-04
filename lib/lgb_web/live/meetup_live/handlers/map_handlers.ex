@@ -37,14 +37,6 @@ defmodule LgbWeb.MeetupLive.Handlers.MapHandlers do
   end
 
   @doc """
-  Handles the "find nearby" button click, requesting user location.
-  """
-  def handle_find_nearby(%{"radius" => radius}, socket) do
-    # Get current user location from browser
-    {:noreply, push_event(socket, "get-user-location", %{radius: radius})}
-  end
-
-  @doc """
   Processes user location data and finds nearby meetups.
   """
   def handle_user_location_result(%{"lat" => lat, "lng" => lng, "radius" => radius}, socket) do

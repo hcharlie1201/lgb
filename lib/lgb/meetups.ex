@@ -107,16 +107,18 @@ defmodule Lgb.Meetups do
 
   # Get location with its latitude and longitude for the UI
   def get_location!(id) do
-    location = Repo.get!(EventLocation, id)
+    location = Repo.get(EventLocation, id)
 
-    # Extract coordinates from PostGIS point
-    %{coordinates: {lng, lat}} = location.geolocation
-
-    # Add latitude and longitude for the UI
-    Map.merge(location, %{latitude: lat, longitude: lng})
+    if location != nil do
+      %{coordinates: {lng, lat}} = location.geolocation
+      Map.merge(location, %{latitude: lat, longitude: lng})
+    else
+      location
+    end
   end
 
   def get_location_by_uuid(uuid) do
+    IO.inspect(uuid)
     location = Repo.get_by!(EventLocation, uuid: uuid)
 
     # Extract coordinates from PostGIS point

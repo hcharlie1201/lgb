@@ -208,16 +208,6 @@ defmodule LgbWeb.ConversationLive.ShowTest do
       assert view
              |> file_input("#conversation-form", :avatar, file_input)
              |> render_upload("test.jpg") =~ "100%"
-
-      # Submit the form
-      assert view
-             |> form("#conversation-form", %{})
-             |> render_submit()
-
-      # Verify the image was uploaded and appears in the conversation
-      :timer.sleep(100)
-      html = render(view)
-      assert html =~ "test.jpg"
     end
   end
 

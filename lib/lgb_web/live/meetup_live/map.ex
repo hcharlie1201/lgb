@@ -57,11 +57,6 @@ defmodule LgbWeb.MeetupLive.Map do
   end
 
   @impl true
-  def handle_event("find-nearby", params, socket) do
-    MapHandlers.handle_find_nearby(params, socket)
-  end
-
-  @impl true
   def handle_event("user-location-result", params, socket) do
     MapHandlers.handle_user_location_result(params, socket)
   end

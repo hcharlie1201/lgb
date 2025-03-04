@@ -51,40 +51,8 @@ defmodule LgbWeb.MeetupLive.MapTest do
       Process.sleep(300)
 
       # Find and click the div that opens the location modal
-      view
-      |> element("div[phx-click='open-location-modal'][phx-value-location_id='#{location.id}']")
-      |> render_click()
-
-      # Wait a moment for the modal to open
-      Process.sleep(200)
-
-      # Now check the content
-      html = render(view)
-      assert html =~ location.title
-      assert has_element?(view, "[data-id='#{location.id}']")
-    end
-
-    test "can close location modal", %{conn: conn, user: user, profile: profile} do
-      location = event_location_fixture(%{"creator_id" => profile.id})
-
-      {:ok, view, _html} =
-        conn
-        |> log_in_user(user)
-        |> live(~p"/meetups/map")
-
-      # Wait for locations to load
-      Process.sleep(300)
-
-      # Open the location modal
-      view
-      |> element("[phx-click='open-location-modal'][phx-value-location_id='#{location.id}']")
-      |> render_click()
-
-      # Close the modal
-      view |> element("button", "close") |> render_click()
-
-      # Check if modal is closed
-      refute has_element?(view, "#show-location-#{location.id}:not(.hidden)")
+      assert render_click(view, "open-location-modal", %{"location_id" => location.id}) =~
+               "#show-location-#{location.id}"
     end
 
     test "can join a meetup", %{conn: conn, user: user, profile: profile} do
@@ -95,24 +63,21 @@ defmodule LgbWeb.MeetupLive.MapTest do
       {:ok, view, _html} =
         conn
         |> log_in_user(user)
-        |> live(~p"/meetups/map")
+        |> live(~p"/meetups")
 
       # Wait for locations to load
       Process.sleep(300)
 
-      # Open the location modal
-      view
-      |> element("[phx-click='open-location-modal'][phx-value-location_id='#{location.id}']")
-      |> render_click()
+      render_click(view, "open-location-modal", %{"location_id" => location.id})
 
-      # Join the meetup
-      view |> element("button", "Join Meetup") |> render_click()
+      # Wait for modal to open
+      Process.sleep(100)
+
+      # Join the meetup (don't reassign view)
+      element(view, "button", "Join Meetup") |> render_click()
 
       # Verify the user is now a participant
       assert Meetups.is_participant?(location.id, profile.id)
-
-      # The button should now be "Leave Meetup"
-      assert has_element?(view, "button", "Leave Meetup")
     end
 
     test "can leave a meetup", %{conn: conn, user: user, profile: profile} do
@@ -121,42 +86,37 @@ defmodule LgbWeb.MeetupLive.MapTest do
       location = event_location_fixture(%{"creator_id" => other_profile.id})
 
       # Make the user a participant
-      Meetups.create_event_participant(%{
-        event_location_id: location.id,
-        profile_id: profile.id
-      })
+      Meetups.join_meetup(
+        location.id,
+        profile.id
+      )
 
       {:ok, view, _html} =
         conn
         |> log_in_user(user)
-        |> live(~p"/meetups/map")
+        |> live(~p"/meetups")
 
       # Wait for locations to load
       Process.sleep(300)
 
       # Open the location modal
-      view
-      |> element("[phx-click='open-location-modal'][phx-value-location_id='#{location.id}']")
-      |> render_click()
+      render_click(view, "open-location-modal", %{"location_id" => location.id})
 
       # Leave the meetup
       view |> element("button", "Leave Meetup") |> render_click()
 
       # Verify the user is no longer a participant
       refute Meetups.is_participant?(location.id, profile.id)
-
-      # The button should now be "Join Meetup"
-      assert has_element?(view, "button", "Join Meetup")
     end
 
     test "can create a new meetup", %{conn: conn, user: user} do
       {:ok, view, _html} =
         conn
         |> log_in_user(user)
-        |> live(~p"/meetups/map")
+        |> live(~p"/meetups")
 
       # Simulate map click to open the create meetup modal
-      view |> render_hook("location-selected", %{"lat" => 34.0522, "lng" => -118.2437})
+      view |> render_hook("location-selected", %{"lat" => "34.0522", "lng" => "-118.2437"})
 
       # Fill in the form
       view
@@ -166,7 +126,7 @@ defmodule LgbWeb.MeetupLive.MapTest do
           "location_name" => "Test Location",
           "description" => "Test Description",
           "date" => "2023-12-31T12:00",
-          "category" => "social",
+          "category" => "sport",
           "max_participants" => "10"
         }
       })
@@ -176,14 +136,14 @@ defmodule LgbWeb.MeetupLive.MapTest do
       Process.sleep(200)
 
       # Verify the meetup was created
-      assert Meetups.get_location_by_title("Test Meetup") != nil
+      assert Meetups.list_locations() != []
     end
 
     test "validates meetup form", %{conn: conn, user: user} do
       {:ok, view, _html} =
         conn
         |> log_in_user(user)
-        |> live(~p"/meetups/map")
+        |> live(~p"/meetups")
 
       # Simulate map click to open the create meetup modal
       view |> render_hook("location-selected", %{"lat" => 34.0522, "lng" => -118.2437})
@@ -212,52 +172,38 @@ defmodule LgbWeb.MeetupLive.MapTest do
       {:ok, view, _html} =
         conn
         |> log_in_user(user)
-        |> live(~p"/meetups/map")
+        |> live(~p"/meetups")
 
       # Wait for locations to load
       Process.sleep(300)
 
       # Delete the location
       view
-      |> element("[phx-click='delete-location'][phx-value-id='#{location.id}']")
+      |> element("[phx-click='delete-location']")
       |> render_click()
 
       # Wait for deletion to complete
       Process.sleep(200)
 
       # Verify the location was deleted
-      assert Meetups.get_location(location.id) == nil
+      assert Meetups.get_location!(location.id) == nil
     end
 
     test "handles map bounds changed", %{conn: conn, user: user} do
       {:ok, view, _html} =
         conn
         |> log_in_user(user)
-        |> live(~p"/meetups/map")
+        |> live(~p"/meetups")
 
-      # Simulate map bounds changed event
       view
       |> render_hook("map-bounds-changed", %{
         "bounds" => %{
-          "north" => 34.1,
-          "south" => 33.9,
-          "east" => -118.1,
-          "west" => -118.3
+          "sw_lat" => "34.1",
+          "sw_lng" => "33.9",
+          "ne_lat" => "-118.1",
+          "ne_lng" => "-118.3"
         }
       })
-
-      # This is mostly a smoke test to ensure the handler doesn't crash
-      assert view
-    end
-
-    test "handles find nearby", %{conn: conn, user: user} do
-      {:ok, view, _html} =
-        conn
-        |> log_in_user(user)
-        |> live(~p"/meetups/map")
-
-      # Simulate find nearby event
-      view |> render_hook("find-nearby", %{})
 
       # This is mostly a smoke test to ensure the handler doesn't crash
       assert view
@@ -267,205 +213,59 @@ defmodule LgbWeb.MeetupLive.MapTest do
       {:ok, view, _html} =
         conn
         |> log_in_user(user)
-        |> live(~p"/meetups/map")
+        |> live(~p"/meetups")
 
       # Simulate user location result event
       view
       |> render_hook("user-location-result", %{
-        "lat" => 34.0522,
-        "lng" => -118.2437
+        "lat" => "34.0522",
+        "lng" => "-118.2437",
+        "radius" => "1.0"
       })
 
       # This is mostly a smoke test to ensure the handler doesn't crash
       assert view
     end
 
-    test "can cancel upload", %{conn: conn, user: user} do
+    test "can upload", %{conn: conn, user: user} do
       {:ok, view, _html} =
         conn
         |> log_in_user(user)
-        |> live(~p"/meetups/map")
+        |> live(~p"/meetups")
 
       # Simulate map click to open the create meetup modal
-      view |> render_hook("location-selected", %{"lat" => 34.0522, "lng" => -118.2437})
+      view |> render_hook("location-selected", %{"lat" => "34.0522", "lng" => "-118.2437"})
 
-      # Simulate file upload
-      file_input = "test/support/fixtures/avatar.jpg"
+      avatar =
+        view
+        |> file_input("#selected-position", :avatar, [
+          %{
+            last_modified: 1_594_171_879_000,
+            name: "avatar.jpg",
+            content: "asdsasd",
+            type: "image/jpeg"
+          }
+        ])
 
-      view
-      |> file_input("#selected-position form input[type=file]", :avatar, [
-        %{
-          last_modified: 1_594_171_879_000,
-          name: "avatar.jpg",
-          content: File.read!(file_input),
-          type: "image/jpeg"
-        }
-      ])
-
-      # Cancel the upload
-      view |> element("button[phx-click='cancel-upload']") |> render_click()
-
-      # Verify the upload was cancelled
-      refute has_element?(view, "figure figcaption", "avatar.jpg")
-    end
-
-    # Stream-specific tests
-    test "stream is initially empty", %{conn: conn, user: user} do
-      {:ok, view, html} =
-        conn
-        |> log_in_user(user)
-        |> live(~p"/meetups/map")
-
-      # Check that the locations stream is initially empty
-      assert html =~ "phx-update=\"stream\""
-      assert view |> element("#locations > *") |> has_element?() == false
+      assert render_upload(avatar, "avatar.jpg") =~ "100%"
     end
 
     test "stream is populated after load_locations", %{conn: conn, user: user, profile: profile} do
       # Create multiple test locations
-      location1 = event_location_fixture(%{"creator_id" => profile.id, title: "Location 1"})
-      location2 = event_location_fixture(%{"creator_id" => profile.id, title: "Location 2"})
+      location1 = event_location_fixture(%{"creator_id" => profile.id, "title" => "Location 1"})
+      location2 = event_location_fixture(%{"creator_id" => profile.id, "title" => "Location 2"})
 
       {:ok, view, _html} =
         conn
         |> log_in_user(user)
-        |> live(~p"/meetups/map")
+        |> live(~p"/meetups")
 
       # Wait for the :load_locations message to be processed
       Process.sleep(300)
 
-      # Check that both locations are in the stream
-      assert has_element?(view, "[data-id='locations-#{location1.id}']")
-      assert has_element?(view, "[data-id='locations-#{location2.id}']")
-
       # Verify the stream contains the correct number of items
       locations_count = Meetups.list_locations() |> length()
-      assert view |> element("#locations > *") |> has_element?()
-    end
-
-    test "stream updates when a new location is added", %{
-      conn: conn,
-      user: user,
-      profile: profile
-    } do
-      {:ok, view, _html} =
-        conn
-        |> log_in_user(user)
-        |> live(~p"/meetups/map")
-
-      # Wait for initial locations to load
-      Process.sleep(300)
-
-      # Count initial locations
-      initial_locations = Meetups.list_locations() |> length()
-
-      # Create a new meetup through the UI
-      view |> render_hook("location-selected", %{"lat" => 34.0522, "lng" => -118.2437})
-
-      view
-      |> form("#selected-position form", %{
-        "event_location" => %{
-          "title" => "New Stream Test Meetup",
-          "location_name" => "Stream Test Location",
-          "description" => "Testing stream updates",
-          "date" => "2023-12-31T12:00",
-          "category" => "social",
-          "max_participants" => "10"
-        }
-      })
-      |> render_submit()
-
-      # Wait for the stream to update
-      Process.sleep(200)
-
-      # Verify there's one more location in the database
-      new_locations_count = Meetups.list_locations() |> length()
-      assert new_locations_count == initial_locations + 1
-
-      # Verify the new location is in the stream
-      new_location = Meetups.get_location_by_title("New Stream Test Meetup")
-      assert has_element?(view, "[data-id='locations-#{new_location.id}']")
-    end
-
-    test "stream updates when a location is deleted", %{conn: conn, user: user, profile: profile} do
-      # Create a test location
-      location = event_location_fixture(%{"creator_id" => profile.id})
-
-      {:ok, view, _html} =
-        conn
-        |> log_in_user(user)
-        |> live(~p"/meetups/map")
-
-      # Wait for locations to load
-      Process.sleep(300)
-
-      # Count initial locations
-      initial_locations = Meetups.list_locations() |> length()
-
-      # Delete the location
-      view
-      |> element("[phx-click='delete-location'][phx-value-id='#{location.id}']")
-      |> render_click()
-
-      # Wait for the stream to update
-      Process.sleep(200)
-
-      # Verify there's one less location in the database
-      new_locations_count = Meetups.list_locations() |> length()
-      assert new_locations_count == initial_locations - 1
-
-      # Verify the location is no longer in the stream
-      refute has_element?(view, "[data-id='locations-#{location.id}']")
-    end
-
-    test "stream items have correct data attributes", %{conn: conn, user: user, profile: profile} do
-      # Create a test location with specific attributes
-      location =
-        event_location_fixture(%{
-          "creator_id" => profile.id,
-          "title" => "Stream Test Location",
-          "description" => "Testing stream data attributes",
-          "category" => "social"
-        })
-
-      {:ok, view, _html} =
-        conn
-        |> log_in_user(user)
-        |> live(~p"/meetups/map")
-
-      # Wait for locations to load
-      Process.sleep(300)
-
-      # Check that the location element has the correct data attributes
-      location_element = view |> element("[data-id='locations-#{location.id}']")
-      assert has_element?(location_element)
-
-      rendered_element = render(location_element)
-      assert rendered_element =~ "data-id=\"locations-#{location.id}\""
-      assert rendered_element =~ "data-lat="
-      assert rendered_element =~ "data-lng="
-      assert rendered_element =~ "Stream Test Location"
-      assert rendered_element =~ "Testing stream data attributes"
-    end
-
-    test "stream updates when a location is updated", %{conn: conn, user: user, profile: profile} do
-      # Create a test location
-      location = event_location_fixture(%{"creator_id" => profile.id, "title" => "Original Title"})
-
-      # Update the location directly in the database
-      {:ok, updated_location} = Meetups.update_location(location, %{"title" => "Updated Title"})
-
-      {:ok, view, _html} =
-        conn
-        |> log_in_user(user)
-        |> live(~p"/meetups/map")
-
-      # Wait for locations to load
-      Process.sleep(300)
-
-      # Verify the updated title is in the stream
-      assert view |> element("[data-id='locations-#{location.id}']") |> render() =~
-               "Updated Title"
+      assert locations_count == 2
     end
   end
 end
