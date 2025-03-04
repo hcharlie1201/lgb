@@ -34,7 +34,7 @@ defmodule LgbWeb.MeetupLive.MapTest do
         |> live(~p"/meetups")
 
       # Wait for the :load_locations message to be processed
-      Process.sleep(200)
+      Process.sleep(300)
 
       assert render(view) =~ location.title
     end
@@ -48,7 +48,7 @@ defmodule LgbWeb.MeetupLive.MapTest do
         |> live(~p"/meetups")
 
       # Wait for locations to load
-      Process.sleep(200)
+      Process.sleep(300)
 
       # Find and click the div that opens the location modal
       view
@@ -56,7 +56,7 @@ defmodule LgbWeb.MeetupLive.MapTest do
       |> render_click()
 
       # Wait a moment for the modal to open
-      Process.sleep(100)
+      Process.sleep(200)
 
       # Now check the content
       html = render(view)
@@ -73,7 +73,7 @@ defmodule LgbWeb.MeetupLive.MapTest do
         |> live(~p"/meetups/map")
 
       # Wait for locations to load
-      Process.sleep(200)
+      Process.sleep(300)
 
       # Open the location modal
       view
@@ -90,7 +90,7 @@ defmodule LgbWeb.MeetupLive.MapTest do
     test "can join a meetup", %{conn: conn, user: user, profile: profile} do
       # Create a location by another user
       other_profile = profile_fixture(user_fixture())
-      location = event_location_fixture(%{"reator_id" => other_profile.id})
+      location = event_location_fixture(%{"creator_id" => other_profile.id})
 
       {:ok, view, _html} =
         conn
@@ -98,7 +98,7 @@ defmodule LgbWeb.MeetupLive.MapTest do
         |> live(~p"/meetups/map")
 
       # Wait for locations to load
-      Process.sleep(200)
+      Process.sleep(300)
 
       # Open the location modal
       view
@@ -118,7 +118,7 @@ defmodule LgbWeb.MeetupLive.MapTest do
     test "can leave a meetup", %{conn: conn, user: user, profile: profile} do
       # Create a location by another user
       other_profile = profile_fixture(user_fixture())
-      location = event_location_fixture(%{"reator_id" => other_profile.id})
+      location = event_location_fixture(%{"creator_id" => other_profile.id})
 
       # Make the user a participant
       Meetups.create_event_participant(%{
@@ -132,7 +132,7 @@ defmodule LgbWeb.MeetupLive.MapTest do
         |> live(~p"/meetups/map")
 
       # Wait for locations to load
-      Process.sleep(200)
+      Process.sleep(300)
 
       # Open the location modal
       view
@@ -171,6 +171,9 @@ defmodule LgbWeb.MeetupLive.MapTest do
         }
       })
       |> render_submit()
+
+      # Wait for the meetup to be created
+      Process.sleep(200)
 
       # Verify the meetup was created
       assert Meetups.get_location_by_title("Test Meetup") != nil
@@ -212,12 +215,15 @@ defmodule LgbWeb.MeetupLive.MapTest do
         |> live(~p"/meetups/map")
 
       # Wait for locations to load
-      Process.sleep(200)
+      Process.sleep(300)
 
       # Delete the location
       view
       |> element("[phx-click='delete-location'][phx-value-id='#{location.id}']")
       |> render_click()
+
+      # Wait for deletion to complete
+      Process.sleep(200)
 
       # Verify the location was deleted
       assert Meetups.get_location(location.id) == nil
@@ -317,8 +323,8 @@ defmodule LgbWeb.MeetupLive.MapTest do
 
     test "stream is populated after load_locations", %{conn: conn, user: user, profile: profile} do
       # Create multiple test locations
-      location1 = event_location_fixture(%{"reator_id" => profile.id, title: "Location 1"})
-      location2 = event_location_fixture(%{"reator_id" => profile.id, title: "Location 2"})
+      location1 = event_location_fixture(%{"creator_id" => profile.id, title: "Location 1"})
+      location2 = event_location_fixture(%{"creator_id" => profile.id, title: "Location 2"})
 
       {:ok, view, _html} =
         conn
@@ -326,7 +332,7 @@ defmodule LgbWeb.MeetupLive.MapTest do
         |> live(~p"/meetups/map")
 
       # Wait for the :load_locations message to be processed
-      Process.sleep(200)
+      Process.sleep(300)
 
       # Check that both locations are in the stream
       assert has_element?(view, "[data-id='locations-#{location1.id}']")
@@ -348,7 +354,7 @@ defmodule LgbWeb.MeetupLive.MapTest do
         |> live(~p"/meetups/map")
 
       # Wait for initial locations to load
-      Process.sleep(200)
+      Process.sleep(300)
 
       # Count initial locations
       initial_locations = Meetups.list_locations() |> length()
@@ -370,7 +376,7 @@ defmodule LgbWeb.MeetupLive.MapTest do
       |> render_submit()
 
       # Wait for the stream to update
-      Process.sleep(100)
+      Process.sleep(200)
 
       # Verify there's one more location in the database
       new_locations_count = Meetups.list_locations() |> length()
@@ -383,7 +389,7 @@ defmodule LgbWeb.MeetupLive.MapTest do
 
     test "stream updates when a location is deleted", %{conn: conn, user: user, profile: profile} do
       # Create a test location
-      location = event_location_fixture(%{"reator_id" => profile.id})
+      location = event_location_fixture(%{"creator_id" => profile.id})
 
       {:ok, view, _html} =
         conn
@@ -391,7 +397,7 @@ defmodule LgbWeb.MeetupLive.MapTest do
         |> live(~p"/meetups/map")
 
       # Wait for locations to load
-      Process.sleep(200)
+      Process.sleep(300)
 
       # Count initial locations
       initial_locations = Meetups.list_locations() |> length()
@@ -402,7 +408,7 @@ defmodule LgbWeb.MeetupLive.MapTest do
       |> render_click()
 
       # Wait for the stream to update
-      Process.sleep(100)
+      Process.sleep(200)
 
       # Verify there's one less location in the database
       new_locations_count = Meetups.list_locations() |> length()
@@ -428,7 +434,7 @@ defmodule LgbWeb.MeetupLive.MapTest do
         |> live(~p"/meetups/map")
 
       # Wait for locations to load
-      Process.sleep(200)
+      Process.sleep(300)
 
       # Check that the location element has the correct data attributes
       location_element = view |> element("[data-id='locations-#{location.id}']")
@@ -444,7 +450,7 @@ defmodule LgbWeb.MeetupLive.MapTest do
 
     test "stream updates when a location is updated", %{conn: conn, user: user, profile: profile} do
       # Create a test location
-      location = event_location_fixture(%{"reator_id" => profile.id, "title" => "Original Title"})
+      location = event_location_fixture(%{"creator_id" => profile.id, "title" => "Original Title"})
 
       # Update the location directly in the database
       {:ok, updated_location} = Meetups.update_location(location, %{"title" => "Updated Title"})
@@ -455,7 +461,7 @@ defmodule LgbWeb.MeetupLive.MapTest do
         |> live(~p"/meetups/map")
 
       # Wait for locations to load
-      Process.sleep(200)
+      Process.sleep(300)
 
       # Verify the updated title is in the stream
       assert view |> element("[data-id='locations-#{location.id}']") |> render() =~
