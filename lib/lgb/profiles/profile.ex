@@ -22,6 +22,10 @@ defmodule Lgb.Profiles.Profile do
       join_through: "profiles_dating_goals",
       on_replace: :delete
 
+    many_to_many :hobbies, Lgb.Profiles.Hobby,
+      join_through: "profiles_hobbies",
+      on_replace: :delete
+
     belongs_to :user, Lgb.Accounts.User
     field :handle, :string
     field :state, :string

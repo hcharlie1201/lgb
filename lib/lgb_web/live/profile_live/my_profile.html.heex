@@ -162,6 +162,33 @@
             dating_goals={@dating_goals}
             selected_goals={@selected_goals}
           />
+          <.live_component
+            module={LgbWeb.Components.HobbyBadges}
+            id="hobbies-display"
+            hobbies={@selected_hobbies}
+            selected_hobbies={@selected_hobbies}
+            display_only={true}
+          />
+          <.button phx-click={show_modal("hobbies-modal")}>Update hobbies</.button>
+          <.modal id="hobbies-modal">
+            <input
+              type="text"
+              placeholder="Search hobbies..."
+              phx-keyup="search"
+              phx-debounce="300"
+              value={@search_query}
+              class="w-full rounded-lg mb-5 border border-gray-200 bg-white py-3 pr-4 pl-10 text-gray-900 transition-all placeholder:text-gray-400 focus:border-purple-200 focus:outline-none focus:ring-2 focus:ring-purple-100"
+            />
+            <div id="hobbies" phx-update="stream">
+              <.live_component
+                module={LgbWeb.Components.HobbyBadges}
+                id="hobbies-selector"
+                hobbies={@hobbies}
+                selected_hobbies={@selected_hobbies}
+                display_only={false}
+              />
+            </div>
+          </.modal>
           <.input
             field={@form[:biography]}
             value={@profile.biography}
