@@ -25,8 +25,13 @@ defmodule LgbWeb.Components.SignedInNav do
     ~H"""
     <nav
       id={assigns.id}
-      class={["top-[64px] sticky flex w-full flex-row justify-around self-start border bg-white p-0 md:w-20 md:flex-col md:border-0 md:bg-transparent md:p-2", "z-10 items-center p-2 md:justify-start"]}
+      class={["top-[64px] bg-white/30 sticky flex w-full flex-row justify-around self-start backdrop-blur-md md:w-20 md:flex-col md:p-2", "z-10 items-center p-2 md:justify-start"]}
     >
+      <.live_component
+        module={LgbWeb.Components.Geolocation}
+        id="user-geolocation"
+        current_user={@current_user}
+      />
       <.link navigate={~p"/starred"} class="loggedinNavLinks group">
         <svg
           xmlns="http://www.w3.org/2000/svg"
