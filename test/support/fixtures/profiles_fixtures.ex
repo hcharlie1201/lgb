@@ -34,16 +34,6 @@ defmodule Lgb.ProfilesFixtures do
       })
 
     {:ok, profile} = Lgb.Profiles.create_profile(user, attrs)
-
-    # Assign hobbies to profile
-    Repo.insert!(%Hobby{name: @hobby_1})
-    Repo.insert!(%Hobby{name: @hobby_2})
-    profile
-    |> Repo.preload(:hobbies)
-    |> Ecto.Changeset.change()
-    |> Ecto.Changeset.put_assoc(:hobbies, Repo.all(Hobby))
-    |> Repo.update!()
-
     profile
   end
 end

@@ -40,6 +40,16 @@ defmodule LgbWeb.ProfileLiveTest do
     user = user_fixture()
     profile = profile_fixture(user, %{uuid: "12312312"})
     conn = log_in_user(build_conn(), user)
+
+    # Assign hobbies to profile
+    Repo.insert!(%Hobby{name: @hobby_1})
+    Repo.insert!(%Hobby{name: @hobby_2})
+    profile
+    |> Repo.preload(:hobbies)
+    |> Ecto.Changeset.change()
+    |> Ecto.Changeset.put_assoc(:hobbies, Repo.all(Hobby))
+    |> Repo.update!()
+
     %{user: user, profile: profile, conn: conn}
   end
 
