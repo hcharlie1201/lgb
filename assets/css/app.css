@@ -22,6 +22,18 @@
   }
 }
 
+@layer utilities {
+  .no-scrollbar {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+  
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;  /* Chrome, Safari, Opera */
+  }
+}
+
+
 body {
   @apply font-Inter font-light relative w-full min-h-full text-sm;
   background-image: url("/images/background_image_bibi.webp");
@@ -122,7 +134,7 @@ body {
 }
 
 .link-style {
-  @apply relative text-blue-600 font-medium after:block after:h-[2px] after:w-full after:bg-blue-600 after:scale-x-0 after:transition-transform after:duration-300 after:ease-in-out hover:after:scale-x-100;
+  @apply relative text-indigo-600 font-medium after:block after:h-[2px] after:w-full after:bg-indigo-600 after:scale-x-0 after:transition-transform after:duration-300 after:ease-in-out hover:after:scale-x-100;
 }
 
 .primary-button {
@@ -135,4 +147,12 @@ body {
 
 .marker {
   @apply w-[100px] h-[100px] rounded-full overflow-hidden border-4 border-pink-400 border-solid outline-offset-2 outline-sky-500 focus:outline-2 
+}
+
+.home-background {
+  background-image: url("/images/homepage_background.jpeg");
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-attachment: fixed;
 }
