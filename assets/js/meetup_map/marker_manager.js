@@ -50,6 +50,19 @@ class MarkerManager {
         // Create circular image for the marker
         const tempImg = createCircularImageMarker(location.url)
 
+        tempImg.style.opacity = '0';
+
+        // Add animation end listener
+        tempImg.addEventListener('animationend', (event) => {
+            tempImg.classList.remove('drop');
+            tempImg.style.opacity = '1';
+        });
+
+        // Add a slight random delay for a staggered effect
+        const time = 0.2 + Math.random() * 0.3;
+        tempImg.style.setProperty('--delay-time', time + 's');
+
+
         const marker = new google.maps.marker.AdvancedMarkerElement({
             position,
             map: this.map,
@@ -66,6 +79,21 @@ class MarkerManager {
 
         // Store the marker
         this.markers[location.id] = marker;
+
+        // Observe for intersection
+        if (!this.intersectionObserver) {
+            this.intersectionObserver = new IntersectionObserver((entries) => {
+                for (const entry of entries) {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('drop');
+                        this.intersectionObserver.unobserve(entry.target);
+                    }
+                }
+            });
+        }
+
+        // Start observing the marker's content
+        this.intersectionObserver.observe(tempImg);
     }
 
     updateMarker(location) {

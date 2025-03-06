@@ -12,6 +12,47 @@
   src: url("/fonts/RobotoSlab.ttf") format("truetype");
 }
 
+@layer utilities {
+  @keyframes drop {
+    0% {
+      transform: translateY(-200px) scaleY(0.9);
+      opacity: 0;
+    }
+    5% {
+      opacity: 0.7;
+    }
+    50% {
+      transform: translateY(0px) scaleY(1);
+      opacity: 1;
+    }
+    65% {
+      transform: translateY(-17px) scaleY(0.9);
+      opacity: 1;
+    }
+    75% {
+      transform: translateY(-22px) scaleY(0.9);
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(0px) scaleY(1);
+      opacity: 1;
+    }
+  }
+}
+  
+.drop {
+  animation: drop 0.3s linear forwards var(--delay-time);
+}
+
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;  /* Chrome, Safari, Opera */
+}
+
 @layer components {
   .join-button {
     @apply text-xl bg-colorPrimary transition rounded-md px-32 py-3 hover:scale-110;
@@ -19,17 +60,6 @@
 
   .login-button {
     @apply bg-colorSecondary border hover:border hover:transition border-colorSecondary hover:text-colorSecondary hover:bg-transparent text-white rounded-md px-3 py-1;
-  }
-}
-
-@layer utilities {
-  .no-scrollbar {
-    -ms-overflow-style: none;  /* IE and Edge */
-    scrollbar-width: none;  /* Firefox */
-  }
-  
-  .no-scrollbar::-webkit-scrollbar {
-    display: none;  /* Chrome, Safari, Opera */
   }
 }
 
