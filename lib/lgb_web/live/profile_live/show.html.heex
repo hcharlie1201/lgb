@@ -171,7 +171,7 @@
             height="100%"
             frameborder="0"
             style="border:0"
-            src={"https://www.google.com/maps/embed/v1/place?key=#{System.fetch_env!("GOOGLE_MAPS_API_KEY")}&q=#{@profile.city},#{@profile.state}"}
+            src={"https://www.google.com/maps/embed/v1/place?key=#{System.fetch_env!("GOOGLE_MAPS_API_KEY")} &q=#{@profile.latitude},#{@profile.longitude}"}
             allowfullscreen
           >
           </iframe>
