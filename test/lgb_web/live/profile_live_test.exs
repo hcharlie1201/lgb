@@ -4,6 +4,8 @@ defmodule LgbWeb.ProfileLiveTest do
   import Phoenix.LiveViewTest
   import Lgb.AccountsFixtures
   import Lgb.ProfilesFixtures
+  alias Lgb.Repo
+  alias Lgb.Profiles.Hobby
 
   @create_attrs %{
     handle: "some handle",
@@ -35,6 +37,8 @@ defmodule LgbWeb.ProfileLiveTest do
     city: nil,
     biography: nil
   }
+  @hobby_1 "Cycling"
+  @hobby_2 "Weightlifting"
 
   setup do
     user = user_fixture()
@@ -74,8 +78,8 @@ defmodule LgbWeb.ProfileLiveTest do
       assert html =~ profile.city
 
       assert html =~ "Update hobbies"
-      assert html =~ "Cycling"
-      assert html =~ "Weightlifting"
+      assert html =~ @hobby_1
+      assert html =~ @hobby_2
     end
 
     test "updates profile", %{conn: conn} do

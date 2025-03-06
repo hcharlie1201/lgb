@@ -5,6 +5,11 @@ defmodule LgbWeb.ProfileLive.MyProfileTest do
   import Phoenix.LiveViewTest
   alias Lgb.Accounts
   alias Lgb.Profiles
+  alias Lgb.Repo
+  alias Lgb.Profiles.Hobby
+
+  @hobby_1 "Cycling"
+  @hobby_2 "Weightlifting"
 
   describe "MyProfile LiveView" do
     setup do
@@ -30,8 +35,8 @@ defmodule LgbWeb.ProfileLive.MyProfileTest do
       assert html =~ "Gallery"
       assert html =~ "Bio"
       assert html =~ "Update hobbies"
-      assert html =~ "Cycling"
-      assert html =~ "Weightlifting"
+      assert html =~ @hobby_1
+      assert html =~ @hobby_2
 
       # Verify form fields are present
       assert has_element?(view, "input[name='handle']")

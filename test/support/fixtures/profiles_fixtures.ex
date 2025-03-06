@@ -3,11 +3,7 @@ defmodule Lgb.ProfilesFixtures do
   This module defines test helpers for creating
   entities via the `Lgb.Profiles` context.
   """
-  alias Lgb.Repo
-  alias Lgb.Profiles.Hobby
 
-  @hobby_1 "Cycling"
-  @hobby_2 "Weightlifting"
   @doc """
   Generate a profile.
   """
