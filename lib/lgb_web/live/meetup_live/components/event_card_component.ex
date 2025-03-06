@@ -7,13 +7,14 @@ defmodule LgbWeb.MeetupLive.Components.EventCardComponent do
     router: LgbWeb.Router,
     endpoint: LgbWeb.Endpoint
 
-  attr :location, :map, required: true
+  attr :locations, :map, required: true
   attr :profile, :any, required: true
+  attr :card_visible, :boolean, required: true
   attr :map_id, :string
 
   def event_card(assigns) do
     ~H"""
-    <.card class="z-2 absolute top-16 bottom-10 left-10 flex w-1/5 flex-col bg-white">
+    <.card class={"#{!@card_visible && "hidden"} z-2 absolute top-0 bottom-0 flex w-full flex-col bg-white md:top-8 md:bottom-10 md:left-0 md:left-7 md:flex md:w-1/3 lg:left-8 lg:w-1/5"}>
       <.header class="mb-4">Going events</.header>
       <div
         id="location-markers"

@@ -1,8 +1,34 @@
 <.page_align current_user={@current_user} no_padding={true}>
   <div class="relative">
     <.map map_id={@map_id} locations={@streams.locations} />
-    <.event_card map_id={@map_id} locations={@streams.locations} profile={@profile} />
+    <.event_card
+      card_visible={@card_visible}
+      map_id={@map_id}
+      locations={@streams.locations}
+      profile={@profile}
+    />
   </div>
+
+  <button
+    phx-click="toggle_card"
+    class="z-3 fixed bottom-6 left-1/2 flex h-12 w-24 -translate-x-1/2 transform items-center justify-center rounded-full bg-blue-600 text-white hover:bg-indigo-700 md:hidden"
+  >
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      class="h-6 w-6"
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path
+        stroke-linecap="round"
+        stroke-linejoin="round"
+        stroke-width="2"
+        d={if @card_visible, do: "M6 18L18 6M6 6l12 12", else: "M4 6h16M4 12h16M4 18h16"}
+      />
+    </svg>
+    {if @card_visible, do: "Map", else: "List"}
+  </button>
   <%= if @show_location_modal do %>
     <.modal
       id={"show-location-#{@selected_location.id}"}
