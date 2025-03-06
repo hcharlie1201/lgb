@@ -62,6 +62,10 @@ defmodule LgbWeb.ProfileLiveTest do
       # Verify current values are shown
       assert html =~ profile.handle
       assert html =~ profile.city
+
+      assert html =~ "Update hobbies"
+      assert html =~ "Cycling"
+      assert html =~ "Weightlifting"
     end
 
     test "updates profile", %{conn: conn} do

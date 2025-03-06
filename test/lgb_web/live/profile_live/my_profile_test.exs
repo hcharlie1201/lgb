@@ -19,6 +19,9 @@ defmodule LgbWeb.ProfileLive.MyProfileTest do
 
       assert html =~ "Gallery"
       assert html =~ "Bio"
+      assert html =~ "Update hobbies"
+      assert html =~ "Cycling"
+      assert html =~ "Weightlifting"
 
       # Verify form fields are present
       assert has_element?(view, "input[name='handle']")
