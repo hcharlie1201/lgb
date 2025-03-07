@@ -22,7 +22,7 @@ defmodule LgbWeb.Components.DatingGoalBadges do
 
   defp selected_class(goal, selected_goals) do
     if Enum.any?(selected_goals, &(&1.id == goal.id)) do
-      "dating-attribute"
+      "tag-attribute"
     else
       "bg-gray-200 text-gray-700 hover:bg-gray-300 border-2 border-gray-300"
     end

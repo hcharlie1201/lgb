@@ -5,11 +5,26 @@ defmodule LgbWeb.ProfileLive.MyProfileTest do
   import Phoenix.LiveViewTest
   alias Lgb.Accounts
   alias Lgb.Profiles
+  alias Lgb.Repo
+  alias Lgb.Profiles.Hobby
+
+  @hobby_1 "Cycling"
+  @hobby_2 "Weightlifting"
 
   describe "MyProfile LiveView" do
     setup do
       user = user_fixture()
       profile = profile_fixture(user)
+
+      # Assign hobbies to profile
+      Repo.insert!(%Hobby{name: @hobby_1})
+      Repo.insert!(%Hobby{name: @hobby_2})
+      profile
+      |> Repo.preload(:hobbies)
+      |> Ecto.Changeset.change()
+      |> Ecto.Changeset.put_assoc(:hobbies, Repo.all(Hobby))
+      |> Repo.update!()
+
       %{user: user, profile: profile}
     end
 
@@ -19,6 +34,9 @@ defmodule LgbWeb.ProfileLive.MyProfileTest do
 
       assert html =~ "Gallery"
       assert html =~ "Bio"
+      assert html =~ "Update hobbies"
+      assert html =~ @hobby_1
+      assert html =~ @hobby_2
 
       # Verify form fields are present
       assert has_element?(view, "input[name='handle']")

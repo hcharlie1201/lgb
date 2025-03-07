@@ -4,6 +4,8 @@ defmodule LgbWeb.ProfileLiveTest do
   import Phoenix.LiveViewTest
   import Lgb.AccountsFixtures
   import Lgb.ProfilesFixtures
+  alias Lgb.Repo
+  alias Lgb.Profiles.Hobby
 
   @create_attrs %{
     handle: "some handle",
@@ -35,11 +37,23 @@ defmodule LgbWeb.ProfileLiveTest do
     city: nil,
     biography: nil
   }
+  @hobby_1 "Cycling"
+  @hobby_2 "Weightlifting"
 
   setup do
     user = user_fixture()
     profile = profile_fixture(user, %{uuid: "12312312"})
     conn = log_in_user(build_conn(), user)
+
+    # Assign hobbies to profile
+    Repo.insert!(%Hobby{name: @hobby_1})
+    Repo.insert!(%Hobby{name: @hobby_2})
+    profile
+    |> Repo.preload(:hobbies)
+    |> Ecto.Changeset.change()
+    |> Ecto.Changeset.put_assoc(:hobbies, Repo.all(Hobby))
+    |> Repo.update!()
+
     %{user: user, profile: profile, conn: conn}
   end
 
@@ -62,6 +76,10 @@ defmodule LgbWeb.ProfileLiveTest do
       # Verify current values are shown
       assert html =~ profile.handle
       assert html =~ profile.city
+
+      assert html =~ "Update hobbies"
+      assert html =~ @hobby_1
+      assert html =~ @hobby_2
     end
 
     test "updates profile", %{conn: conn} do

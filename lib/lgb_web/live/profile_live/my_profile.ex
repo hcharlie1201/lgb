@@ -10,16 +10,21 @@ defmodule LgbWeb.ProfileLive.MyProfile do
   def mount(_params, _session, socket) do
     user = socket.assigns.current_user
     dating_goals = Lgb.Repo.all(Lgb.Profiles.DatingGoal)
+    hobbies = Lgb.Repo.all(Lgb.Profiles.Hobby)
 
-    profile = User.current_profile(user)
-    selected_goals = Lgb.Repo.preload(profile, :dating_goals).dating_goals
+    profile = User.current_profile(user) |> Lgb.Repo.preload([:dating_goals, :hobbies])
+    selected_goals = profile.dating_goals
+    selected_hobbies = profile.hobbies
 
     socket =
       socket
       |> assign(
         uploaded_files: Profiles.list_profile_pictures(profile),
         dating_goals: dating_goals,
-        selected_goals: selected_goals
+        selected_goals: selected_goals,
+        hobbies: hobbies,
+        selected_hobbies: selected_hobbies,
+        search_query: ""
       )
       |> allow_upload(:avatar, accept: ~w(image/*), max_entries: 3)
 
@@ -36,6 +41,7 @@ defmodule LgbWeb.ProfileLive.MyProfile do
         end)
 
         Profiles.save_dating_goals(profile, socket.assigns.selected_goals)
+        Profiles.save_hobbies(profile, socket.assigns.selected_hobbies)
 
         {:noreply,
          socket
@@ -117,6 +123,24 @@ defmodule LgbWeb.ProfileLive.MyProfile do
       end
 
     {:noreply, assign(socket, :selected_goals, updated_goals)}
+  end
+
+  def handle_event("toggle_hobby", %{"id" => id}, socket) do
+    hobby = Enum.find(socket.assigns.hobbies, &(to_string(&1.id) == id))
+
+    updated_hobbies =
+      if Enum.any?(socket.assigns.selected_hobbies, &(&1.id == hobby.id)) do
+        Enum.reject(socket.assigns.selected_hobbies, &(&1.id == hobby.id))
+      else
+        [hobby | socket.assigns.selected_hobbies]
+      end
+
+    {:noreply, assign(socket, :selected_hobbies, updated_hobbies)}
+  end
+
+  def handle_event("search", %{"value" => query}, socket) do
+    hobbies = Profiles.list_hobbies(query)
+    {:noreply, assign(socket, :hobbies, hobbies)}
   end
 
   # special case since form doesn't accept struct so we have to update it manually

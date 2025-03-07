@@ -117,7 +117,7 @@ body {
   @apply text-2xl logo-gradient mb-2;
 }
 
-.dating-attribute {
+.tag-attribute {
   @apply border-2 border-yellow-500 bg-gradient-to-br from-blue-500 to-purple-600 text-white shadow-md transform scale-105 ring-2 ring-yellow-400/50;
 }
 

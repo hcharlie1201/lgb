@@ -4,6 +4,8 @@ defmodule Lgb.Profiles do
   """
 
   import Ecto.Query, warn: false
+  alias Lgb.Profiles.Hobby
+  alias Lgb.Profiles.ProfileHobby
   alias Lgb.Profiles.Starred
   alias Lgb.Repo
 
@@ -425,6 +427,28 @@ defmodule Lgb.Profiles do
         Repo.insert!(%ProfileDatingGoal{
           profile_id: profile.id,
           dating_goal_id: goal.id
+        })
+      end)
+    end)
+  end
+
+  def list_hobbies(search_params) do
+    search_pattern = "%#{search_params}%"
+
+    from(hobby in Hobby,
+      where: ilike(hobby.name, ^search_pattern),
+    )
+    |> Repo.all()
+  end
+
+  def save_hobbies(profile, hobbies) do
+    Repo.transaction(fn ->
+      Repo.delete_all(from ph in ProfileHobby, where: ph.profile_id == ^profile.id)
+
+      Enum.each(hobbies, fn hobby ->
+        Repo.insert!(%ProfileHobby{
+          profile_id: profile.id,
+          hobby_id: hobby.id
         })
       end)
     end)
