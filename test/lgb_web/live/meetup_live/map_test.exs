@@ -268,4 +268,14 @@ defmodule LgbWeb.MeetupLive.MapTest do
       assert locations_count == 2
     end
   end
+
+  test "toggle card visibility", %{conn: conn, user: user, profile: profile} do
+    {:ok, view, _html} =
+      conn
+      |> log_in_user(user)
+      |> live(~p"/meetups")
+
+    # Smoke Test
+    view |> element("button[phx-click='toggle_card']") |> render_click()
+  end
 end

@@ -21,6 +21,7 @@ defmodule LgbWeb.MeetupLive.Map do
      |> assign(:show_selected_position_modal, false)
      |> assign(:show_location_modal, false)
      |> assign(:selected_location, nil)
+     |> assign(:card_visible, false)
      |> allow_upload(:avatar, accept: ~w(image/*), max_entries: 1)
      |> assign(:profile, Lgb.Accounts.User.current_profile(socket.assigns.current_user))}
   end
@@ -36,6 +37,10 @@ defmodule LgbWeb.MeetupLive.Map do
       |> Map.put(:action, :validate)
 
     {:noreply, assign(socket, form: to_form(changeset))}
+  end
+
+  def handle_event("toggle_card", _, socket) do
+    {:noreply, update(socket, :card_visible, fn visible -> !visible end)}
   end
 
   @impl true

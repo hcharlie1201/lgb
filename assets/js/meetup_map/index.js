@@ -49,6 +49,8 @@ export const MeetupMap = {
         this.map = new google.maps.Map(this.el, {
             zoom: 12,
             center: defaultCenter,
+            mapTypeControl: false,
+            streetViewControl: false,
             mapId: "5c21f5c01da8345d", // https://console.cloud.google.com/google/maps-apis/studio/maps/5c21f5c01da8345d?project=bibi-451006
         });
 
