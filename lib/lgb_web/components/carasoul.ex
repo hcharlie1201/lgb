@@ -20,7 +20,6 @@ defmodule LgbWeb.Components.Carousel do
         <%= if length(@uploaded_files) > 0 do %>
           <div
             :for={uploaded_file <- @uploaded_files}
-            phx-click={show_modal("uploaded-file-#{uploaded_file.id}")}
             class="group relative w-full flex-shrink-0"
             style={"width: #{100 / @length}%"}
           >
@@ -107,23 +106,6 @@ defmodule LgbWeb.Components.Carousel do
             </button>
           <% end %>
         </div>
-      <% end %>
-      
-    <!-- Popups -->
-      <%= for uploaded_file <- @uploaded_files do %>
-        <.modal id={"uploaded-file-#{uploaded_file.id}"}>
-          <img
-            src={
-              Lgb.Profiles.ProfilePictureUploader.url(
-                {uploaded_file.image, uploaded_file},
-                :original,
-                signed: true
-              )
-            }
-            alt="Carousel Image"
-            class="h-full w-full rounded-lg object-cover"
-          />
-        </.modal>
       <% end %>
     </div>
     """
