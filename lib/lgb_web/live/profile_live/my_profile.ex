@@ -2,7 +2,6 @@ defmodule LgbWeb.ProfileLive.MyProfile do
   alias Lgb.Accounts.User
   alias Lgb.Profiles
   alias Lgb.Profiles.Profile
-  alias LgbWeb.Components.Carousel
   require Logger
   use LgbWeb, :live_view
 
@@ -19,6 +18,8 @@ defmodule LgbWeb.ProfileLive.MyProfile do
     socket =
       socket
       |> assign(
+        current_index: 0,
+        length: 3,
         uploaded_files: Profiles.list_profile_pictures(profile),
         dating_goals: dating_goals,
         selected_goals: selected_goals,
@@ -103,6 +104,21 @@ defmodule LgbWeb.ProfileLive.MyProfile do
     {:noreply, assign(socket, form: form)}
   end
 
+  def handle_event("next", _, socket) do
+    current_index = rem(socket.assigns.current_index + 1, length(socket.assigns.uploaded_files))
+    {:noreply, assign(socket, current_index: current_index)}
+  end
+
+  def handle_event("prev", _, socket) do
+    current_index =
+      rem(
+        socket.assigns.current_index - 1 + length(socket.assigns.uploaded_files),
+        length(socket.assigns.uploaded_files)
+      )
+
+    {:noreply, assign(socket, current_index: current_index)}
+  end
+
   @impl Phoenix.LiveView
   def handle_event("cancel-upload", %{"ref" => ref}, socket) do
     {:noreply, cancel_upload(socket, :avatar, ref)}
@@ -138,6 +154,19 @@ defmodule LgbWeb.ProfileLive.MyProfile do
     {:noreply, assign(socket, :selected_hobbies, updated_hobbies)}
   end
 
+  def handle_event("delete_profile_picture", %{"profile-pic-id" => id}, socket) do
+    profile_picture = Lgb.Profiles.ProfilePicture.get!(id)
+
+    case Lgb.Repo.delete(profile_picture) do
+      {:ok, _} ->
+        {:noreply,
+         assign(socket, :uploaded_files, Profiles.list_profile_pictures(socket.assigns.profile))}
+
+      {:error, _} ->
+        {:error, socket}
+    end
+  end
+
   def handle_event("search", %{"value" => query}, socket) do
     hobbies = Profiles.list_hobbies(query)
     {:noreply, assign(socket, :hobbies, hobbies)}
@@ -157,12 +186,6 @@ defmodule LgbWeb.ProfileLive.MyProfile do
           "state" => socket.assigns.form.params["state"]
         })
     end
-  end
-
-  @impl true
-  def handle_info(:remove_profile_picture, socket) do
-    {:noreply,
-     assign(socket, :uploaded_files, Profiles.list_profile_pictures(socket.assigns.profile))}
   end
 
   @impl true
