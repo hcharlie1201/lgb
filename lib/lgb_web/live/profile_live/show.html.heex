@@ -104,12 +104,87 @@
       
 <!-- Gallery/Carousel Section -->
       <div class="mb-8">
-        <.live_component
-          module={LgbWeb.Components.Carousel}
-          id={@profile.id}
-          uploaded_files={@uploaded_files}
-          length={3}
-        />
+        <div>
+          <div class="group relative mx-auto w-full max-w-6xl overflow-hidden rounded-md shadow-md">
+            <div
+              class="relative flex h-96 space-x-4 transition-transform duration-500 ease-in-out"
+              style={"transform: translateX(-#{@current_index * (100 / @length)}%)"}
+            >
+              <%= if length(@uploaded_files) > 0 do %>
+                <div
+                  :for={uploaded_file <- @uploaded_files}
+                  class="group relative w-full flex-shrink-0"
+                  phx-click={show_modal("show-profile-picture-modal-#{uploaded_file.id}")}
+                  style={"width: #{100 / @length}%"}
+                >
+                  <img
+                    src={
+                      Lgb.Profiles.ProfilePictureUploader.url(
+                        {uploaded_file.image, uploaded_file},
+                        :original,
+                        signed: true
+                      )
+                    }
+                    alt="Carousel Image"
+                    class="h-full w-full rounded-lg object-cover"
+                  />
+                </div>
+              <% else %>
+                <div
+                  class="group relative w-full flex-shrink-0"
+                  style={"width: #{100 / @length}%"}
+                >
+                  <div class="flex h-full w-full items-center justify-center rounded-lg bg-gray-200">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      class="h-32 w-32 text-gray-400"
+                      viewBox="0 0 20 20"
+                      fill="currentColor"
+                    >
+                      <path
+                        fill-rule="evenodd"
+                        d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z"
+                        clip-rule="evenodd"
+                      />
+                    </svg>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+
+            <div class="group">
+              <!-- Previous Button -->
+              <%= if @current_index > 0 and length(@uploaded_files) > 0 do %>
+                <button
+                  phx-click={JS.push("prev")}
+                  class="bg-white/30 absolute top-1/2 left-4 -translate-y-1/2 transform rounded-full p-3 text-gray-800 opacity-0 shadow-md transition-opacity duration-200 hover:bg-purple-200 group-hover:opacity-100"
+                >
+                  ←
+                </button>
+              <% end %>
+              
+<!-- Next Button -->
+              <%= if @current_index < length(@uploaded_files) - 1 and length(@uploaded_files) > 0 do %>
+                <button
+                  phx-click={JS.push("next")}
+                  class="bg-white/30 absolute top-1/2 right-4 -translate-y-1/2 transform rounded-full p-3 text-gray-800 opacity-0 shadow-md transition-opacity duration-200 hover:bg-purple-200 group-hover:opacity-100"
+                >
+                  →
+                </button>
+              <% end %>
+            </div>
+            
+<!-- Indicators -->
+            <%= if length(@uploaded_files) > 0 do %>
+              <div class="absolute bottom-4 left-1/2 flex -translate-x-1/2 transform space-x-2">
+                <%= for {_uploaded_file, index} <- Enum.with_index(@uploaded_files) do %>
+                  <button class={"#{if index == @current_index, do: "bg-colorSecondary", else: "bg-purple-200"} h-3 w-3 rounded-full opacity-0 transition-colors duration-200 group-hover:opacity-100"}>
+                  </button>
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+        </div>
       </div>
       
 <!-- Dating Goals/Style Section -->
@@ -191,4 +266,18 @@
       </div>
     </div>
   </div>
+  <%= for uploaded_file <- @uploaded_files do %>
+    <.modal id={"show-profile-picture-modal-#{uploaded_file.id}"}>
+      <img
+        src={
+          Lgb.Profiles.ProfilePictureUploader.url(
+            {uploaded_file.image, uploaded_file},
+            :original,
+            signed: true
+          )
+        }
+        class="h-full w-full rounded-lg object-cover"
+      />
+    </.modal>
+  <% end %>
 </.page_align>
