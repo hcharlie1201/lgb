@@ -288,7 +288,13 @@
     </div>
     
 <!-- Comments List -->
-    <div id="comments" class="space-y-6" phx-update="stream">
+    <div id="comments" class="space-y-3" phx-update="stream">
+      <div
+        id="event-comments-empty-state"
+        class="hidden py-8 text-center italic text-gray-500 only:block"
+      >
+        No meetups created yet. Click on the map to create one!
+      </div>
       <div
         :for={{dom_id, comment} <- @streams.comments}
         id={dom_id}

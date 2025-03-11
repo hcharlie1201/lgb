@@ -314,7 +314,7 @@ defmodule Lgb.Meetups do
     |> Repo.insert()
     |> case do
       {:ok, comment} ->
-        {:ok, Lgb.Repo.preload(comment, :replies, profile: :first_picture)}
+        {:ok, Lgb.Repo.preload(comment, [:replies, profile: :first_picture])}
 
       {:error, changeset} ->
         {:error, changeset}
@@ -373,7 +373,7 @@ defmodule Lgb.Meetups do
     |> Repo.insert()
     |> case do
       {:ok, reply} ->
-        {:ok, Repo.preload(reply, :likes, profile: :first_picture)}
+        {:ok, Repo.preload(reply, [:likes, profile: :first_picture])}
 
       {:error, changeset} ->
         {:error, changeset}
