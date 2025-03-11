@@ -1,4 +1,4 @@
-<.profile_page_align current_user={@current_user}>
+<.wide_page_align current_user={@current_user}>
   <section class="flex flex-col gap-2">
     <.header class="mb-8 text-3xl font-bold text-gray-800">Gallery</.header>
     <section>
@@ -77,7 +77,7 @@
               ←
             </button>
           <% end %>
-          
+
 <!-- Next Button -->
           <%= if @current_index < length(@uploaded_files) - 1 and length(@uploaded_files) > 0 do %>
             <button
@@ -88,7 +88,7 @@
             </button>
           <% end %>
         </div>
-        
+
 <!-- Indicators -->
         <%= if length(@uploaded_files) > 0 do %>
           <div class="absolute bottom-4 left-1/2 flex -translate-x-1/2 transform space-x-2">
@@ -100,7 +100,7 @@
         <% end %>
       </div>
     </section>
-    
+
 <!-- Profile Form -->
     <.simple_form
       for={@form}
@@ -136,7 +136,7 @@
               </p>
             </div>
           </div>
-          
+
 <!-- Uploaded Files Preview -->
           <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
             <article :for={entry <- @uploads.avatar.entries} class="relative">
@@ -146,12 +146,12 @@
                   {entry.client_name}
                 </figcaption>
               </figure>
-              
+
 <!-- Progress Bar -->
               <progress value={entry.progress} max="100" class="mt-2 h-2 w-full rounded">
                 {entry.progress}%
               </progress>
-              
+
 <!-- Cancel Button -->
               <button
                 type="button"
@@ -162,7 +162,7 @@
               >
                 &times;
               </button>
-              
+
 <!-- Error Messages -->
               <p
                 :for={err <- upload_errors(@uploads.avatar, entry)}
@@ -172,13 +172,13 @@
               </p>
             </article>
           </div>
-          
+
 <!-- Global Upload Errors -->
           <p :for={err <- upload_errors(@uploads.avatar)} class="mt-2 text-sm text-red-500">
             {error_to_string(err)}
           </p>
         </section>
-        
+
 <!-- Form Fields -->
         <div class="space-y-6">
           <.input
@@ -313,7 +313,7 @@
           </div>
         </div>
       </section>
-      
+
 <!-- Save Button -->
       <:actions>
         <.button
@@ -339,4 +339,4 @@
       />
     </.modal>
   <% end %>
-</.profile_page_align>
+</.wide_page_align>
