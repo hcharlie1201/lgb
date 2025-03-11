@@ -793,20 +793,17 @@ defmodule LgbWeb.CoreComponents do
 
   def page_align(assigns) do
     ~H"""
-    <div class={["flex min-h-full flex-col md:flex-row"]}>
-      <!-- Sidebar Navigation -->
+    <div class="mx-auto flex min-h-full max-w-7xl flex-col justify-center md:flex-row">
+      <!-- Sidebar Navigation with fixed width -->
       <.live_component
         id={"page-align-#{assigns.current_user.uuid}"}
         module={LgbWeb.Components.SignedInNav}
         current_user={assigns.current_user}
       />
-      <!-- Main Content -->
-      <main class={["flex-1", if(@no_padding,
-    do: "p-0",
-    else: "p-4")]}>
-        <div class={[if(@no_padding,
-    do: "h-full px-4",
-    else: "mx-auto max-w-5xl")]}>
+      
+    <!-- Main Content that takes most of the width -->
+      <main class={["w-full flex-1", if(@no_padding, do: "p-0", else: "p-4")]}>
+        <div class={["h-full", if(@no_padding, do: "px-4", else: "mx-auto max-w-5xl")]}>
           {render_slot(@inner_block)}
         </div>
       </main>
@@ -817,7 +814,7 @@ defmodule LgbWeb.CoreComponents do
   slot :inner_block, required: true
   attr :no_padding, :boolean, default: false
 
-  def chatrooms_page_align(assigns) do
+  def wide_page_align(assigns) do
     ~H"""
     <div class={["flex min-h-full flex-col md:flex-row"]}>
       <!-- Sidebar Navigation -->
@@ -951,23 +948,45 @@ defmodule LgbWeb.CoreComponents do
 
   def non_logged_in_nav(assigns) do
     ~H"""
-    <div class="relative">
+    <div class="relative min-h-screen">
       <!-- Navigation Bar -->
-      <nav id="non-signed-in-nav" class="sticky top-0 z-10 flex px-4 py-4 backdrop-blur-md">
-        <section class="mx-auto flex w-full max-w-6xl items-center justify-between md:flex-row md:gap-0">
+      <nav id="non-signed-in-nav" class="sticky top-0 z-10 w-full px-4 py-4 backdrop-blur-md">
+        <div class="mx-auto flex w-full max-w-6xl items-center justify-between">
           <!-- Logo -->
-          <div class="flex items-center space-x-2">
-            <span class="text-xl font-bold">
-              <.link navigate={~p"/"}>
-                <h1 class="font-sans bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-3xl text-transparent">
-                  bi⏾bi
-                </h1>
-              </.link>
-            </span>
+          <div class="flex items-center">
+            <.link navigate={~p"/"} class="focus:outline-none">
+              <h1 class="font-sans bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-3xl font-bold text-transparent">
+                bi⏾bi
+              </h1>
+            </.link>
           </div>
           
-    <!-- Navigation Links -->
-          <div class="menu cursor-pointer md:hidden" onclick="expandNavigation()">
+    <!-- Desktop Navigation Links -->
+          <div class="hidden md:flex md:items-center" id="desktop-nav-link-nonsigned-in">
+            <div class="mr-8 flex items-center space-x-6">
+              <a href="/products" class="font-medium text-white">Products</a>
+              <a href="/features" class="font-medium text-white">Features</a>
+              <a href="/blogs" class="font-medium text-white">Blogs</a>
+              <a href="/community" class="font-medium text-white">Community</a>
+              <a href="/pricing" class="font-medium text-white">Pricing</a>
+            </div>
+
+            <.link
+              navigate={~p"/users/log_in"}
+              id="non-signed-in-nav-login"
+              class="rounded-full bg-gradient-to-r from-purple-600 to-blue-600 px-4 py-2 font-medium text-white transition-colors hover:from-purple-700 hover:to-blue-700"
+            >
+              Log In
+            </.link>
+          </div>
+          
+    <!-- Mobile Menu Button -->
+          <button
+            type="button"
+            class="flex items-center md:hidden"
+            onclick="expandNavigation()"
+            aria-label="Toggle menu"
+          >
             <svg
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
@@ -978,47 +997,61 @@ defmodule LgbWeb.CoreComponents do
             >
               <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 9h16.5m-16.5 6.75h16.5" />
             </svg>
-          </div>
-
-          <div class="hidden bg-white shadow-lg sm:static sm:h-max sm:w-full sm:w-min sm:gap-0 sm:rounded-full sm:px-6 sm:py-3 md:flex md:items-center md:space-x-8">
-            <div class="flex space-x-6">
-              <a href="/products" class="loggedOutNavbarText">Products</a>
-              <a href="/features" class="loggedOutNavbarText">Features</a>
-              <a href="/blogs" class="loggedOutNavbarText">Blogs</a>
-              <a href="/community" class="loggedOutNavbarText">Community</a>
-              <a href="/pricing" class="loggedOutNavbarText">Pricing</a>
-            </div>
-          </div>
-          <.link
-            navigate={~p"/users/log_in"}
-            id="non-signed-in-nav-login"
-            class="ml-4 font-medium text-gray-600 hover:text-gray-900"
-          >
-            Log In
-          </.link>
+          </button>
           
-    <!-- Mobile Navigation -->
-          <div class="navs fixed top-0 left-0 h-screen w-0 overflow-x-hidden bg-white shadow-lg md:hidden">
-            <div class="flex flex-col">
-              <button
-                class="bg-colorPrimary m-4 w-max rounded-3xl px-4 py-1 shadow-lg"
-                onclick="closeNavigation()"
-              >
-                esc
-              </button>
-              <a href="/products" class="loggedOutNavbarText">Products</a>
-              <a href="/features" class="loggedOutNavbarText">Features</a>
-              <a href="/blogs" class="loggedOutNavbarText">Blogs</a>
-              <a href="/community" class="loggedOutNavbarText">Community</a>
-              <a href="/pricing" class="loggedOutNavbarText">Pricing</a>
-              <.link navigate={~p"/users/log_in"} class="loggedOutNavbarText">
-                Log In
-              </.link>
+    <!-- Mobile Navigation Slide-out -->
+          <div class="navs fixed top-0 left-0 z-50 h-screen w-0 overflow-x-hidden bg-white shadow-lg transition-all duration-300 md:hidden">
+            <div class="flex flex-col space-y-6 p-6">
+              <div class="flex items-center justify-between">
+                <h1 class="font-sans bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-3xl font-bold text-transparent">
+                  bi⏾bi
+                </h1>
+                <button
+                  class="rounded-full p-2 hover:bg-gray-100"
+                  onclick="closeNavigation()"
+                  aria-label="Close menu"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke-width="1.5"
+                    stroke="currentColor"
+                    class="size-6"
+                  >
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
+
+              <div class="flex flex-col space-y-4 pt-4">
+                <a href="/products" class="py-2 text-lg text-gray-700 hover:text-gray-900">
+                  Products
+                </a>
+                <a href="/features" class="py-2 text-lg text-gray-700 hover:text-gray-900">
+                  Features
+                </a>
+                <a href="/blogs" class="py-2 text-lg text-gray-700 hover:text-gray-900">Blogs</a>
+                <a href="/community" class="py-2 text-lg text-gray-700 hover:text-gray-900">
+                  Community
+                </a>
+                <a href="/pricing" class="py-2 text-lg text-gray-700 hover:text-gray-900">Pricing</a>
+                <.link
+                  navigate={~p"/users/log_in"}
+                  class="mt-4 rounded-full bg-gradient-to-r from-purple-600 to-blue-600 px-4 py-3 text-center font-medium text-white"
+                >
+                  Log In
+                </.link>
+              </div>
             </div>
           </div>
-        </section>
+        </div>
       </nav>
-      {render_slot(@inner_block)}
+      
+    <!-- Main Content -->
+      <main class="min-h-[calc(100vh-5rem)]">
+        {render_slot(@inner_block)}
+      </main>
     </div>
     """
   end

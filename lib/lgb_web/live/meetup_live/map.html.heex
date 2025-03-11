@@ -1,243 +1,241 @@
-<.page_align current_user={@current_user} no_padding={true}>
-  <div class="relative">
-    <.map map_id={@map_id} locations={@streams.locations} />
-    <.event_card
-      card_visible={@card_visible}
-      map_id={@map_id}
-      locations={@streams.locations}
-      profile={@profile}
-    />
-  </div>
+<div class="relative">
+  <.map map_id={@map_id} locations={@streams.locations} />
+  <.event_card
+    card_visible={@card_visible}
+    map_id={@map_id}
+    locations={@streams.locations}
+    profile={@profile}
+  />
+</div>
 
-  <button
-    phx-click="toggle_card"
-    class="z-3 fixed bottom-6 left-1/2 flex h-12 w-24 -translate-x-1/2 transform items-center justify-center rounded-full bg-blue-600 text-white hover:bg-indigo-700 md:hidden"
+<button
+  phx-click="toggle_card"
+  class="z-3 fixed bottom-6 left-1/2 flex h-12 w-24 -translate-x-1/2 transform items-center justify-center rounded-full bg-blue-600 text-white hover:bg-indigo-700 md:hidden"
+>
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    class="h-6 w-6"
+    fill="none"
+    viewBox="0 0 24 24"
+    stroke="currentColor"
   >
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      class="h-6 w-6"
-      fill="none"
-      viewBox="0 0 24 24"
-      stroke="currentColor"
-    >
-      <path
-        stroke-linecap="round"
-        stroke-linejoin="round"
-        stroke-width="2"
-        d={if @card_visible, do: "M6 18L18 6M6 6l12 12", else: "M4 6h16M4 12h16M4 18h16"}
-      />
-    </svg>
-    {if @card_visible, do: "Map", else: "List"}
-  </button>
-  <%= if @show_location_modal do %>
-    <.modal
-      id={"show-location-#{@selected_location.id}"}
-      show={@show_location_modal}
-      on_cancel={JS.push("close-location-modal")}
-    >
-      <section class="mb-4 flex items-start justify-between">
-        <.header>
-          <.link navigate={~p"/meetups/#{@selected_location.uuid}"} class="link-style">
-            {@selected_location.title || "Meetup Location"}
-          </.link>
-        </.header>
+    <path
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      stroke-width="2"
+      d={if @card_visible, do: "M6 18L18 6M6 6l12 12", else: "M4 6h16M4 12h16M4 18h16"}
+    />
+  </svg>
+  {if @card_visible, do: "Map", else: "List"}
+</button>
+<%= if @show_location_modal do %>
+  <.modal
+    id={"show-location-#{@selected_location.id}"}
+    show={@show_location_modal}
+    on_cancel={JS.push("close-location-modal")}
+  >
+    <section class="mb-4 flex items-start justify-between">
+      <.header>
+        <.link navigate={~p"/meetups/#{@selected_location.uuid}"} class="link-style">
+          {@selected_location.title || "Meetup Location"}
+        </.link>
+      </.header>
 
-        <span
-          :if={@selected_location.is_creator}
-          class="rounded bg-blue-100 px-2.5 py-0.5 text-xs text-blue-800"
-        >
-          You created this
-        </span>
-      </section>
+      <span
+        :if={@selected_location.is_creator}
+        class="rounded bg-blue-100 px-2.5 py-0.5 text-xs text-blue-800"
+      >
+        You created this
+      </span>
+    </section>
 
-      <div class="space-y-4">
-        <div>
-          <h3>Location</h3>
-          <p>{@selected_location.location_name || "Not specified"}</p>
-        </div>
+    <div class="space-y-4">
+      <div>
+        <h3>Location</h3>
+        <p>{@selected_location.location_name || "Not specified"}</p>
+      </div>
 
-        <div>
-          <h3>Description</h3>
-          <p>{@selected_location.description || "No description available"}</p>
-        </div>
+      <div>
+        <h3>Description</h3>
+        <p>{@selected_location.description || "No description available"}</p>
+      </div>
 
-        <div>
-          <h3>Category</h3>
-          <p>
-            <%= if @selected_location.category do %>
-              {@selected_location.category
-              |> to_string()
-              |> String.replace("_", " ")
-              |> String.capitalize()}
-            <% else %>
-              Not specified
-            <% end %>
-          </p>
-        </div>
-
-        <div>
-          <h3>Date & Time</h3>
-          <p>
-            <%= if @selected_location.date do %>
-              {Calendar.strftime(@selected_location.date, "%B %d, %Y at %I:%M %p")}
-            <% else %>
-              No date specified
-            <% end %>
-          </p>
-        </div>
-
-        <div>
-          <h3>Participants</h3>
-          <p>
-            {@selected_location.participant_count}
-            <%= if @selected_location.max_participants do %>
-              of {@selected_location.max_participants}
-            <% end %>
-            participants
-            <%= if @selected_location.is_participant do %>
-              <span class="ml-2 rounded bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
-                You're going
-              </span>
-            <% end %>
-          </p>
-        </div>
-
-        <div class="mt-6">
-          <%= cond do %>
-            <% @selected_location.is_participant -> %>
-              <.button
-                phx-click="leave-meetup"
-                phx-value-id={@selected_location.id}
-                class="bg-red-600 hover:bg-red-700"
-              >
-                Leave Meetup
-              </.button>
-            <% @selected_location.is_creator -> %>
-              <span class="text-sm text-gray-600">You are the creator of this meetup</span>
-            <% @selected_location.max_participants && @selected_location.participant_count >= @selected_location.max_participants -> %>
-              <.button disabled class="cursor-not-allowed bg-gray-400">
-                Event Full
-              </.button>
-            <% true -> %>
-              <.button
-                phx-click="join-meetup"
-                phx-value-id={@selected_location.id}
-                class="bg-blue-600 hover:bg-blue-700"
-              >
-                Join Meetup
-              </.button>
+      <div>
+        <h3>Category</h3>
+        <p>
+          <%= if @selected_location.category do %>
+            {@selected_location.category
+            |> to_string()
+            |> String.replace("_", " ")
+            |> String.capitalize()}
+          <% else %>
+            Not specified
           <% end %>
+        </p>
+      </div>
+
+      <div>
+        <h3>Date & Time</h3>
+        <p>
+          <%= if @selected_location.date do %>
+            {Calendar.strftime(@selected_location.date, "%B %d, %Y at %I:%M %p")}
+          <% else %>
+            No date specified
+          <% end %>
+        </p>
+      </div>
+
+      <div>
+        <h3>Participants</h3>
+        <p>
+          {@selected_location.participant_count}
+          <%= if @selected_location.max_participants do %>
+            of {@selected_location.max_participants}
+          <% end %>
+          participants
+          <%= if @selected_location.is_participant do %>
+            <span class="ml-2 rounded bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
+              You're going
+            </span>
+          <% end %>
+        </p>
+      </div>
+
+      <div class="mt-6">
+        <%= cond do %>
+          <% @selected_location.is_participant -> %>
+            <.button
+              phx-click="leave-meetup"
+              phx-value-id={@selected_location.id}
+              class="bg-red-600 hover:bg-red-700"
+            >
+              Leave Meetup
+            </.button>
+          <% @selected_location.is_creator -> %>
+            <span class="text-sm text-gray-600">You are the creator of this meetup</span>
+          <% @selected_location.max_participants && @selected_location.participant_count >= @selected_location.max_participants -> %>
+            <.button disabled class="cursor-not-allowed bg-gray-400">
+              Event Full
+            </.button>
+          <% true -> %>
+            <.button
+              phx-click="join-meetup"
+              phx-value-id={@selected_location.id}
+              class="bg-blue-600 hover:bg-blue-700"
+            >
+              Join Meetup
+            </.button>
+        <% end %>
+      </div>
+    </div>
+  </.modal>
+<% end %>
+
+<.modal
+  :if={@show_selected_position_modal}
+  show={@show_selected_position_modal}
+  id="selected-position"
+  on_cancel={JS.push("close-position-modal")}
+>
+  <.simple_form for={@form} phx-submit="save-location" phx-change="validate">
+    <.input
+      field={@form[:title]}
+      label="Event Title"
+      placeholder="Socal Dungeon and Dragons"
+      required
+    />
+    <.input
+      field={@form[:location_name]}
+      label="Location Name"
+      placeholder="1234 Fake Street => Coffee Shop"
+      required
+    />
+    <.input
+      field={@form[:description]}
+      type="textarea"
+      label="Description"
+      placeholder="Enter meetup details..."
+    />
+    <.input field={@form[:date]} type="datetime-local" label="Date & Time" />
+    <.input
+      field={@form[:category]}
+      type="select"
+      label="Category"
+      options={Lgb.Meetups.EventLocation.categories()}
+      prompt="Select your category"
+      multiple={false}
+    />
+    <section phx-drop-target={@uploads.avatar.ref} class="mb-6">
+      <div class="group relative cursor-pointer rounded-lg border-2 border-dashed border-gray-300 p-6 text-center transition-all hover:bg-blue-50/10 hover:border-blue-500">
+        <.live_file_input
+          upload={@uploads.avatar}
+          class="absolute inset-0 z-20 h-full w-full cursor-pointer opacity-0"
+        />
+        <div class="pointer-events-none flex flex-col items-center justify-center space-y-2">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            class="h-10 w-10 text-gray-400 group-hover:text-blue-500"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+            />
+          </svg>
+          <p class="text-gray-600 group-hover:text-blue-500">
+            Click to upload or drag & drop your avatar
+          </p>
         </div>
       </div>
-    </.modal>
-  <% end %>
 
-  <.modal
-    :if={@show_selected_position_modal}
-    show={@show_selected_position_modal}
-    id="selected-position"
-    on_cancel={JS.push("close-position-modal")}
-  >
-    <.simple_form for={@form} phx-submit="save-location" phx-change="validate">
-      <.input
-        field={@form[:title]}
-        label="Event Title"
-        placeholder="Socal Dungeon and Dragons"
-        required
-      />
-      <.input
-        field={@form[:location_name]}
-        label="Location Name"
-        placeholder="1234 Fake Street => Coffee Shop"
-        required
-      />
-      <.input
-        field={@form[:description]}
-        type="textarea"
-        label="Description"
-        placeholder="Enter meetup details..."
-      />
-      <.input field={@form[:date]} type="datetime-local" label="Date & Time" />
-      <.input
-        field={@form[:category]}
-        type="select"
-        label="Category"
-        options={Lgb.Meetups.EventLocation.categories()}
-        prompt="Select your category"
-        multiple={false}
-      />
-      <section phx-drop-target={@uploads.avatar.ref} class="mb-6">
-        <div class="group relative cursor-pointer rounded-lg border-2 border-dashed border-gray-300 p-6 text-center transition-all hover:bg-blue-50/10 hover:border-blue-500">
-          <.live_file_input
-            upload={@uploads.avatar}
-            class="absolute inset-0 z-20 h-full w-full cursor-pointer opacity-0"
-          />
-          <div class="pointer-events-none flex flex-col items-center justify-center space-y-2">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              class="h-10 w-10 text-gray-400 group-hover:text-blue-500"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                stroke-linecap="round"
-                stroke-linejoin="round"
-                stroke-width="2"
-                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-              />
-            </svg>
-            <p class="text-gray-600 group-hover:text-blue-500">
-              Click to upload or drag & drop your avatar
-            </p>
-          </div>
-        </div>
-        
 <!-- Uploaded Files Preview -->
-        <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
-          <article :for={entry <- @uploads.avatar.entries} class="relative">
-            <figure class="rounded-lg bg-gray-100 p-4">
-              <.live_img_preview entry={entry} width="100" class="rounded-lg shadow-md" />
-              <figcaption class="mt-2 truncate text-sm text-gray-600">
-                {entry.client_name}
-              </figcaption>
-            </figure>
-            
+      <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
+        <article :for={entry <- @uploads.avatar.entries} class="relative">
+          <figure class="rounded-lg bg-gray-100 p-4">
+            <.live_img_preview entry={entry} width="100" class="rounded-lg shadow-md" />
+            <figcaption class="mt-2 truncate text-sm text-gray-600">
+              {entry.client_name}
+            </figcaption>
+          </figure>
+
 <!-- Progress Bar -->
-            <progress value={entry.progress} max="100" class="mt-2 h-2 w-full rounded">
-              {entry.progress}%
-            </progress>
-            
+          <progress value={entry.progress} max="100" class="mt-2 h-2 w-full rounded">
+            {entry.progress}%
+          </progress>
+
 <!-- Cancel Button -->
-            <button
-              type="button"
-              phx-click="cancel-upload"
-              phx-value-ref={entry.ref}
-              class="absolute top-2 right-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-white transition-colors hover:bg-red-600"
-              aria-label="cancel"
-            >
-              &times;
-            </button>
-            
+          <button
+            type="button"
+            phx-click="cancel-upload"
+            phx-value-ref={entry.ref}
+            class="absolute top-2 right-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-white transition-colors hover:bg-red-600"
+            aria-label="cancel"
+          >
+            &times;
+          </button>
+
 <!-- Error Messages -->
-            <p
-              :for={err <- upload_errors(@uploads.avatar, entry)}
-              class="mt-2 text-sm text-red-500"
-            >
-              {Lgb.Uploader.error_to_string(err)}
-            </p>
-          </article>
-        </div>
-        
+          <p
+            :for={err <- upload_errors(@uploads.avatar, entry)}
+            class="mt-2 text-sm text-red-500"
+          >
+            {Lgb.Uploader.error_to_string(err)}
+          </p>
+        </article>
+      </div>
+
 <!-- Global Upload Errors -->
-        <p :for={err <- upload_errors(@uploads.avatar)} class="mt-2 text-sm text-red-500">
-          {Lgb.Uploader.error_to_string(err)}
-        </p>
-      </section>
-      <.input field={@form[:max_participants]} type="number" label="Max # of Participants" />
-      <.button type="submit">
-        Create Meetup
-      </.button>
-    </.simple_form>
-  </.modal>
-</.page_align>
+      <p :for={err <- upload_errors(@uploads.avatar)} class="mt-2 text-sm text-red-500">
+        {Lgb.Uploader.error_to_string(err)}
+      </p>
+    </section>
+    <.input field={@form[:max_participants]} type="number" label="Max # of Participants" />
+    <.button type="submit">
+      Create Meetup
+    </.button>
+  </.simple_form>
+</.modal>

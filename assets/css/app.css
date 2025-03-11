@@ -18,39 +18,47 @@
       transform: translateY(-200px) scaleY(0.9);
       opacity: 0;
     }
+
     5% {
       opacity: 0.7;
     }
+
     50% {
       transform: translateY(0px) scaleY(1);
       opacity: 1;
     }
+
     65% {
       transform: translateY(-17px) scaleY(0.9);
       opacity: 1;
     }
+
     75% {
       transform: translateY(-22px) scaleY(0.9);
       opacity: 1;
     }
+
     100% {
       transform: translateY(0px) scaleY(1);
       opacity: 1;
     }
   }
 }
-  
+
 .drop {
   animation: drop 0.3s linear forwards var(--delay-time);
 }
 
 .no-scrollbar {
-  -ms-overflow-style: none;  /* IE and Edge */
-  scrollbar-width: none;  /* Firefox */
+  -ms-overflow-style: none;
+  /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
 }
 
 .no-scrollbar::-webkit-scrollbar {
-  display: none;  /* Chrome, Safari, Opera */
+  display: none;
+  /* Chrome, Safari, Opera */
 }
 
 @layer components {
@@ -77,30 +85,31 @@ body {
 }
 
 .logo-gradient {
-  @apply bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent;
+  @apply bg-gradient-to-r from-purple-600 to-blue-600 bg-clip-text text-transparent text-3xl;
 }
 
 .loggedOutNavbarText {
   @apply text-gray-600 font-medium transition-colors py-4 sm:py-0 hover:text-gray-900 text-xl sm:m-0 sm:text-sm px-4 hover:bg-colorPrimary sm:hover:bg-transparent;
 }
 
-.mainNavBar {
-  @apply leading-6 hover:bg-colorSecondary hover:text-white p-2 rounded-md;
-}
+
 .menu {
   @apply sm:hidden;
 }
+
 .navText,
 .userNavText {
-  @apply sm:block hidden;
+  @apply md:block hidden mt-1 text-xs lg:text-xl;
 }
 
 .collapsible {
   @apply overflow-hidden duration-300;
 }
+
 .loggedinNavLinks {
-  @apply flex p-2 flex-col items-center rounded-lg text-gray-700 transition-colors duration-200 hover:text-colorSecondary hover:bg-purple-50;
+  @apply text-gray-600 p-2 rounded-lg transition-colors duration-200 w-full hover:text-white hover:bg-indigo-400 flex gap-2 items-center;
 }
+
 .pricing-card {
   transition: all 0.2s ease-in-out;
 }
@@ -125,6 +134,7 @@ body {
 .benefits-card {
   @apply bg-white p-4 rounded-lg shadow;
 }
+
 .benefits-header {
   @apply text-2xl font-semibold text-gray-800 mb-4 font-RobotoSlab font-light;
 }
@@ -176,7 +186,7 @@ body {
 }
 
 .marker {
-  @apply w-[100px] h-[100px] rounded-full overflow-hidden border-4 border-pink-400 border-solid outline-offset-2 outline-sky-500 focus:outline-2 
+  @apply w-[100px] h-[100px] rounded-full overflow-hidden border-4 border-pink-400 border-solid outline-offset-2 outline-sky-500 focus:outline-2
 }
 
 .home-background {
