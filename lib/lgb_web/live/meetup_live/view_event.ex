@@ -2,12 +2,16 @@ defmodule LgbWeb.MeetupLive.ViewEvent do
   use LgbWeb, :live_view
 
   alias Lgb.Meetups
-  alias Lgb.Meetups.{EventComment, EventCommentReply}
+  alias Lgb.Meetups.EventComment
   alias LgbWeb.MeetupLive.Handlers.{EventHandlers, ParticipantHandlers}
 
   def mount(_params, _session, socket) do
     current_profile = Lgb.Accounts.User.current_profile(socket.assigns.current_user)
-    {:ok, assign(socket, :current_profile, current_profile)}
+
+    {:ok,
+     socket
+     |> assign(:current_profile, current_profile)
+     |> stream_configure(:comments, dom_id: fn comment -> "comment-#{comment.id}" end)}
   end
 
   def handle_params(%{"id" => event_location_uuid}, _url, socket) do
@@ -19,7 +23,7 @@ defmodule LgbWeb.MeetupLive.ViewEvent do
       |> assign(:event_location, event_location)
       |> assign(:host, Meetups.get_host(event_location))
       |> assign(:participants, Meetups.list_participants(event_location.id))
-      |> assign(:comments, Meetups.list_event_comments(event_location))
+      |> stream(:comments, Meetups.list_event_comments(event_location))
       |> assign(:is_host, event_location.creator_id == current_profile.id)
       |> assign(
         :user_participation_status,
@@ -33,9 +37,6 @@ defmodule LgbWeb.MeetupLive.ViewEvent do
           })
         )
       end)
-      |> assign_new(:comment_reply_form, fn ->
-        to_form(EventCommentReply.changeset(%EventCommentReply{}, %{}))
-      end)
 
     {:noreply, socket}
   end
@@ -43,20 +44,6 @@ defmodule LgbWeb.MeetupLive.ViewEvent do
   # Comment Likes
   def handle_event("toggle_comment_like", %{"comment_id" => comment_id}, socket) do
     {:noreply, EventHandlers.handle_toggle_comment_like(socket, comment_id)}
-  end
-
-  # Add Comment Reply
-  def handle_event(
-        "add_comment_reply",
-        %{"event_comment_reply" => reply_params, "comment_id" => comment_id},
-        socket
-      ) do
-    {:noreply, EventHandlers.handle_add_comment_reply(socket, reply_params, comment_id)}
-  end
-
-  # Comment Reply Likes
-  def handle_event("toggle_reply_like", %{"reply_id" => reply_id}, socket) do
-    {:noreply, EventHandlers.handle_toggle_reply_like(socket, reply_id)}
   end
 
   # Attend Event Handler
@@ -83,10 +70,5 @@ defmodule LgbWeb.MeetupLive.ViewEvent do
   # Delete Comment Handler
   def handle_event("delete_comment", %{"comment_id" => comment_id}, socket) do
     {:noreply, EventHandlers.handle_delete_comment(socket, comment_id)}
-  end
-
-  # Delete Comment Reply Handler
-  def handle_event("delete_comment_reply", %{"reply_id" => reply_id}, socket) do
-    {:noreply, EventHandlers.handle_delete_comment_reply(socket, reply_id)}
   end
 end
