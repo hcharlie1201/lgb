@@ -21,6 +21,12 @@ defmodule LgbWeb.Components.SignedInNav do
      |> assign(count: count)}
   end
 
+  @doc """
+  Renders the navigation bar for signed-in users.
+  
+  Generates a responsive HTML menu that displays links to key sections (Profile, Starred, Search, Inbox, Chatroom, Premium, Events, and Account) and integrates a geolocation component. A notification badge is conditionally shown when there are unread messages.
+  """
+  @spec render(map()) :: Phoenix.LiveView.Rendered.t()
   def render(assigns) do
     ~H"""
     <nav

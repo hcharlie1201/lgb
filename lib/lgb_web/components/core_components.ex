@@ -946,6 +946,12 @@ defmodule LgbWeb.CoreComponents do
   """
   slot :inner_block, required: true
 
+  @doc """
+  Renders a responsive navigation bar for non-logged-in users.
+  
+  This component displays a sticky top navigation bar that adapts to both desktop and mobile layouts. On desktop, it shows a logo linking to the home page, a set of navigation links (Products, Features, Blogs, Community, Pricing), and a login button. On mobile, it provides a menu toggle that expands to reveal the same navigation options and login action. Additionally, any content passed via the inner slot is rendered in the main section below the navigation bar.
+  """
+  @spec non_logged_in_nav(map()) :: Phoenix.LiveView.Rendered.t()
   def non_logged_in_nav(assigns) do
     ~H"""
     <div class="relative min-h-screen">
