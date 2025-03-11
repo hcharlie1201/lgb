@@ -248,7 +248,7 @@ defmodule Lgb.Meetups do
       from c in EventComment,
         where: c.event_location_id == ^event_location.id,
         order_by: [desc: c.inserted_at],
-        preload: [profile: :first_picture, replies: [profile: :first_picture, likes: []]]
+        preload: [profile: :first_picture, replies: [:likes, profile: :first_picture]]
 
     Repo.all(query)
     |> Enum.map(fn comment ->
@@ -373,7 +373,7 @@ defmodule Lgb.Meetups do
     |> Repo.insert()
     |> case do
       {:ok, reply} ->
-        {:ok, Repo.preload(reply, profile: :first_picture, likes: [])}
+        {:ok, Repo.preload(reply, :likes, profile: :first_picture)}
 
       {:error, changeset} ->
         {:error, changeset}
