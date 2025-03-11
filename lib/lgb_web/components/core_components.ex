@@ -962,13 +962,13 @@ defmodule LgbWeb.CoreComponents do
           </div>
           
     <!-- Desktop Navigation Links -->
-          <div class="hidden md:flex md:items-center" id="desktop-nav-link-nonsigned-in">
-            <div class="mr-8 flex items-center space-x-6">
-              <a href="/products" class="font-medium text-white">Products</a>
-              <a href="/features" class="font-medium text-white">Features</a>
-              <a href="/blogs" class="font-medium text-white">Blogs</a>
-              <a href="/community" class="font-medium text-white">Community</a>
-              <a href="/pricing" class="font-medium text-white">Pricing</a>
+          <div class="hidden md:flex md:items-center">
+            <div class="mr-8 flex items-center space-x-1" id="desktop-nav-link-nonsigned-in">
+              <a href="/products" class="navLinks">Products</a>
+              <a href="/features" class="navLinks">Features</a>
+              <a href="/blogs" class="navLinks">Blogs</a>
+              <a href="/community" class="navLinks">Community </a>
+              <a href="/pricing" class="navLinks">Pricing </a>
             </div>
 
             <.link
