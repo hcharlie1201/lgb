@@ -110,6 +110,10 @@ body {
   @apply text-gray-600 p-2 rounded-lg transition-colors duration-200 w-full hover:text-white hover:bg-indigo-400 flex gap-2 items-center;
 }
 
+.navLinks {
+  @apply rounded-lg px-4 py-2 font-medium transition-all duration-200 hover:bg-white/10;
+}
+
 .pricing-card {
   transition: all 0.2s ease-in-out;
 }
