@@ -288,267 +288,136 @@
     </div>
     
 <!-- Comments List -->
-    <%= if Enum.empty?(@comments) do %>
-      <div class="py-8 text-center text-gray-400">
-        Be the first to comment!
+    <div id="comments" class="space-y-3" phx-update="stream">
+      <div
+        id="event-comments-empty-state"
+        class="hidden py-8 text-center italic text-gray-500 only:block"
+      >
+        No comments created yet
       </div>
-    <% else %>
-      <div class="space-y-6">
-        <%= for comment <- @comments do %>
-          <div id={"comment-#{comment.id}"} class="rounded-lg bg-gray-50 p-4">
-            <!-- Comment Header -->
-            <div class="flex justify-between">
-              <div class="flex items-center">
-                <div class="h-10 w-10 flex-shrink-0">
-                  <img
-                    class="h-10 w-10 rounded-full"
-                    src={
-                      if comment.profile.first_picture do
-                        Lgb.Profiles.ProfilePictureUploader.url(
-                          {comment.profile.first_picture.image, comment.profile.first_picture},
-                          :original,
-                          signed: true
-                        )
-                      else
-                        "https://lgb-public.s3.us-west-2.amazonaws.com/static/empty-profile.jpg"
-                      end
-                    }
-                    alt={comment.profile.handle}
-                  />
-                </div>
-                <div class="ml-3">
-                  <p class="text-sm font-medium text-gray-900">{comment.profile.handle}</p>
-                  <p class="text-xs text-gray-500">
-                    {Calendar.strftime(comment.inserted_at, "%B %d, %Y at %I:%M %p")}
-                  </p>
-                </div>
-              </div>
-              
-<!-- Delete Comment Button (only for comment owner) -->
-              <%= if @current_profile.id == comment.profile_id do %>
-                <button
-                  phx-click="delete_comment"
-                  phx-value-comment_id={comment.id}
-                  class="text-gray-400 hover:text-gray-600"
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="h-5 w-5"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
-                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                    />
-                  </svg>
-                </button>
-              <% end %>
+      <div
+        :for={{dom_id, comment} <- @streams.comments}
+        id={dom_id}
+        class="rounded-lg bg-gray-50 p-4"
+      >
+        <!-- Comment Header -->
+        <div class="flex justify-between">
+          <div class="flex items-center">
+            <div class="h-10 w-10 flex-shrink-0">
+              <img
+                class="h-10 w-10 rounded-full"
+                src={
+                  if comment.profile.first_picture do
+                    Lgb.Profiles.ProfilePictureUploader.url(
+                      {comment.profile.first_picture.image, comment.profile.first_picture},
+                      :original,
+                      signed: true
+                    )
+                  else
+                    "https://lgb-public.s3.us-west-2.amazonaws.com/static/empty-profile.jpg"
+                  end
+                }
+                alt={comment.profile.handle}
+              />
             </div>
-            
-<!-- Comment Content -->
-            <div class="mt-2 text-sm text-gray-700">
-              <p>{comment.content}</p>
-            </div>
-            
-<!-- Like Button -->
-            <div class="mt-2 flex items-center space-x-4">
-              <button
-                phx-click="toggle_comment_like"
-                phx-value-comment_id={comment.id}
-                class="flex items-center text-gray-500 hover:text-indigo-600"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="mr-1 h-5 w-5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"
-                  />
-                </svg>
-                <span>
-                  {Map.get(comment, :likes_count, 0)} {if Map.get(comment, :likes_count, 0) ==
-                                                            1,
-                                                          do: "like",
-                                                          else: "likes"}
-                </span>
-              </button>
-              
-<!-- Reply Toggle Button -->
-              <button
-                phx-click="show_reply_form"
-                phx-value-comment_id={comment.id}
-                class="flex items-center text-gray-500 hover:text-indigo-600"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  class="mr-1 h-5 w-5"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"
-                  />
-                </svg>
-                <span>Reply</span>
-              </button>
-            </div>
-            
-<!-- Replies Section -->
-            <%= if comment.replies && !Enum.empty?(comment.replies) do %>
-              <div class="mt-4 space-y-4 border-l-2 border-gray-200 pl-6">
-                <%= for reply <- comment.replies do %>
-                  <div id={"reply-#{reply.id}"} class="rounded-lg bg-white p-3">
-                    <!-- Reply Header -->
-                    <div class="flex justify-between">
-                      <div class="flex items-center">
-                        <div class="h-8 w-8 flex-shrink-0">
-                          <img
-                            class="h-8 w-8 rounded-full"
-                            src={
-                              if reply.profile.first_picture do
-                                Lgb.Profiles.ProfilePictureUploader.url(
-                                  {reply.profile.first_picture.image,
-                                   reply.profile.first_picture},
-                                  :original,
-                                  signed: true
-                                )
-                              else
-                                "https://lgb-public.s3.us-west-2.amazonaws.com/static/empty-profile.jpg"
-                              end
-                            }
-                            alt={reply.profile.handle}
-                          />
-                        </div>
-                        <div class="ml-3">
-                          <p class="text-sm font-medium text-gray-900">
-                            {reply.profile.handle}
-                          </p>
-                          <p class="text-xs text-gray-500">
-                            {Calendar.strftime(reply.inserted_at, "%B %d, %Y at %I:%M %p")}
-                          </p>
-                        </div>
-                      </div>
-                      
-<!-- Delete Reply Button (only for reply owner) -->
-                      <%= if @current_profile.id == reply.profile_id do %>
-                        <button
-                          phx-click="delete_comment_reply"
-                          phx-value-reply_id={reply.id}
-                          class="text-gray-400 hover:text-gray-600"
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            class="h-4 w-4"
-                            fill="none"
-                            viewBox="0 0 24 24"
-                            stroke="currentColor"
-                          >
-                            <path
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                              stroke-width="2"
-                              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                            />
-                          </svg>
-                        </button>
-                      <% end %>
-                    </div>
-                    
-<!-- Reply Content -->
-                    <div class="mt-1 text-sm text-gray-700">
-                      <p>{reply.content}</p>
-                    </div>
-                    
-<!-- Reply Like Button -->
-                    <div class="mt-1">
-                      <button
-                        phx-click="toggle_reply_like"
-                        phx-value-reply_id={reply.id}
-                        class="flex items-center text-xs text-gray-500 hover:text-indigo-600"
-                      >
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          class="mr-1 h-4 w-4"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"
-                          />
-                        </svg>
-                        <span>
-                          {length(reply.likes)} {if length(reply.likes) == 1,
-                            do: "like",
-                            else: "likes"}
-                        </span>
-                      </button>
-                    </div>
-                  </div>
-                <% end %>
-              </div>
-            <% end %>
-            
-<!-- Reply Form (hidden by default, shown with JS) -->
-            <div id={"reply-form-#{comment.id}"} class="mt-4 hidden pl-6">
-              <.form
-                for={@comment_reply_form}
-                phx-submit="add_comment_reply"
-                phx-value-comment_id={comment.id}
-                class="space-y-3"
-              >
-                <div>
-                  <label
-                    for={"reply-content-#{comment.id}"}
-                    class="sr-only block text-sm font-medium text-gray-700"
-                  >
-                    Your reply
-                  </label>
-                  <div class="mt-1">
-                    <textarea
-                      id={"reply-content-#{comment.id}"}
-                      name="event_comment_reply[content]"
-                      rows="2"
-                      class="block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
-                      placeholder="Add your reply..."
-                    ></textarea>
-                  </div>
-                </div>
-                <div class="flex justify-end space-x-2">
-                  <button
-                    type="button"
-                    phx-click="hide_reply_form"
-                    phx-value-comment_id={comment.id}
-                    class="primary-button"
-                  >
-                    Cancel
-                  </button>
-                  <button type="submit" class="primary-button">
-                    Post Reply
-                  </button>
-                </div>
-              </.form>
+            <div class="ml-3">
+              <p class="text-sm font-medium text-gray-900">{comment.profile.handle}</p>
+              <p class="text-xs text-gray-500">
+                {Calendar.strftime(comment.inserted_at, "%B %d, %Y at %I:%M %p")}
+              </p>
             </div>
           </div>
-        <% end %>
+          
+<!-- Delete Comment Button (only for comment owner) -->
+          <button
+            :if={@current_profile.id == comment.profile_id}
+            phx-click="delete_comment"
+            phx-value-comment_id={comment.id}
+            class="text-gray-400 hover:text-gray-600"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+              />
+            </svg>
+          </button>
+        </div>
+        
+<!-- Comment Content -->
+        <div class="mt-2 text-sm text-gray-700">
+          <p>{comment.content}</p>
+        </div>
+        
+<!-- Like Button -->
+        <div class="mt-2 flex items-center space-x-4">
+          <button
+            phx-click="toggle_comment_like"
+            phx-value-comment_id={comment.id}
+            class="flex items-center text-gray-500 hover:text-indigo-600"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="mr-1 h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M14 10h4.764a2 2 0 011.789 2.894l-3.5 7A2 2 0 0115.263 21h-4.017c-.163 0-.326-.02-.485-.06L7 20m7-10V5a2 2 0 00-2-2h-.095c-.5 0-.905.405-.905.905 0 .714-.211 1.412-.608 2.006L7 11v9m7-10h-2M7 20H5a2 2 0 01-2-2v-6a2 2 0 012-2h2.5"
+              />
+            </svg>
+            <span>
+              {Map.get(comment, :likes_count, 0)} {if Map.get(comment, :likes_count, 0) ==
+                                                        1,
+                                                      do: "like",
+                                                      else: "likes"}
+            </span>
+          </button>
+          
+<!-- Reply Toggle Button -->
+          <button
+            phx-click={JS.show(to: "#reply-form-#{comment.id}")}
+            class="flex items-center text-gray-500 hover:text-indigo-600"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              class="mr-1 h-5 w-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                stroke-width="2"
+                d="M3 10h10a8 8 0 018 8v2M3 10l6 6m-6-6l6-6"
+              />
+            </svg>
+            <span>Reply</span>
+          </button>
+        </div>
+        
+<!-- Replies Section -->
+        <.live_component
+          id={"live-component-comment-replies-#{comment.id}"}
+          module={LgbWeb.Components.EventCommentReplies}
+          replies={comment.replies}
+          comment={comment}
+          current_profile={@current_profile}
+        />
       </div>
-    <% end %>
+    </div>
   </div>
 </.page_align>

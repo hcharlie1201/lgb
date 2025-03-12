@@ -248,7 +248,7 @@ defmodule Lgb.Meetups do
       from c in EventComment,
         where: c.event_location_id == ^event_location.id,
         order_by: [desc: c.inserted_at],
-        preload: [profile: :first_picture, replies: [:profile, :likes]]
+        preload: [profile: :first_picture, replies: [:likes, profile: :first_picture]]
 
     Repo.all(query)
     |> Enum.map(fn comment ->
@@ -312,6 +312,13 @@ defmodule Lgb.Meetups do
     %EventComment{}
     |> EventComment.changeset(attrs)
     |> Repo.insert()
+    |> case do
+      {:ok, comment} ->
+        {:ok, Lgb.Repo.preload(comment, [:replies, profile: :first_picture])}
+
+      {:error, changeset} ->
+        {:error, changeset}
+    end
   end
 
   @doc """
@@ -328,7 +335,7 @@ defmodule Lgb.Meetups do
     # Get the comment for returning later
     comment =
       Repo.get!(EventComment, comment_id)
-      |> Repo.preload(profile: :first_picture, replies: [:profile, :likes])
+      |> Repo.preload(profile: :first_picture, replies: [:likes, profile: :first_picture])
 
     result =
       if existing_like do
@@ -365,8 +372,11 @@ defmodule Lgb.Meetups do
     |> EventCommentReply.changeset(attrs)
     |> Repo.insert()
     |> case do
-      {:ok, reply} -> {:ok, Repo.preload(reply, [:profile, :likes])}
-      error -> error
+      {:ok, reply} ->
+        {:ok, Repo.preload(reply, [:likes, profile: :first_picture])}
+
+      {:error, changeset} ->
+        {:error, changeset}
     end
   end
 
@@ -374,16 +384,14 @@ defmodule Lgb.Meetups do
   Toggle a like on a comment reply.
   """
   def toggle_reply_like(reply_id, profile_id) do
-    # Check if like already exists
+    # Check if like already exists using a query
     like_query =
       from l in CommentReplyLike,
         where: l.event_comment_reply_id == ^reply_id and l.profile_id == ^profile_id
 
     existing_like = Repo.one(like_query)
 
-    # Get the reply for returning later
-    reply = Repo.get!(EventCommentReply, reply_id) |> Repo.preload([:profile, :likes])
-
+    # Toggle the like status
     result =
       if existing_like do
         # Unlike
@@ -391,14 +399,21 @@ defmodule Lgb.Meetups do
       else
         # Like
         %CommentReplyLike{}
-        |> CommentReplyLike.changeset(%{event_comment_reply_id: reply_id, profile_id: profile_id})
+        |> CommentReplyLike.changeset(%{
+          event_comment_reply_id: reply_id,
+          profile_id: profile_id
+        })
         |> Repo.insert()
       end
 
+    # Return the updated reply with freshly loaded associations
     case result do
       {:ok, _} ->
-        # Return updated reply with fresh likes
-        updated_reply = Repo.get!(EventCommentReply, reply_id) |> Repo.preload([:profile, :likes])
+        updated_reply =
+          EventCommentReply
+          |> Repo.get!(reply_id)
+          |> Repo.preload([:likes, profile: :first_picture])
+
         {:ok, updated_reply}
 
       {:error, changeset} ->
