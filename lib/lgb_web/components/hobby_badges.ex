@@ -23,7 +23,7 @@ defmodule LgbWeb.Components.HobbyBadges do
 
   defp selected_class(hobby, selected_hobbies) do
     if Enum.any?(selected_hobbies, &(&1.id == hobby.id)) do
-      "tag-attribute"
+      "tag-attribute-cherry-blossom"
     else
       "bg-gray-200 text-gray-700 hover:bg-gray-300 border-2 border-gray-300"
     end

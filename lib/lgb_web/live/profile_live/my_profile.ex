@@ -11,9 +11,13 @@ defmodule LgbWeb.ProfileLive.MyProfile do
     dating_goals = Lgb.Repo.all(Lgb.Profiles.DatingGoal)
     hobbies = Lgb.Repo.all(Lgb.Profiles.Hobby)
 
-    profile = User.current_profile(user) |> Lgb.Repo.preload([:dating_goals, :hobbies])
+    profile =
+      User.current_profile(user)
+      |> Lgb.Repo.preload([:dating_goals, :hobbies, :sexual_orientations])
+
     selected_goals = profile.dating_goals
     selected_hobbies = profile.hobbies
+    selected_sexual_orientations = profile.sexual_orientations
 
     socket =
       socket
@@ -25,6 +29,8 @@ defmodule LgbWeb.ProfileLive.MyProfile do
         selected_goals: selected_goals,
         hobbies: hobbies,
         selected_hobbies: selected_hobbies,
+        selected_sexual_orientations: selected_sexual_orientations,
+        sexual_orientations: Lgb.Orientation.SexualOrientation.list_sexual_orientations(),
         search_query: ""
       )
       |> allow_upload(:avatar, accept: ~w(image/*), max_entries: 3)
