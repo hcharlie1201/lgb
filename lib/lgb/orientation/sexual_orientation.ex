@@ -31,7 +31,8 @@ defmodule Lgb.Orientation.SexualOrientation do
   @doc false
   def changeset(sexual_orientation, attrs) do
     sexual_orientation
-    |> cast(attrs, [])
-    |> validate_required([])
+    |> cast(attrs, [:category])
+    |> validate_required([:category])
+    |> validate_inclusion(:category, @categories)
   end
 end

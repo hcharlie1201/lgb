@@ -15,7 +15,6 @@ defmodule Lgb.Repo.Migrations.CreateSexualOrientations do
       'sapiosexual',
       'graysexual',
       'pansexual',
-      'greysexual',
       'gay',
       'lesbian'
     )

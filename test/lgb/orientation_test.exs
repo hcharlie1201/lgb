@@ -2,56 +2,112 @@ defmodule Lgb.OrientationTest do
   use Lgb.DataCase
 
   alias Lgb.Orientation
+  alias Lgb.Orientation.{SexualOrientation, ProfileSexualOrientation}
+  alias Lgb.Profiles.Profile
+  import Lgb.{ProfilesFixtures, AccountsFixtures}
 
-  describe "sexual_orientations" do
-    alias Lgb.Orientation.SexualOrientation
+  describe "sexual orientations" do
+    setup do
+      # Create a user and profile
+      user = user_fixture()
+      profile = profile_fixture(user)
 
-    import Lgb.OrientationFixtures
+      # Create sexual orientation records in the database
+      bisexual = Repo.insert!(%SexualOrientation{category: :bisexual})
+      gay = Repo.insert!(%SexualOrientation{category: :gay})
+      straight = Repo.insert!(%SexualOrientation{category: :straight})
 
-    @invalid_attrs %{}
-
-    test "list_sexual_orientations/0 returns all sexual_orientations" do
-      sexual_orientation = sexual_orientation_fixture()
-      assert Orientation.list_sexual_orientations() == [sexual_orientation]
+      %{
+        profile: profile,
+        orientations: %{
+          bisexual: bisexual,
+          gay: gay,
+          straight: straight
+        }
+      }
     end
 
-    test "get_sexual_orientation!/1 returns the sexual_orientation with given id" do
-      sexual_orientation = sexual_orientation_fixture()
-      assert Orientation.get_sexual_orientation!(sexual_orientation.id) == sexual_orientation
+    test "save_sexual_orientations/2 creates correct associations", %{
+      profile: profile,
+      orientations: orientations
+    } do
+      # Initial check that profile has no orientations
+      assert Repo.all(from so in ProfileSexualOrientation, where: so.profile_id == ^profile.id) ==
+               []
+
+      # Call the function with two categories
+      selected_categories = [:bisexual, :gay]
+      Orientation.save_sexual_orientations(profile, selected_categories)
+
+      # Check that correct associations were created
+      associations =
+        Repo.all(
+          from pso in ProfileSexualOrientation,
+            where: pso.profile_id == ^profile.id,
+            select: pso.sexual_orientation_id
+        )
+
+      assert length(associations) == 2
+      assert orientations.bisexual.id in associations
+      assert orientations.gay.id in associations
+      refute orientations.straight.id in associations
+
+      # Update to different orientations
+      new_categories = [:straight]
+      Orientation.save_sexual_orientations(profile, new_categories)
+
+      # Check that old associations were replaced
+      new_associations =
+        Repo.all(
+          from pso in ProfileSexualOrientation,
+            where: pso.profile_id == ^profile.id,
+            select: pso.sexual_orientation_id
+        )
+
+      assert length(new_associations) == 1
+      assert orientations.straight.id in new_associations
+      refute orientations.bisexual.id in new_associations
+      refute orientations.gay.id in new_associations
+
+      # Test with empty list
+      Orientation.save_sexual_orientations(profile, [])
+
+      empty_associations =
+        Repo.all(
+          from pso in ProfileSexualOrientation,
+            where: pso.profile_id == ^profile.id
+        )
+
+      assert empty_associations == []
     end
 
-    test "create_sexual_orientation/1 with valid data creates a sexual_orientation" do
-      valid_attrs = %{}
-
-      assert {:ok, %SexualOrientation{} = sexual_orientation} = Orientation.create_sexual_orientation(valid_attrs)
+    test "save_sexual_orientations/2 handles non-existent categories", %{profile: profile} do
+      # Try to save with non-existent categories
+      assert_raise Ecto.Query.CastError, fn ->
+        Orientation.save_sexual_orientations(profile, [:nonexistent, :another_fake])
+      end
     end
 
-    test "create_sexual_orientation/1 with invalid data returns error changeset" do
-      assert {:error, %Ecto.Changeset{}} = Orientation.create_sexual_orientation(@invalid_attrs)
-    end
+    test "save_sexual_orientations/2 is idempotent", %{
+      profile: profile,
+      orientations: orientations
+    } do
+      # Call the function twice with the same categories
+      selected_categories = [:bisexual, :gay]
+      Orientation.save_sexual_orientations(profile, selected_categories)
+      Orientation.save_sexual_orientations(profile, selected_categories)
 
-    test "update_sexual_orientation/2 with valid data updates the sexual_orientation" do
-      sexual_orientation = sexual_orientation_fixture()
-      update_attrs = %{}
+      # Should still only have two associations
+      associations =
+        Repo.all(
+          from pso in ProfileSexualOrientation,
+            where: pso.profile_id == ^profile.id,
+            select: pso.sexual_orientation_id
+        )
 
-      assert {:ok, %SexualOrientation{} = sexual_orientation} = Orientation.update_sexual_orientation(sexual_orientation, update_attrs)
-    end
-
-    test "update_sexual_orientation/2 with invalid data returns error changeset" do
-      sexual_orientation = sexual_orientation_fixture()
-      assert {:error, %Ecto.Changeset{}} = Orientation.update_sexual_orientation(sexual_orientation, @invalid_attrs)
-      assert sexual_orientation == Orientation.get_sexual_orientation!(sexual_orientation.id)
-    end
-
-    test "delete_sexual_orientation/1 deletes the sexual_orientation" do
-      sexual_orientation = sexual_orientation_fixture()
-      assert {:ok, %SexualOrientation{}} = Orientation.delete_sexual_orientation(sexual_orientation)
-      assert_raise Ecto.NoResultsError, fn -> Orientation.get_sexual_orientation!(sexual_orientation.id) end
-    end
-
-    test "change_sexual_orientation/1 returns a sexual_orientation changeset" do
-      sexual_orientation = sexual_orientation_fixture()
-      assert %Ecto.Changeset{} = Orientation.change_sexual_orientation(sexual_orientation)
+      assert length(associations) == 2
+      assert orientations.bisexual.id in associations
+      assert orientations.gay.id in associations
     end
   end
 end
