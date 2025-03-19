@@ -1,4 +1,5 @@
 defmodule LgbWeb.ProfileLive.MyProfile do
+  alias Lgb.Orientation
   alias Lgb.Accounts.User
   alias Lgb.Profiles
   alias Lgb.Profiles.Profile
@@ -17,7 +18,7 @@ defmodule LgbWeb.ProfileLive.MyProfile do
 
     selected_goals = profile.dating_goals
     selected_hobbies = profile.hobbies
-    selected_sexual_orientations = profile.sexual_orientations
+    selected_sexual_orientations = Enum.map(profile.sexual_orientations, & &1.category)
 
     socket =
       socket
@@ -49,6 +50,7 @@ defmodule LgbWeb.ProfileLive.MyProfile do
 
         Profiles.save_dating_goals(profile, socket.assigns.selected_goals)
         Profiles.save_hobbies(profile, socket.assigns.selected_hobbies)
+        Orientation.save_sexual_orientations(profile, socket.assigns.selected_sexual_orientations)
 
         {:noreply,
          socket
@@ -158,6 +160,24 @@ defmodule LgbWeb.ProfileLive.MyProfile do
       end
 
     {:noreply, assign(socket, :selected_hobbies, updated_hobbies)}
+  end
+
+  def handle_event("toggle_sexual_orientation", %{"category" => category}, socket) do
+    category = String.to_existing_atom(category)
+
+    updated_sexual_orientations =
+      if category in socket.assigns.selected_sexual_orientations do
+        Enum.reject(socket.assigns.selected_sexual_orientations, &(&1 == category))
+      else
+        # Add the category if there's room (limit to 2)
+        if length(socket.assigns.selected_sexual_orientations) < 2 do
+          [category | socket.assigns.selected_sexual_orientations]
+        else
+          socket.assigns.selected_sexual_orientations
+        end
+      end
+
+    {:noreply, assign(socket, :selected_sexual_orientations, updated_sexual_orientations)}
   end
 
   def handle_event("delete_profile_picture", %{"profile-pic-id" => id}, socket) do

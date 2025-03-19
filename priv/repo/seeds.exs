@@ -253,3 +253,9 @@ Enum.each(hobbies, fn hobby ->
     name: hobby.name
   })
 end)
+
+Enum.each(Lgb.Orientation.SexualOrientation.list_sexual_orientations(), fn sexual_orientation ->
+  Lgb.Repo.insert!(%Lgb.Orientation.SexualOrientation{
+    category: sexual_orientation
+  })
+end)

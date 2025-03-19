@@ -15,10 +15,11 @@ defmodule LgbWeb.ProfileLive.Show do
 
     profile =
       Profiles.get_profile!(id)
-      |> Lgb.Repo.preload([:user, :first_picture, :dating_goals, :hobbies])
+      |> Lgb.Repo.preload([:user, :first_picture, :dating_goals, :hobbies, :sexual_orientations])
 
     selected_attributes = profile.dating_goals
     selected_hobbies = profile.hobbies
+    selected_orientations = profile.sexual_orientations
 
     Lgb.ProfileViews.create_or_update_profile_view(%{
       viewer_id: current_profile.id,
@@ -33,6 +34,7 @@ defmodule LgbWeb.ProfileLive.Show do
      |> assign(:current_index, 0)
      |> assign(:length, 3)
      |> assign(:hobbies, selected_hobbies)
+     |> assign(:sexual_orientations, selected_orientations)
      |> assign(:distance, Lgb.Profiles.calculate_distance(profile, current_profile))
      |> assign(:uploaded_files, Profiles.list_profile_pictures(profile))}
   end

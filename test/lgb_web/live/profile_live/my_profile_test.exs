@@ -19,6 +19,7 @@ defmodule LgbWeb.ProfileLive.MyProfileTest do
       # Assign hobbies to profile
       Repo.insert!(%Hobby{name: @hobby_1})
       Repo.insert!(%Hobby{name: @hobby_2})
+
       profile
       |> Repo.preload(:hobbies)
       |> Ecto.Changeset.change()
@@ -111,6 +112,14 @@ defmodule LgbWeb.ProfileLive.MyProfileTest do
 
       # Verify the form was updated with the new location
       assert has_element?(view, "#mapid")
+    end
+
+    test "handles toggling for sexual orientation", %{conn: conn, user: user} do
+      conn = log_in_user(conn, user)
+      {:ok, view, _html} = live(conn, ~p"/profiles/current")
+
+      # Simulate clicking on a sexual orientation
+      render_hook(view, "toggle_sexual_orientation", %{"category" => "bisexual"})
     end
   end
 end
