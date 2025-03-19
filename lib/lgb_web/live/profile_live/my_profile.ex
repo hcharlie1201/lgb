@@ -7,6 +7,14 @@ defmodule LgbWeb.ProfileLive.MyProfile do
   use LgbWeb, :live_view
 
   @impl true
+  @doc """
+  Initializes the LiveView socket with the current user's profile and related data.
+  
+  This function retrieves the current user from the socket and loads all available dating goals and hobbies from the repository. It then fetches the user's profile and preloads associated dating goals, hobbies, and sexual orientations. Selected dating goals, hobbies, and sexual orientation categories are extracted from the profile. Additionally, the socket is configured with a list of uploaded profile pictures, a changeset for form handling, and file upload settings for avatar images (accepting image files with a maximum of three entries).
+  
+  Returns `{:ok, socket}` with the updated assigns.
+  """
+  @spec mount(term, term, Phoenix.LiveView.Socket.t()) :: {:ok, Phoenix.LiveView.Socket.t()}
   def mount(_params, _session, socket) do
     user = socket.assigns.current_user
     dating_goals = Lgb.Repo.all(Lgb.Profiles.DatingGoal)
@@ -39,6 +47,12 @@ defmodule LgbWeb.ProfileLive.MyProfile do
     {:ok, assign(socket, profile: profile, form: to_form(Profile.changeset(profile, %{})))}
   end
 
+  @doc """
+  Handles the profile update event by merging geolocation data, updating the profile, and processing associated resources.
+  
+  This function integrates any available geolocation information into the submitted profile parameters before attempting to update the user's profile. If the update is successful, it consumes uploaded avatar entries to create profile picture records and saves related dating goals, hobbies, and sexual orientations. The socket is then updated with the new profile and a success flash message. In case of an error, the function assigns the resulting changeset to the socket and sets an error flash message.
+  """
+  @spec handle_event("update_profile", map(), Phoenix.LiveView.Socket.t()) :: {:noreply, Phoenix.LiveView.Socket.t()}
   def handle_event("update_profile", profile_params, socket) do
     profile_params = handle_geo_location(profile_params, socket)
 
@@ -149,6 +163,12 @@ defmodule LgbWeb.ProfileLive.MyProfile do
     {:noreply, assign(socket, :selected_goals, updated_goals)}
   end
 
+  @doc """
+  Toggles a hobby's selection state in the user's profile.
+  
+  If the hobby corresponding to the given id is already selected, it is removed from the list of selected hobbies. Otherwise, the hobby is added to the list. The updated list is then assigned to the socket.
+  """
+  @spec handle_event("toggle_hobby", %{id: String.t()}, map()) :: {:noreply, map()}
   def handle_event("toggle_hobby", %{"id" => id}, socket) do
     hobby = Enum.find(socket.assigns.hobbies, &(to_string(&1.id) == id))
 
@@ -162,6 +182,12 @@ defmodule LgbWeb.ProfileLive.MyProfile do
     {:noreply, assign(socket, :selected_hobbies, updated_hobbies)}
   end
 
+  @doc """
+  Toggles the selection of a sexual orientation category in the user profile.
+  
+  If the category is already selected, it is removed; otherwise, if fewer than two categories are selected, it is added. This ensures that a maximum of two orientations are maintained.
+  """
+  @spec handle_event("toggle_sexual_orientation", map, Phoenix.LiveView.Socket.t()) :: {:noreply, Phoenix.LiveView.Socket.t()}
   def handle_event("toggle_sexual_orientation", %{"category" => category}, socket) do
     category = String.to_existing_atom(category)
 
@@ -180,6 +206,15 @@ defmodule LgbWeb.ProfileLive.MyProfile do
     {:noreply, assign(socket, :selected_sexual_orientations, updated_sexual_orientations)}
   end
 
+  @doc """
+  Deletes a profile picture from the user's profile.
+  
+  Retrieves the profile picture using the provided ID from the event payload and attempts
+  to delete it from the repository. On successful deletion, refreshes the socket's assigned list
+  of uploaded profile pictures; if the deletion fails, returns an error tuple with the unchanged socket.
+  """
+  @spec handle_event("delete_profile_picture", %{"profile-pic-id" => integer()}, Phoenix.LiveView.Socket.t()) ::
+          {:noreply, Phoenix.LiveView.Socket.t()} | {:error, Phoenix.LiveView.Socket.t()}
   def handle_event("delete_profile_picture", %{"profile-pic-id" => id}, socket) do
     profile_picture = Lgb.Profiles.ProfilePicture.get!(id)
 

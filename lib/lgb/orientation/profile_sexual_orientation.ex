@@ -11,7 +11,14 @@ defmodule Lgb.Orientation.ProfileSexualOrientation do
       primary_key: true
   end
 
-  @doc false
+  @doc """
+  Builds a changeset for a ProfileSexualOrientation struct.
+  
+  Casts the provided attributes to extract the `:profile_id` and
+  `:sexual_orientation_id` fields, validates that both are present, and enforces the uniqueness
+  of their combination.
+  """
+  @spec changeset(t, map) :: Ecto.Changeset.t()
   def changeset(sexual_orientation, attrs) do
     sexual_orientation
     |> cast(attrs, [:profile_id, :sexual_orientation_id])
