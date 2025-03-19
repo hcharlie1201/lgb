@@ -9,6 +9,17 @@ defmodule Lgb.Orientation do
 
   alias Lgb.Orientation.SexualOrientation
 
+  @doc """
+  Saves a profile's sexual orientation associations by replacing any existing links with new ones based on the provided categories.
+  
+  This function runs within a database transaction to ensure that either all changes are persisted or none at all. It deletes any current associations for the given profile and then inserts new associations for each sexual orientation whose category matches an element in the provided list.
+  
+  ## Examples
+  
+      iex> Lgb.Orientation.save_sexual_orientations(profile, ["bisexual", "heterosexual"])
+      {:ok, _}
+  """
+  @spec save_sexual_orientations(profile :: map(), sexual_orientation_categories :: list()) :: {:ok, any} | {:error, any}
   def save_sexual_orientations(profile, sexual_orientation_categories) do
     Repo.transaction(fn ->
       # First, delete existing associations
