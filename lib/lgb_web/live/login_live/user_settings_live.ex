@@ -5,7 +5,7 @@ defmodule LgbWeb.LoginLive.UserSettingsLive do
 
   def render(assigns) do
     ~H"""
-    <.header class="text-center mt-4">
+    <.header class="mt-4 text-center">
       <div class="logo-gradient text-2xl">Account Settings</div>
       <:subtitle>Manage your account email address and password settings</:subtitle>
     </.header>

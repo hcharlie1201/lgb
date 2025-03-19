@@ -48,6 +48,7 @@ defmodule LgbWeb.ProfileLiveTest do
     # Assign hobbies to profile
     Repo.insert!(%Hobby{name: @hobby_1})
     Repo.insert!(%Hobby{name: @hobby_2})
+
     profile
     |> Repo.preload(:hobbies)
     |> Ecto.Changeset.change()

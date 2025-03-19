@@ -436,7 +436,7 @@ defmodule Lgb.Profiles do
     search_pattern = "%#{search_params}%"
 
     from(hobby in Hobby,
-      where: ilike(hobby.name, ^search_pattern),
+      where: ilike(hobby.name, ^search_pattern)
     )
     |> Repo.all()
   end

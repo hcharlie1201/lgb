@@ -16,9 +16,7 @@ defmodule Lgb.OrientationFixtures do
   def sexual_orientation_fixture(attrs \\ %{}) do
     {:ok, sexual_orientation} =
       attrs
-      |> Enum.into(%{
-
-      })
+      |> Enum.into(%{})
       |> Lgb.Orientation.create_sexual_orientation()
 
     sexual_orientation

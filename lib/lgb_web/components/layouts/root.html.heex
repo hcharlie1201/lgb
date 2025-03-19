@@ -65,7 +65,7 @@
     >
     </div>
     <%= if @current_user do %>
-    <nav class="sticky top-0 z-10 flex items-center justify-between px-4 mb-2 backdrop-blur-md bg-gradient-to-r from-pink-300 via-rose-400 to-orange-200 sm:px-6 lg:px-10 shadow-lg text-white border-b border-white/10">
+      <nav class="border-white/10 sticky top-0 z-10 mb-2 flex items-center justify-between border-b bg-gradient-to-r from-pink-300 via-rose-400 to-orange-200 px-4 text-white shadow-lg backdrop-blur-md sm:px-6 lg:px-10">
         <span class="text-xl font-bold">
           <.link navigate={~p"/"} class="focus:outline-none">
             <h1 class="font-sans logo-gradient">
@@ -75,7 +75,7 @@
         </span>
 
         <ul class="flex items-center gap-2 text-sm sm:gap-4">
-          <li class="rounded-lg px-4 transition-colors my-4">
+          <li class="my-4 rounded-lg px-4 transition-colors">
             <.link href={~p"/users/settings"}>
               <div class="flex items-center gap-1">
                 <svg
@@ -102,7 +102,7 @@
             </.link>
           </li>
 
-          <li class="rounded-lg px-2 transition-colors my-4">
+          <li class="my-4 rounded-lg px-2 transition-colors">
             <.link href={~p"/users/log_out"} method="delete">
               <div class="flex items-center gap-1">
                 <svg

@@ -191,7 +191,7 @@
           </p>
         </div>
       </div>
-
+      
 <!-- Uploaded Files Preview -->
       <div class="mt-4 grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
         <article :for={entry <- @uploads.avatar.entries} class="relative">
@@ -201,12 +201,12 @@
               {entry.client_name}
             </figcaption>
           </figure>
-
+          
 <!-- Progress Bar -->
           <progress value={entry.progress} max="100" class="mt-2 h-2 w-full rounded">
             {entry.progress}%
           </progress>
-
+          
 <!-- Cancel Button -->
           <button
             type="button"
@@ -217,17 +217,14 @@
           >
             &times;
           </button>
-
+          
 <!-- Error Messages -->
-          <p
-            :for={err <- upload_errors(@uploads.avatar, entry)}
-            class="mt-2 text-sm text-red-500"
-          >
+          <p :for={err <- upload_errors(@uploads.avatar, entry)} class="mt-2 text-sm text-red-500">
             {Lgb.Uploader.error_to_string(err)}
           </p>
         </article>
       </div>
-
+      
 <!-- Global Upload Errors -->
       <p :for={err <- upload_errors(@uploads.avatar)} class="mt-2 text-sm text-red-500">
         {Lgb.Uploader.error_to_string(err)}
