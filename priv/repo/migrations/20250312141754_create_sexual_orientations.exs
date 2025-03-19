@@ -3,10 +3,9 @@ defmodule Lgb.Repo.Migrations.CreateSexualOrientations do
 
   @doc """
   Applies a reversible migration to set up sexual orientation support.
-  
+
   Creates a PostgreSQL ENUM type `romantic_category` with predefined sexual orientation categories and registers its corresponding drop query for rollback. Establishes the `sexual_orientations` table with a non-nullable `category` column and timestamps, and creates the join table `profiles_sexual_orientations` to link profiles with sexual orientations via a unique composite index.
   """
-  @spec change :: any()
   def change do
     create_query = """
     CREATE TYPE romantic_category AS ENUM (

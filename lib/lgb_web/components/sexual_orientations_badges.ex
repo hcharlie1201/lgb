@@ -5,10 +5,9 @@ defmodule LgbWeb.Components.SexualOrientationBadges do
 
   @doc """
   Renders a list of selectable sexual orientation buttons.
-  
+
   This function generates a flex container with a button for each sexual orientation provided via the `@sexual_orientations` assign. Each button triggers a "toggle_sexual_orientation" event and applies dynamic styling based on its selection state, as determined by the `@selected_sexual_orientations` assign.
   """
-  @spec render(map()) :: Phoenix.LiveView.Rendered.t()
   def render(assigns) do
     ~H"""
     <div>
