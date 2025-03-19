@@ -19,6 +19,16 @@ defmodule LgbWeb.ProfileLive.MyProfileTest do
       # Assign hobbies to profile
       Repo.insert!(%Hobby{name: @hobby_1})
       Repo.insert!(%Hobby{name: @hobby_2})
+
+      Enum.each(
+        Lgb.Orientation.SexualOrientation.list_sexual_orientations(),
+        fn sexual_orientation ->
+          Lgb.Repo.insert!(%Lgb.Orientation.SexualOrientation{
+            category: sexual_orientation
+          })
+        end
+      )
+
       profile
       |> Repo.preload(:hobbies)
       |> Ecto.Changeset.change()
@@ -111,6 +121,19 @@ defmodule LgbWeb.ProfileLive.MyProfileTest do
 
       # Verify the form was updated with the new location
       assert has_element?(view, "#mapid")
+    end
+
+    test "handles toggling and submitting new sexual orientaion", %{conn: conn, user: user} do
+      conn = log_in_user(conn, user)
+      {:ok, view, _html} = live(conn, ~p"/profiles/current")
+
+      # Simulate clicking on a sexual orientation
+      render_hook(view, "toggle_sexual_orientation", %{"category" => "bisexual"})
+
+      view = render_submit(view, "update_profile", %{})
+      profile = Lgb.Repo.preload(Lgb.Accounts.User.current_profile(user), :sexual_orientations)
+
+      assert Enum.map(profile.sexual_orientations, & &1.category) == [:bisexual]
     end
   end
 end

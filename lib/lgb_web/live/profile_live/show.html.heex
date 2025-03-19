@@ -4,7 +4,7 @@
     <div class="relative">
       <!-- Cover Image/Background -->
       <div class="h-48 bg-gradient-to-r from-red-100 to-indigo-400"></div>
-
+      
 <!-- Profile Picture Overlay -->
       <div class="absolute bottom-0 left-8 translate-y-1/2 transform">
         <div class="h-24 w-24 overflow-hidden rounded-full border-4 border-white bg-white shadow-md">
@@ -29,7 +29,7 @@
           <% end %>
         </div>
       </div>
-
+      
 <!-- Action Buttons -->
       <div class="absolute right-6 bottom-4 flex items-center gap-3">
         <.button
@@ -67,7 +67,7 @@
         </div>
       </div>
     </div>
-
+    
 <!-- Profile Info Section -->
     <div class="animate-fadeInUp px-8 pt-16 pb-8">
       <!-- Name and Status -->
@@ -101,7 +101,7 @@
           </span>
         </div>
       </div>
-
+      
 <!-- Gallery/Carousel Section -->
       <div class="mb-8">
         <div>
@@ -162,7 +162,7 @@
                   ←
                 </button>
               <% end %>
-
+              
 <!-- Next Button -->
               <%= if @current_index < length(@uploaded_files) - 1 and length(@uploaded_files) > 0 do %>
                 <button
@@ -173,7 +173,7 @@
                 </button>
               <% end %>
             </div>
-
+            
 <!-- Indicators -->
             <%= if length(@uploaded_files) > 0 do %>
               <div class="absolute bottom-4 left-1/2 flex -translate-x-1/2 transform space-x-2">
@@ -186,7 +186,7 @@
           </div>
         </div>
       </div>
-
+      
 <!-- Dating Goals/Style Section -->
       <div class="mb-8">
         <h2 class="mb-3 text-lg font-semibold text-gray-900">Dating Style</h2>
@@ -198,7 +198,7 @@
           <% end %>
         </div>
       </div>
-
+      
 <!-- Hobbies/Interests Section -->
       <div class="mb-8">
         <h2 class="mb-3 text-lg font-semibold text-gray-900">Hobbies</h2>
@@ -210,13 +210,25 @@
           <% end %>
         </div>
       </div>
-
+      
+<!-- Romantic Section -->
+      <div class="mb-8">
+        <h2 class="mb-3 text-lg font-semibold text-gray-900">Sexual and Romantic Orientations</h2>
+        <div class="flex flex-wrap gap-2">
+          <%= for sexual_orientation <- @sexual_orientations do %>
+            <span class="rounded-full bg-indigo-100 px-3 py-1 text-sm font-medium text-indigo-800">
+              {sexual_orientation.category}
+            </span>
+          <% end %>
+        </div>
+      </div>
+      
 <!-- Biography Section -->
       <div class="mb-8">
         <h2 class="mb-2 text-lg font-semibold text-gray-900">About</h2>
         <p class="leading-relaxed text-gray-700">{@profile.biography}</p>
       </div>
-
+      
 <!-- Personal Details Grid -->
       <div class="grid grid-cols-2 gap-4 md:grid-cols-3">
         <div class="dugout rounded-lg border border-indigo-100 p-4">
@@ -248,7 +260,7 @@
           <span class="block font-medium text-gray-900">{@profile.zip}</span>
         </div>
       </div>
-
+      
 <!-- Location Map (Optional) -->
       <div class="mt-8">
         <h2 class="mb-3 text-lg font-semibold text-gray-900">Location</h2>

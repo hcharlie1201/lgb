@@ -107,7 +107,7 @@ body {
 }
 
 .loggedinNavLinks {
-  @apply text-gray-600 p-2 rounded-lg transition-colors duration-200 w-full hover:text-white hover:bg-indigo-400 flex gap-2 items-center;
+  @apply text-gray-600 p-2 rounded-lg transition-colors duration-200 w-full hover:text-white hover:bg-indigo-500 flex gap-2 items-center;
 }
 
 .navLinks {
@@ -175,6 +175,14 @@ body {
 
 .tag-attribute {
   @apply border-2 border-yellow-500 bg-gradient-to-br from-blue-500 to-purple-600 text-white shadow-md transform scale-105 ring-2 ring-yellow-400/50;
+}
+
+.tag-attribute-cherry-blossom {
+  @apply border-2 border-pink-300 bg-gradient-to-br from-pink-200 to-purple-400 text-white shadow-md transform scale-105 ring-2 ring-purple-300/50;
+}
+
+.tag-attribute-sky {
+  @apply border-2 border-blue-300 bg-gradient-to-br from-sky-300 via-indigo-400 to-purple-500 text-white shadow-md transform scale-105 ring-2 ring-indigo-400/50;
 }
 
 .link-style {

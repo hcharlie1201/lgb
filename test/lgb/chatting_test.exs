@@ -232,9 +232,9 @@ defmodule Lgb.ChattingTest do
     test "preload_and_transform_conversations/2 properly transforms conversations",
          %{profile1: profile1, profile2: profile2, conversation: conversation} do
       message = conversation_message_fixture(conversation, profile2)
-      
+
       [transformed] = Chatting.preload_and_transform_conversations([conversation], profile1.id)
-      
+
       assert transformed.other_profile.id == profile2.id
       assert transformed.last_message.id == message.id
     end
@@ -243,12 +243,12 @@ defmodule Lgb.ChattingTest do
          %{profile1: profile1, profile2: profile2} do
       # Update profile2's handle to make it searchable
       {:ok, _} = Lgb.Profiles.update_profile(profile2, %{handle: "searchable_handle"})
-      
+
       {:ok, _conversation} = Chatting.get_or_create_conversation(profile1, profile2)
-      
+
       results = Chatting.list_conversations(profile1, "searchable")
       assert length(results) == 1
-      
+
       results = Chatting.list_conversations(profile1, "nonexistent")
       assert length(results) == 0
     end

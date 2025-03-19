@@ -9,16 +9,24 @@ defmodule LgbWeb.ProfileLive.Show do
   end
 
   @impl true
+  @doc """
+  Processes URL parameters to load and display a user profile.
+
+  Extracts the profile ID from the URL parameters, fetches the corresponding profile record from the database (preloading associated data including user, first picture, dating goals, hobbies, and sexual orientations), and records a profile view event. It then assigns the profile along with its related attributes—such as dating goals, hobbies, sexual orientations, a computed distance relative to the current user, and a list of uploaded profile pictures—to the LiveView socket while initializing navigation state.
+
+  Returns `{:noreply, socket}`.
+  """
   def handle_params(%{"id" => id}, _, socket) do
     user = socket.assigns.current_user
     current_profile = Lgb.Accounts.User.current_profile(user)
 
     profile =
       Profiles.get_profile!(id)
-      |> Lgb.Repo.preload([:user, :first_picture, :dating_goals, :hobbies])
+      |> Lgb.Repo.preload([:user, :first_picture, :dating_goals, :hobbies, :sexual_orientations])
 
     selected_attributes = profile.dating_goals
     selected_hobbies = profile.hobbies
+    selected_orientations = profile.sexual_orientations
 
     Lgb.ProfileViews.create_or_update_profile_view(%{
       viewer_id: current_profile.id,
@@ -33,6 +41,7 @@ defmodule LgbWeb.ProfileLive.Show do
      |> assign(:current_index, 0)
      |> assign(:length, 3)
      |> assign(:hobbies, selected_hobbies)
+     |> assign(:sexual_orientations, selected_orientations)
      |> assign(:distance, Lgb.Profiles.calculate_distance(profile, current_profile))
      |> assign(:uploaded_files, Profiles.list_profile_pictures(profile))}
   end

@@ -26,6 +26,10 @@ defmodule Lgb.Profiles.Profile do
       join_through: "profiles_hobbies",
       on_replace: :delete
 
+    many_to_many :sexual_orientations, Lgb.Orientation.SexualOrientation,
+      join_through: "profiles_sexual_orientations",
+      on_replace: :delete
+
     belongs_to :user, Lgb.Accounts.User
     field :handle, :string
     field :state, :string

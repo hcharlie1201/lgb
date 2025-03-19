@@ -45,11 +45,11 @@ defmodule Lgb.ChattingFixtures do
 
   def create_conversation_with_messages(profile1, profile2, message_count) do
     {:ok, conversation} = Chatting.get_or_create_conversation(profile1, profile2)
-    
+
     Enum.each(1..message_count, fn _ ->
       conversation_message_fixture(conversation, profile2)
     end)
-    
+
     conversation
   end
 end
