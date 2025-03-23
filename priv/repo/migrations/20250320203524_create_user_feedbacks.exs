@@ -13,8 +13,8 @@ defmodule Lgb.Repo.Migrations.CreateUserFeedbacks do
       timestamps(type: :utc_datetime)
     end
 
-    create index(:user_feedbacks, [:profile_id])
-    create index(:user_feedbacks, [:category])
-    create index(:user_feedbacks, [:rating])
+    create index(:feedbacks, [:profile_id])
+    create index(:feedbacks, [:category])
+    create index(:feedbacks, [:rating])
   end
 end
