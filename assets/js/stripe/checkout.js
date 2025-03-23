@@ -1,6 +1,6 @@
 import { Hook, makeHook } from "phoenix_typed_hook";
 
-class StripCheckout extends Hook {
+class StripeCheckout extends Hook {
   mounted() {
     const stripe = Stripe(this.el.dataset.stripekey);
     const options = {
@@ -49,4 +49,4 @@ class StripCheckout extends Hook {
   }
 }
 
-export default makeHook(StripCheckout);
+export default makeHook(StripeCheckout);
