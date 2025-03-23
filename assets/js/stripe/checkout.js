@@ -1,4 +1,6 @@
-export const StripeCheckout = {
+import { Hook, makeHook } from "phoenix_typed_hook";
+
+class StripeCheckout extends Hook {
   mounted() {
     const stripe = Stripe(this.el.dataset.stripekey);
     const options = {
@@ -44,5 +46,7 @@ export const StripeCheckout = {
         this.pushEvent("payment_success", paymentIntent);
       }
     });
-  },
-};
+  }
+}
+
+export default makeHook(StripeCheckout);

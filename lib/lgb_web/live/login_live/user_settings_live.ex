@@ -2,6 +2,21 @@ defmodule LgbWeb.LoginLive.UserSettingsLive do
   use LgbWeb, :live_view
 
   alias Lgb.Accounts
+  alias Lgb.Feedbacks.Feedback
+  alias Lgb.Feedbacks
+
+  @feedback_categories [
+    "User Experience",
+    "Matching Algorithm",
+    "Profile Features",
+    "Messaging",
+    "App Performance",
+    "Suggestions",
+    "Bug Report",
+    "Other"
+  ]
+
+  @ratings [1, 2, 3, 4, 5]
 
   def render(assigns) do
     ~H"""
@@ -69,6 +84,102 @@ defmodule LgbWeb.LoginLive.UserSettingsLive do
           </:actions>
         </.simple_form>
       </div>
+
+      <section>
+        <.header class="mt-4 text-center">
+          <div class="text-2xl">Share Your Feedback</div>
+          <:subtitle>Help us improve your dating experience</:subtitle>
+        </.header>
+
+        <div class="flex flex-col items-center p-4">
+          <div class="w-[90vw] md:w-[70vw] lg:w-[50vw]">
+            <.simple_form
+              for={@feedback_form}
+              id="feedback_form"
+              phx-submit="submit_feedback"
+              phx-change="validate_feedback"
+            >
+              <div class="space-y-6">
+                <.input
+                  field={@feedback_form[:category]}
+                  type="select"
+                  name="user_feedback[category]"
+                  label="What is your feedback about?"
+                  options={@categories}
+                  required
+                />
+
+                <div class="space-y-2">
+                  <label class="block text-sm font-medium text-gray-700">
+                    How would you rate your overall experience?
+                  </label>
+                  <div class="flex items-center justify-between py-2">
+                    <span class="text-sm text-gray-500">Poor</span>
+                    <div class="flex space-x-2">
+                      <%= for rating <- @ratings do %>
+                        <div class="flex flex-col items-center">
+                          <input
+                            type="radio"
+                            name="user_feedback[rating]"
+                            id={"rating-#{rating}"}
+                            value={rating}
+                            checked={@current_rating == rating}
+                            class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                            phx-click="set_rating"
+                            phx-value-rating={rating}
+                          />
+                          <label for={"rating-#{rating}"} class="mt-1 text-xs">
+                            {rating}
+                          </label>
+                        </div>
+                      <% end %>
+                    </div>
+                    <span class="text-sm text-gray-500">Excellent</span>
+                  </div>
+                </div>
+
+                <.input
+                  field={@feedback_form[:title]}
+                  type="text"
+                  name="user_feedback[title]"
+                  label="Feedback Summary"
+                  placeholder="Brief description of your feedback"
+                  required
+                />
+
+                <.input
+                  field={@feedback_form[:content]}
+                  type="textarea"
+                  label="Details"
+                  name="user_feedback[content]"
+                  placeholder="Please share the details of your experience or suggestion..."
+                  rows={5}
+                  required
+                />
+
+                <div class="py-3">
+                  <label class="flex items-center gap-2 text-sm">
+                    <input
+                      type="checkbox"
+                      name="user_feedback[contact_consent]"
+                      checked={@contact_consent}
+                      phx-click="toggle_consent"
+                      class="h-4 w-4 border-gray-300 text-indigo-600 focus:ring-indigo-600"
+                    />
+                    <span>I consent to being contacted about my feedback</span>
+                  </label>
+                </div>
+              </div>
+
+              <:actions>
+                <.button phx-disable-with="Submitting..." class="w-full">
+                  Submit Feedback
+                </.button>
+              </:actions>
+            </.simple_form>
+          </div>
+        </div>
+      </section>
     </div>
     """
   end
@@ -90,15 +201,21 @@ defmodule LgbWeb.LoginLive.UserSettingsLive do
     user = socket.assigns.current_user
     email_changeset = Accounts.change_user_email(user)
     password_changeset = Accounts.change_user_password(user)
+    changeset = Feedbacks.change_user_feedback(%Feedback{})
 
     socket =
       socket
-      |> assign(:current_password, nil)
-      |> assign(:email_form_current_password, nil)
-      |> assign(:current_email, user.email)
       |> assign(:email_form, to_form(email_changeset))
       |> assign(:password_form, to_form(password_changeset))
+      |> assign(:feedback_form, to_form(changeset))
+      |> assign(:current_email, user.email)
+      |> assign(:current_password, nil)
+      |> assign(:email_form_current_password, nil)
       |> assign(:trigger_submit, false)
+      |> assign(:categories, @feedback_categories)
+      |> assign(:ratings, @ratings)
+      |> assign(:current_rating, 3)
+      |> assign(:contact_consent, false)
 
     {:ok, socket}
   end
@@ -163,5 +280,39 @@ defmodule LgbWeb.LoginLive.UserSettingsLive do
       {:error, changeset} ->
         {:noreply, assign(socket, password_form: to_form(changeset))}
     end
+  end
+
+  def handle_event("validate_feedback", %{"user_feedback" => feedback_params}, socket) do
+    changeset =
+      %Feedback{}
+      |> Feedbacks.change_user_feedback(feedback_params)
+      |> Map.put(:action, :validate)
+
+    {:noreply, assign(socket, :feedback_form, to_form(changeset))}
+  end
+
+  def handle_event("submit_feedback", %{"user_feedback" => feedback_params}, socket) do
+    current_profile = Accounts.User.current_profile(socket.assigns.current_user)
+
+    feedback_params = Map.put(feedback_params, "profile_id", current_profile.id)
+
+    case Feedbacks.create_user_feedback(feedback_params) do
+      {:ok, _feedback} ->
+        {:noreply,
+         socket
+         |> put_flash(:info, "Thank you for your feedback! We appreciate your input.")
+         |> push_navigate(to: ~p"/")}
+
+      {:error, changeset} ->
+        {:noreply, assign(socket, feedback_form: to_form(changeset))}
+    end
+  end
+
+  def handle_event("set_rating", %{"rating" => rating}, socket) do
+    {:noreply, assign(socket, :current_rating, String.to_integer(rating))}
+  end
+
+  def handle_event("toggle_consent", _params, socket) do
+    {:noreply, assign(socket, :contact_consent, !socket.assigns.contact_consent)}
   end
 end

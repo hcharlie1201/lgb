@@ -1,8 +1,9 @@
 import MarkerManager from './marker_manager.js';
 import LocationManager from './location_manager.js';
 import MapEvents from './map_events.js';
+import { Hook, makeHook } from "phoenix_typed_hook";
 
-export const MeetupMap = {
+class MeetupMap extends Hook {
     async mounted() {
         // Initialize managers
         this.markerManager = new MarkerManager(this);
@@ -14,7 +15,7 @@ export const MeetupMap = {
 
         // Set up mutation observer for location streams
         this.setupLocationObserver();
-    },
+    }
 
     loadGoogleMaps() {
         const apiKey = this.el.dataset.apiKey;
@@ -40,7 +41,7 @@ export const MeetupMap = {
                 document.head.appendChild(script);
             }
         });
-    },
+    }
 
     initMap() {
         // Default map center
@@ -59,12 +60,17 @@ export const MeetupMap = {
         this.locationManager.setMap(this.map);
         this.mapEvents.setMap(this.map);
 
+        this.markerClusterer = new markerClusterer.MarkerClusterer({
+            map: this.map,
+        });
+        this.markerManager.setMarkerClusterer(this.markerClusterer);
+
         // Set up event listeners
         this.mapEvents.setupEventListeners();
 
         // Try to get user's current location
         this.locationManager.tryGetUserInitialLocation();
-    },
+    }
 
     setupLocationObserver() {
         const locationContainer = document.getElementById('location-markers');
@@ -78,26 +84,28 @@ export const MeetupMap = {
 
         // Initial sync
         this.markerManager.syncMarkersFromDOM();
-    },
+    }
 
     // Event handler methods that delegate to the appropriate manager
     handleMapClick(position) {
         this.mapEvents.handleMapClick(position);
-    },
+    }
 
     handleBoundsChanged() {
         this.mapEvents.handleBoundsChanged();
-    },
+    }
 
     focusMarker(details) {
         this.markerManager.focusMarker(details);
-    },
+    }
 
     centerMap(data) {
         this.mapEvents.centerMap(data);
-    },
+    }
 
     getUserLocation(data) {
         this.locationManager.getUserLocation(data);
-    },
-};
+    }
+}
+
+export default makeHook(MeetupMap);
