@@ -283,14 +283,10 @@ defmodule LgbWeb.LoginLive.UserSettingsLive do
   end
 
   def handle_event("validate_feedback", %{"user_feedback" => feedback_params}, socket) do
-    IO.inspect(feedback_params)
-
     changeset =
       %Feedback{}
       |> Feedbacks.change_user_feedback(feedback_params)
       |> Map.put(:action, :validate)
-
-    IO.inspect(changeset)
 
     {:noreply, assign(socket, :feedback_form, to_form(changeset))}
   end

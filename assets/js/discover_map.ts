@@ -1,15 +1,12 @@
 import { Hook, makeHook } from "phoenix_typed_hook";
+import L from "leaflet";
 
 class DiscoverMap extends Hook {
     mounted() {
         const sridString = this.el.dataset.geo;
-        console.log(sridString)
-        let match = sridString.match(/POINT\((-?\d+\.\d+) (-?\d+\.\d+)\)/);
-
-        console.log(match, "wtf")
-
+        let match = sridString?.match(/POINT\((-?\d+\.\d+) (-?\d+\.\d+)\)/);
         if (!match) {
-            match = [0, 51, 0.1];
+            match = ["0", "51", "0.1"];
         }
 
         const [latitude, longitude] = [parseFloat(match[1]), parseFloat(match[2])];
@@ -32,7 +29,7 @@ class DiscoverMap extends Hook {
         };
 
         let circle = addCircle([latitude, longitude], "red");
-        let lastMarker = null;
+        let lastMarker: null | L.Marker<any> = null;
 
         // Add popup on map click
         map.on("click", (e) => {

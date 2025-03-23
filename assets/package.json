@@ -3,6 +3,7 @@
     "@mux/upchunk": "^3.4.0",
     "@types/phoenix": "^1.6.6",
     "@types/phoenix_live_view": "^1.0.0",
+    "leaflet": "^1.9.4",
     "phoenix_typed_hook": "file:../deps/phoenix_typed_hook",
     "posthog-js": "^1.232.4",
     "three": "^0.174.0"

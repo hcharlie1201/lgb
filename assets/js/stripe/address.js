@@ -1,5 +1,4 @@
 import { Hook, makeHook } from "phoenix_typed_hook";
-import Stripe from "stripe";
 
 class StripeAddress extends Hook {
   mounted() {
