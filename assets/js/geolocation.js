@@ -1,4 +1,6 @@
-export const Geolocation = {
+import { Hook, makeHook } from "phoenix_typed_hook";
+
+class GeolocationHook extends Hook {
   mounted() {
     // Request geolocation immediately when the component mounts
     this.requestGeolocation();
@@ -7,7 +9,7 @@ export const Geolocation = {
     this.handleEvent("request-geolocation", () => {
       this.requestGeolocation();
     });
-  },
+  }
 
   requestGeolocation() {
     if (navigator.geolocation) {
@@ -37,5 +39,7 @@ export const Geolocation = {
         code: 0,
       });
     }
-  },
-};
+  }
+}
+
+export default makeHook(GeolocationHook);

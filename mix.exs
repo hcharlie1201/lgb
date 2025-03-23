@@ -75,6 +75,7 @@ defmodule Lgb.MixProject do
       {:sentry, "~> 10.2.0"},
       {:dns_cluster, "~> 0.1.1"},
       {:ueberauth_google, "~> 0.10"},
+      {:phoenix_typed_hook, "~> 0.18.2"},
       {:bandit, "~> 1.2"}
     ]
   end

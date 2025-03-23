@@ -11,9 +11,20 @@ class MarkerManager {
         this.map = map;
     }
 
+    setMarkerClusterer(markerClusterer) {
+        this.markerClusterer = markerClusterer;
+
+        // Add any existing markers to the clusterer
+        if (this.markerClusterer && Object.keys(this.markers).length > 0) {
+            const markerArray = Object.values(this.markers);
+            this.markerClusterer.addMarkers(markerArray);
+        }
+    }
+
     syncMarkersFromDOM() {
         const locationElements = document.querySelectorAll('#location-markers > div');
         const currentIds = new Set();
+        let markersChanged = false;
 
         // Add or update markers
         locationElements.forEach(element => {
@@ -27,6 +38,7 @@ class MarkerManager {
                 } else {
                     // Create new marker
                     this.addMarker(locationData);
+                    markersChanged = true;
                 }
             } catch (e) {
                 console.error("Error parsing location data:", e);
@@ -37,8 +49,15 @@ class MarkerManager {
         Object.keys(this.markers).forEach(id => {
             if (!currentIds.has(parseInt(id))) {
                 this.removeMarker(id);
+                markersChanged = true;
             }
         });
+
+        // If markers changed and we're not adding/removing markers individually,
+        // sync with clusterer
+        if (markersChanged && !this.addingToClustererIndividually) {
+            this.syncWithClusterer();
+        }
     }
 
     addMarker(location) {
@@ -80,6 +99,11 @@ class MarkerManager {
         // Store the marker
         this.markers[location.id] = marker;
 
+        // Add to clusterer if available
+        if (this.markerClusterer) {
+            this.markerClusterer.addMarker(marker);
+        }
+
         // Observe for intersection
         if (!this.intersectionObserver) {
             this.intersectionObserver = new IntersectionObserver((entries) => {
@@ -114,6 +138,10 @@ class MarkerManager {
 
     removeMarker(id) {
         if (this.markers[id]) {
+            // Remove from clusterer if available
+            if (this.markerClusterer) {
+                this.markerClusterer.removeMarker(this.markers[id]);
+            }
             this.markers[id].map = null;
             delete this.markers[id];
         }
@@ -152,6 +180,17 @@ class MarkerManager {
 
         // Add the marker to the map
         this.selectionMarker.map = this.map;
+    }
+
+    syncWithClusterer() {
+        if (!this.markerClusterer) return;
+
+        // Clear existing markers from clusterer
+        this.markerClusterer.clearMarkers();
+
+        // Add all current markers to clusterer
+        const markerArray = Object.values(this.markers);
+        this.markerClusterer.addMarkers(markerArray);
     }
 }
 

@@ -1,6 +1,6 @@
 import * as THREE from 'three';
-
-export const StarsBackground = {
+import { Hook, makeHook } from "phoenix_typed_hook"
+class StarsBackground extends Hook {
     mounted() {
         try {
             // Create scene, camera, and renderer
@@ -35,7 +35,7 @@ export const StarsBackground = {
         } catch (error) {
             console.error("Error initializing Three.js stars:", error);
         }
-    },
+    }
 
     createStars() {
         try {
@@ -174,7 +174,7 @@ export const StarsBackground = {
         } catch (error) {
             console.error("Error creating first star group:", error);
         }
-    },
+    }
 
     createStarsOpposite() {
         try {
@@ -290,7 +290,7 @@ export const StarsBackground = {
         } catch (error) {
             console.error("Error creating second star group:", error);
         }
-    },
+    }
 
     animate() {
         try {
@@ -349,7 +349,7 @@ export const StarsBackground = {
             console.error("Error in animation loop:", error);
             cancelAnimationFrame(this.animationFrame);
         }
-    },
+    }
 
     destroyed() {
         // Clean up
@@ -369,3 +369,5 @@ export const StarsBackground = {
     }
 }
 
+
+export default makeHook(StarsBackground);

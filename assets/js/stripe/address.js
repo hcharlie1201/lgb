@@ -1,4 +1,7 @@
-export const StripeAddress = {
+import { Hook, makeHook } from "phoenix_typed_hook";
+import Stripe from "stripe";
+
+class StripeAddress extends Hook {
   mounted() {
     const publishableKey = this.el.dataset.stripekey;
     const googleMapsKey = this.el.dataset.googlekey;
@@ -70,4 +73,6 @@ export const StripeAddress = {
       }
     });
   }
-};
+}
+
+export default makeHook(StripeAddress);

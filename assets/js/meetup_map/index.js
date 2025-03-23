@@ -1,103 +1,111 @@
 import MarkerManager from './marker_manager.js';
 import LocationManager from './location_manager.js';
 import MapEvents from './map_events.js';
+import { Hook, makeHook } from "phoenix_typed_hook";
 
-export const MeetupMap = {
-    async mounted() {
-        // Initialize managers
-        this.markerManager = new MarkerManager(this);
-        this.locationManager = new LocationManager(this);
-        this.mapEvents = new MapEvents(this);
+class MeetupMap extends Hook {
+  async mounted() {
+    // Initialize managers
+    this.markerManager = new MarkerManager(this);
+    this.locationManager = new LocationManager(this);
+    this.mapEvents = new MapEvents(this);
 
-        // Load Google Maps
-        await this.loadGoogleMaps();
+    // Load Google Maps
+    await this.loadGoogleMaps();
 
-        // Set up mutation observer for location streams
-        this.setupLocationObserver();
-    },
+    // Set up mutation observer for location streams
+    this.setupLocationObserver();
+  }
 
-    loadGoogleMaps() {
-        const apiKey = this.el.dataset.apiKey;
+  loadGoogleMaps() {
+    const apiKey = this.el.dataset.apiKey;
 
-        // Return a Promise that resolves when Google Maps is loaded
-        return new Promise((resolve) => {
-            if (window.google && window.google.maps) {
-                // If Maps is already loaded, initialize and resolve immediately
-                this.initMap();
-                resolve();
-            } else {
-                // Create script element for Maps API
-                const script = document.createElement('script');
-                script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&callback=initGoogleMaps&v=weekly&libraries=marker&loading=async`;
-                script.async = true;
+    // Return a Promise that resolves when Google Maps is loaded
+    return new Promise((resolve) => {
+      if (window.google && window.google.maps) {
+        // If Maps is already loaded, initialize and resolve immediately
+        this.initMap();
+        resolve();
+      } else {
+        // Create script element for Maps API
+        const script = document.createElement('script');
+        script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&callback=initGoogleMaps&v=weekly&libraries=marker&loading=async`;
+        script.async = true;
 
-                // Setup callback function
-                window.initGoogleMaps = () => {
-                    this.initMap();
-                    resolve(); // Resolve the promise after initialization
-                };
+        // Setup callback function
+        window.initGoogleMaps = () => {
+          this.initMap();
+          resolve(); // Resolve the promise after initialization
+        };
 
-                document.head.appendChild(script);
-            }
-        });
-    },
+        document.head.appendChild(script);
+      }
+    });
+  }
 
-    initMap() {
-        // Default map center
-        const defaultCenter = { lat: 37.7749, lng: -122.4194 };
+  initMap() {
+    // Default map center
+    const defaultCenter = { lat: 37.7749, lng: -122.4194 };
 
-        this.map = new google.maps.Map(this.el, {
-            zoom: 12,
-            center: defaultCenter,
-            mapTypeControl: false,
-            streetViewControl: false,
-            mapId: "5c21f5c01da8345d", // https://console.cloud.google.com/google/maps-apis/studio/maps/5c21f5c01da8345d?project=bibi-451006
-        });
+    this.map = new google.maps.Map(this.el, {
+      zoom: 12,
+      center: defaultCenter,
+      mapTypeControl: false,
+      streetViewControl: false,
+      mapId: "5c21f5c01da8345d", // https://console.cloud.google.com/google/maps-apis/studio/maps/5c21f5c01da8345d?project=bibi-451006
+    });
 
-        // Initialize managers with map
-        this.markerManager.setMap(this.map);
-        this.locationManager.setMap(this.map);
-        this.mapEvents.setMap(this.map);
+    // Initialize managers with map
+    this.markerManager.setMap(this.map);
+    this.locationManager.setMap(this.map);
+    this.mapEvents.setMap(this.map);
 
-        // Set up event listeners
-        this.mapEvents.setupEventListeners();
+    this.markerClusterer = new markerClusterer.MarkerClusterer({
+      map: this.map,
+    });
+    this.markerManager.setMarkerClusterer(this.markerClusterer);
 
-        // Try to get user's current location
-        this.locationManager.tryGetUserInitialLocation();
-    },
+    // Set up event listeners
+    this.mapEvents.setupEventListeners();
 
-    setupLocationObserver() {
-        const locationContainer = document.getElementById('location-markers');
-        if (!locationContainer) return;
+    // Try to get user's current location
+    this.locationManager.tryGetUserInitialLocation();
+  }
 
-        const observer = new MutationObserver(() => {
-            this.markerManager.syncMarkersFromDOM();
-        });
+  setupLocationObserver() {
+    const locationContainer = document.getElementById('location-markers');
+    if (!locationContainer) return;
 
-        observer.observe(locationContainer, { childList: true, subtree: true });
+    const observer = new MutationObserver(() => {
+      this.markerManager.syncMarkersFromDOM();
+    });
 
-        // Initial sync
-        this.markerManager.syncMarkersFromDOM();
-    },
+    observer.observe(locationContainer, { childList: true, subtree: true });
 
-    // Event handler methods that delegate to the appropriate manager
-    handleMapClick(position) {
-        this.mapEvents.handleMapClick(position);
-    },
+    // Initial sync
+    this.markerManager.syncMarkersFromDOM();
+  }
 
-    handleBoundsChanged() {
-        this.mapEvents.handleBoundsChanged();
-    },
+  // Event handler methods that delegate to the appropriate manager
+  handleMapClick(position) {
+    this.mapEvents.handleMapClick(position);
+  }
 
-    focusMarker(details) {
-        this.markerManager.focusMarker(details);
-    },
+  handleBoundsChanged() {
+    this.mapEvents.handleBoundsChanged();
+  }
 
-    centerMap(data) {
-        this.mapEvents.centerMap(data);
-    },
+  focusMarker(details) {
+    this.markerManager.focusMarker(details);
+  }
 
-    getUserLocation(data) {
-        this.locationManager.getUserLocation(data);
-    },
-};
+  centerMap(data) {
+    this.mapEvents.centerMap(data);
+  }
+
+  getUserLocation(data) {
+    this.locationManager.getUserLocation(data);
+  }
+}
+
+export default makeHook(MeetupMap);
