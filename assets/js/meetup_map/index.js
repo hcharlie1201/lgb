@@ -2,6 +2,7 @@ import MarkerManager from './marker_manager.js';
 import LocationManager from './location_manager.js';
 import MapEvents from './map_events.js';
 import { Hook, makeHook } from "phoenix_typed_hook";
+import { MarkerClusterer } from "@googlemaps/markerclusterer";
 
 class MeetupMap extends Hook {
     async mounted() {
@@ -60,7 +61,7 @@ class MeetupMap extends Hook {
         this.locationManager.setMap(this.map);
         this.mapEvents.setMap(this.map);
 
-        this.markerClusterer = new markerClusterer.MarkerClusterer({
+        this.markerClusterer = new MarkerClusterer({
             map: this.map,
         });
         this.markerManager.setMarkerClusterer(this.markerClusterer);

@@ -1,6 +1,8 @@
 {
   "dependencies": {
+    "@googlemaps/markerclusterer": "^2.5.3",
     "@mux/upchunk": "^3.4.0",
+    "@types/google.maps": "^3.58.1",
     "@types/phoenix": "^1.6.6",
     "@types/phoenix_live_view": "^1.0.0",
     "leaflet": "^1.9.4",
