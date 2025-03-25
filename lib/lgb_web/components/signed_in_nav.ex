@@ -25,7 +25,7 @@ defmodule LgbWeb.Components.SignedInNav do
     ~H"""
     <nav
       id={assigns.id}
-      class="z-10 flex w-full flex-row items-start justify-around p-2 backdrop-blur-md md:h-[calc(100vh-80px)] md:sticky md:top-20 md:w-64 md:flex-col md:justify-start"
+      class="sticky top-14 z-10 flex w-full flex-row items-start justify-around p-2 backdrop-blur-md md:h-[calc(100vh-80px)] md:top-20 md:w-64 md:flex-col md:justify-start"
     >
       <.live_component
         module={LgbWeb.Components.Geolocation}
