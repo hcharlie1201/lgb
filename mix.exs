@@ -19,7 +19,7 @@ defmodule Lgb.MixProject do
   def application do
     [
       mod: {Lgb.Application, []},
-      extra_applications: [:logger, :runtime_tools]
+      extra_applications: [:logger, :runtime_tools, :confex]
     ]
   end
 
@@ -35,12 +35,11 @@ defmodule Lgb.MixProject do
       {:bcrypt_elixir, "~> 3.0"},
       {:phoenix, "~> 1.7.12"},
       {:tailwind_formatter, "~> 0.4.2", only: [:dev, :test], runtime: false},
-      {:ex_aws, "~> 2.1.2"},
+      {:ex_aws, "~> 2.4"},
       {:ex_aws_s3, "~> 2.0"},
       {:hackney, "~> 1.9"},
       {:httpoison, "~> 2.0"},
       {:poison, "~> 6.0"},
-      {:dotenv, "~> 3.0.0"},
       {:ecto_dbg, "~> 0.5.0"},
       {:sweet_xml, "~> 0.6"},
       {:waffle, "~> 1.1"},
@@ -72,11 +71,14 @@ defmodule Lgb.MixProject do
       {:telemetry_poller, "~> 1.0"},
       {:gettext, "~> 0.20"},
       {:jason, "~> 1.2"},
-      {:sentry, "~> 10.2.0"},
+      {:sentry, "~> 10.9"},
       {:dns_cluster, "~> 0.1.1"},
       {:ueberauth_google, "~> 0.10"},
       {:phoenix_typed_hook, "~> 0.18.2"},
-      {:bandit, "~> 1.2"}
+      {:bandit, "~> 1.2"},
+      {:open_api_spex, "~> 3.21"},
+      {:jose, "~> 1.11"},
+      {:confex, "~> 3.5.1"}
     ]
   end
 

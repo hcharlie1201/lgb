@@ -17,6 +17,12 @@ defmodule LgbWeb.Router do
     plug :accepts, ["json"]
   end
 
+  scope "/api/v1", LgbWeb do
+    pipe_through [:api]
+
+    post "/auth/google", Authentication.Signin, :google_signin
+  end
+
   scope "/", LgbWeb do
     pipe_through [:browser, :redirect_if_user_is_authenticated]
 
