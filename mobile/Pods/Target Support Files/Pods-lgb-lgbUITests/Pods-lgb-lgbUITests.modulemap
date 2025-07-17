@@ -1,0 +1,6 @@
+framework module Pods_lgb_lgbUITests {
+  umbrella header "Pods-lgb-lgbUITests-umbrella.h"
+
+  export *
+  module * { export * }
+}

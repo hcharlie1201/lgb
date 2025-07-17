@@ -9,7 +9,8 @@ import Config
 
 config :lgb,
   ecto_repos: [Lgb.Repo],
-  generators: [timestamp_type: :utc_datetime]
+  generators: [timestamp_type: :utc_datetime],
+  google_mobile_client_id: {:system, "GOOGLE_MOBILE_CLIENT_ID"}
 
 # Configures the endpoint
 config :lgb, LgbWeb.Endpoint,
